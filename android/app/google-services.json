@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "950017735766",
+    "project_id": "shop-n-go-3d4b9",
+    "storage_bucket": "shop-n-go-3d4b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950017735766:android:b34ed250a9a0f14695cff7",
+        "android_client_info": {
+          "package_name": "com.mcs.shop_n_go"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950017735766-l5rm9evtjlceg6q3jtp011l2dvpd60oj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcs.shop_n_go",
+            "certificate_hash": "4a73d6b8ab32a94efd4f0b916ada9b78592bb1f7"
+          }
+        },
+        {
+          "client_id": "950017735766-4ta3tca9jaim37d6pqm7o7c2k4t0fd3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY-SmJ29RYyqiwa3S8I9WblOlnR-Eqbhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950017735766-4ta3tca9jaim37d6pqm7o7c2k4t0fd3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

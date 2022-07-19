@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/cupertino.dart';
-import 'package:shop_n_go/shared/constant.dart';
+import 'package:shop_n_go/shared/auth/constant.dart';
 
 class ItemData {
   // String image = '';

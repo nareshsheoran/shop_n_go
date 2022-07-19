@@ -5,9 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shop_n_go/shared/constant.dart';
-import 'package:shop_n_go/shared/routes.dart';
-import 'package:shop_n_go/shared/splash_page.dart';
+import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/page/splash_page.dart';
 import 'package:flutter_config/flutter_config.dart';
 
 void main() async {

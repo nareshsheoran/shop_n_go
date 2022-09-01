@@ -1,10 +1,14 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/auth/mobile_otp_auth.dart';
+
+import '../../shared/auth/localdb.dart';
+import '../../shared/auth/routes.dart';
 
 class ConfirmOtpPage extends StatefulWidget {
   const ConfirmOtpPage({Key? key}) : super(key: key);
@@ -16,7 +20,60 @@ class ConfirmOtpPage extends StatefulWidget {
 class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController otpController = TextEditingController(text: "999999");
+  TextEditingController otpController = TextEditingController(text: "123456");
+
+  Future otpNoVerify() async {
+    verifyOTP(otpController.text.toString(), context);
+    // await Navigator.pushReplacementNamed(context, AppRoutes.WelcomeAboardPage);
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String verificationID = '';
+  int? resendTokens ;
+
+  Future fetchingOTP(controller,context) async {
+    try {
+      await _auth.verifyPhoneNumber(
+          phoneNumber: controller,
+          timeout: const Duration(seconds: 60),
+
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            await _auth.signInWithCredential(credential);
+
+            LocalDataSaver.savePhone(controller);
+            ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
+
+            // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            if (e.code == "invalid-phone-number") {
+              print("Invalid phone no:$controller");
+              print("Invalid phone no");
+
+            } else{
+              print("FirebaseAuthException code: $e");
+              Fluttertoast.showToast(msg: "FirebaseAuthException code: $e");
+
+            }
+          },
+          codeSent: (String verificationId, int? resendToken) async {
+            verificationID = verificationId;
+            resendTokens=resendToken;
+            print("resendTokens:$resendTokens");
+            Fluttertoast.showToast(msg: "Code has been sent to your mobile number +91${ProfileDetails.resendPhone}");
+            await Navigator.pushReplacementNamed(context, AppRoutes.ConfirmOtpPage);
+
+
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {});
+
+
+      // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
+    } on FirebaseAuthException catch (e) {
+      print("FirebaseAuthException: $e");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +157,7 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
                   child: GestureDetector(
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
-                        Fluttertoast.showToast(msg: "Login Successful");
-                        await Navigator.pushReplacementNamed(
-                            context, AppRoutes.DashboardPage);
+                        otpNoVerify();
                       }
                     },
                     child: Container(
@@ -123,8 +178,9 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
                 SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    // Navigator.pushReplacementNamed(
-                    //     context, AppRoutes.LoginScreenPage);
+                    print("Resend: ${ProfileDetails.resendPhone}");
+                    // fetchOTP("+91${ProfileDetails.resendPhone}", context);
+                    fetchingOTP("+91${ProfileDetails.resendPhone}", context);
                   },
                   child: Text("Resend OTP",
                       style: TextStyle(

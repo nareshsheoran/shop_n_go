@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
+import 'package:http/http.dart';
+import '../model/store_list_req.dart';
 
 class StoresDetailsPage extends StatefulWidget {
   const StoresDetailsPage({Key? key}) : super(key: key);
@@ -13,10 +18,44 @@ class StoresDetailsPage extends StatefulWidget {
 }
 
 class _StoresDetailsPageState extends State<StoresDetailsPage> {
-  Object? image = '';
+  // Object? image = '';
+  StoreListData? storeListRequestData;
+
+  // StoreListRequest? storeListRequestData;
 
   late int selectedIndex;
-  final List<bool> _selected = List.generate(20, (i) => false);
+  final List<bool> _selected = List.generate(50, (i) => false);
+
+  bool isLoading = false;
+  List<StoreListDetailsData> dataAllStoreDetailsList = [];
+
+  Future<void> fetchStoreDetailsData() async {
+    setState(() {
+      isLoading = true;
+    });
+    Uri myUri = Uri.parse(
+        "${NetworkUtil.getVendorProductUrl}${storeListRequestData!.authPerson?.toLowerCase()}v");
+    Response response = await get(myUri);
+    if (response.statusCode == 200) {
+      debugPrint("fetchStoreDetails Response Body: ${response.body}");
+      debugPrint("fetchStoreDetails Status Code: ${response.statusCode}");
+
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      StoreListDetailsReq storeListDetailsReq =
+          StoreListDetailsReq.fromJson(jsonResponse);
+      List<StoreListDetailsData>? list = storeListDetailsReq.data;
+      dataAllStoreDetailsList.addAll(list!);
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // fetchStoreDetailsData();
+    super.initState();
+  }
 
   List nameList = [
     "Chilly",
@@ -47,7 +86,12 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    image = ModalRoute.of(context)?.settings.arguments!;
+    if (storeListRequestData == null) {
+      storeListRequestData =
+          ModalRoute.of(context)?.settings.arguments as StoreListData;
+      fetchStoreDetailsData();
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -57,7 +101,8 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.fill,
                 image: NetworkImage(
-                  image.toString(),
+                  // image.toString(),
+                  Images.baseUrl + storeListRequestData!.vendorProfile!,
                 )),
             Container(
               decoration: BoxDecoration(),
@@ -66,7 +111,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Spencer Stores",
+                    Text("${storeListRequestData!.vendorName}",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18)),
                     SizedBox(height: 10),
@@ -74,10 +119,14 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                       children: [
                         Icon(Icons.directions),
                         SizedBox(width: 8),
-                        Expanded(child: Text("8 KMS")),
+                        Expanded(
+                            child: Text("${storeListRequestData!.distance}")),
                         Icon(Icons.card_travel),
                         SizedBox(width: 8),
-                        Text("20 Items")
+                        (storeListRequestData!.noOfProducts == 0)
+                            ? Text("${storeListRequestData!.noOfProducts} Item")
+                            : Text(
+                                "${storeListRequestData!.noOfProducts} Items")
                       ],
                     ),
                     SizedBox(height: 10),
@@ -85,7 +134,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                       children: [
                         Icon(Icons.directions_bike_sharp),
                         SizedBox(width: 8),
-                        Text("HOME DELIVERY AVAILABLE")
+                        Text("${storeListRequestData!.isHomeDelivery}")
                       ],
                     ),
                     SizedBox(height: 10),
@@ -93,7 +142,8 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                       children: [
                         Icon(Icons.currency_rupee_rounded),
                         SizedBox(width: 8),
-                        Text("MINIMUM ORDER \$10")
+                        Text(
+                            "Minimum Order ${AppDetails.currencySign}${storeListRequestData!.minimumOrder}")
                       ],
                     ),
                     SizedBox(height: 10),
@@ -101,7 +151,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                       children: [
                         Icon(Icons.star),
                         SizedBox(width: 8),
-                        Text("REVIEW")
+                        Text("Review")
                       ],
                     ),
                     SizedBox(height: 10),
@@ -118,7 +168,8 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                           GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
-                                  context, AppRoutes.StoreSearchPage);
+                                  context, AppRoutes.StoreSearchPage,
+                                  arguments: storeListRequestData);
                             },
                             child: Text("View All",
                                 style: TextStyle(
@@ -128,79 +179,136 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 160,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        itemCount: nameList.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Stack(
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 125,
-                                child: Card(
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(5),
-                                        child: Image(
-                                          width: ImageDimension.imageWidth,
-                                          height: ImageDimension.imageHeight,
-                                          fit: BoxFit.fill,
-                                          image: itemData[index].image,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                          "${itemData[index].name} ${itemData[index].weight}kg"),
-                                      SizedBox(height: 4),
-                                      Padding(
-                                        padding: const EdgeInsets.all(5),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text("\$${itemData[index].price}"),
-                                            counterWidget(index)
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                  top: 6,
-                                  right: 8,
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          // isFavourite = true;
-                                          _selected[index] = !_selected[index];
-                                        });
-                                      },
-                                      child: _selected[index]
-                                          ? Icon(
-                                              Icons.favorite,
-                                              color: Colors.red,
-                                            )
-                                          : Icon(
-                                              Icons.favorite_border_outlined,
-                                              color: Colors.black,
-                                            )))
-                            ],
-                          );
-                        },
-                      ),
-                    )
+                    // SizedBox(height: 10),
+
                   ],
                 ),
               ),
+            ),
+            (isLoading)
+                ? SizedBox(
+              height: MediaQuery.of(context).size.width / 3,
+              width: MediaQuery.of(context).size.width,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                ),
+              ),
             )
+                : SizedBox(
+                  height: 157,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                    itemCount: dataAllStoreDetailsList.length >= 4
+                        ? dataAllStoreDetailsList.length
+                        .toInt()
+                        .bitLength
+                        : dataAllStoreDetailsList.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      //
+                      //?.toStringAsFixed(0)
+                      print( "Index: ${AppDetails.currencySign}${(((dataAllStoreDetailsList[index].price)!)*(itemData[index].counter)).toStringAsFixed(0)}");
+                      print( "Index counter:  ${(itemData[index].counter)}");
+                      return Stack(
+                        children: [
+                          Container(
+                            height: 157,
+                            width: 150,
+                            child: Card(
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 9),
+                                  Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: (isLoading)
+                                        ? SizedBox(
+                                      height: ImageDimension
+                                          .imageWidth -
+                                          16,
+                                      width: ImageDimension
+                                          .imageWidth -
+                                          16,
+                                      child: const Center(
+                                        child:
+                                        CircularProgressIndicator(
+                                          strokeWidth: 4,
+                                        ),
+                                      ),
+                                    )
+                                        : Image(
+                                      width: ImageDimension
+                                          .imageWidth -
+                                          16,
+                                      height: ImageDimension
+                                          .imageHeight -
+                                          25,
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(Images
+                                          .baseUrl +
+                                          dataAllStoreDetailsList[
+                                          index]
+                                              .itemImages!),
+                                    ),
+                                  ),
+                                  // SizedBox(height: 4),
+                                  Text(
+                                      // "${dataAllStoreDetailsList[index].itemName} ${itemData[index].weight}kg"),
+                                      "${dataAllStoreDetailsList[index].itemName}"),
+                                  // SizedBox(height: 4),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                      children: [
+                                        Text(
+                                            "${AppDetails.currencySign}${(((dataAllStoreDetailsList[index].price)!)*(itemData[index].counter)).toStringAsFixed(0)}"),
+                                        ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                minimumSize: Size(20, 30),
+                                                primary: Constant.primaryColor),
+                                            onPressed: () {},
+                                            child: Text("ADD +",style: TextStyle(fontSize: 12),))
+
+                                        // counterWidget(index)
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                              top: 6,
+                              right: 8,
+                              child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      // isFavourite = true;
+                                      _selected[index] =
+                                      !_selected[index];
+                                    });
+                                  },
+                                  child: _selected[index]
+                                      ? Icon(
+                                    Icons.favorite,
+                                    color: Colors.red,
+                                  )
+                                      : Icon(
+                                    Icons
+                                        .favorite_border_outlined,
+                                    color: Colors.black,
+                                  )))
+                        ],
+                      );
+                    },
+                  ),
+                ),
+
+
           ],
         ),
       ),
@@ -266,7 +374,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
         Container(
       padding: EdgeInsets.all(5),
       height: 30,
-      width: 72,
+      width: 80,
       decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(4),
@@ -277,6 +385,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
           InkWell(
               onTap: () {
                 setState(() {
+
                   // itemData[index].counter--;
                   if (itemData[index].counter < 1) {
                     itemData[index].shouldVisible =
@@ -302,12 +411,12 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                 color: Constant.primaryColor,
                 size: 22,
               ))),
-          SizedBox(width: 4),
+          SizedBox(width: 2),
           Text(
             '${itemData[index].counter}',
             style: const TextStyle(color: Colors.black),
           ),
-          SizedBox(width: 4),
+          SizedBox(width: 2),
           InkWell(
               onTap: () {
                 setState(() {

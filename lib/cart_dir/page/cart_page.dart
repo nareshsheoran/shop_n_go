@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 
@@ -124,13 +125,16 @@ class _CartPageState extends State<CartPage> {
                                               Icons.card_travel,
                                               size: IconDimension.iconSize,
                                             ),
-                                            SizedBox(width: 8),(number == 0 || number == null)
-                                                ? Text("1 Item")
-                                                : number == 1
-                                                ? Text("$number Item")
-                                                : Text("$number Items"),
+                                            SizedBox(width: 8),
+                                            // (number == 0 || number == null)
+                                            //     ? Text("1 Item")
+                                            //     : number == 1
+                                            //     ? Text("$number Item")
+                                            //     : Text("$number Items"),
+                                            Text("${itemData[index].counter} Items"),
                                           ],
                                         ),
+                                        SizedBox(height: 8),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -140,6 +144,7 @@ class _CartPageState extends State<CartPage> {
                                               size: IconDimension.iconSize,
                                             ),
                                             SizedBox(width: 8),
+                                            // counterWidget(index),
                                             ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
                                                     // minimumSize: Size(50, 30),
@@ -176,6 +181,125 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
     );
+  }
+
+  Widget counterWidget(int index) {
+    return
+      // itemData[index].shouldVisible ?
+      //    Center(
+      //       child: Container(
+      //       height: 30,
+      //       width: 70,
+      //       decoration: BoxDecoration(
+      //           color: Colors.grey[200],
+      //           borderRadius: BorderRadius.circular(4),
+      //           border: Border.all(color: Colors.white70)),
+      //       child: Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //         children: <Widget>[
+      //           InkWell(
+      //               onTap: () {
+      //                 setState(() {
+      //                   if (itemData[index].counter < 1) {
+      //                     itemData[index].shouldVisible =
+      //                         !itemData[index].shouldVisible;
+      //                   } else {
+      //                     itemData[index].counter--;
+      //                   }
+      //                 });
+      //               },
+      //               child: Icon(
+      //                 Icons.remove,
+      //                 color: Constant.primaryColor,
+      //                 size: 22,
+      //               )),
+      //           SizedBox(width: 4),
+      //           (itemData[index].counter == 0 ||
+      //                   itemData[index].counter == null)
+      //               ? Text(
+      //                   '${itemData[index].counter}',
+      //                   style: TextStyle(color: Colors.black),
+      //                 )
+      //               : Text(
+      //                   '${itemData[index].counter}',
+      //                   style: const TextStyle(color: Colors.black),
+      //                 ),
+      //           SizedBox(width: 4),
+      //           InkWell(
+      //               onTap: () {
+      //                 setState(() {
+      //                   itemData[index].counter++;
+      //                 });
+      //               },
+      //               child: Icon(
+      //                 Icons.add,
+      //                 color: Constant.primaryColor,
+      //                 size: 22,
+      //               )),
+      //         ],
+      //       ),
+      //     )):
+      Container(
+        padding: EdgeInsets.all(5),
+        height: 30,
+        width: 80,
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Colors.white70)),
+        child: Row(          children: <Widget>[
+            InkWell(
+                onTap: () {
+                  setState(() {
+
+                    // itemData[index].counter--;
+                    if (itemData[index].counter < 1) {
+                      itemData[index].shouldVisible =
+                      !itemData[index].shouldVisible;
+                      if (itemData[index].counter == 0) {
+                        setState(() {
+                          itemData.removeAt(index);
+                        });
+                      }
+                    } else {
+                      itemData[index].counter--;
+                      if (itemData[index].counter == 0) {
+                        setState(() {
+                          itemData.removeAt(index);
+                        });
+                      }
+                    }
+                  });
+                },
+                child: Center(
+                    child: Icon(
+                      Icons.remove,
+                      color: Constant.primaryColor,
+                      size: 22,
+                    ))),
+            SizedBox(width: 2),
+            Text(
+              '${itemData[index].counter}',
+              style: const TextStyle(color: Colors.black),
+            ),
+            SizedBox(width: 2),
+            InkWell(
+                onTap: () {
+                  setState(() {
+                    itemData[index].counter++;
+                    itemData[index].shouldVisible =
+                    !itemData[index].shouldVisible;
+                  });
+                },
+                child: Center(
+                    child: Icon(
+                      Icons.add,
+                      color: Constant.primaryColor,
+                      size: 22,
+                    ))),
+          ],
+        ),
+      );
   }
 
   List imgList = [

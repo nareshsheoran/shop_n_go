@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/home_page_dir/model_req/all_category_req.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 
 import '../../shared/auth/constant.dart';
 
@@ -14,6 +16,8 @@ class CategoryNamePage extends StatefulWidget {
 
 class _CategoryNamePageState extends State<CategoryNamePage> {
   TextEditingController searchController = TextEditingController();
+  AllCategoryData allCategoryData = AllCategoryData();
+
   List imageList = [
     Images.chillyImg,
     Images.ladiesFingerImg,
@@ -47,7 +51,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
 
   @override
   Widget build(BuildContext context) {
-    name = ModalRoute.of(context)?.settings.arguments;
+    allCategoryData = ModalRoute.of(context)?.settings.arguments as AllCategoryData;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -67,7 +71,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                               color: Colors.black)),
                       SizedBox(width: 8),
                       Text(
-                        name.toString(),
+                        allCategoryData.name.toString(),
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -107,7 +111,12 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                         onTap: () {
                           Navigator.pushNamed(
                               context, AppRoutes.CategoriesDetailsPage,
-                              arguments: imageList[index]);
+                              arguments: ScreenArguments(
+                                  Images.baseUrl +
+                                     imageList[index],
+                                  nameList[index],
+                                  "Vegatables",
+                                  rateList[index]));
                         },
                         child: categoryWidget(index));
                   },
@@ -150,7 +159,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "\$${rateList[index]}",
+                          "${AppDetails.currencySign}${rateList[index]}",
                           textAlign: TextAlign.left,
                         ),
                       ],

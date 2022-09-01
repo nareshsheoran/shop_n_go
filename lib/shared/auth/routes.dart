@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:shop_n_go/account_dir/page/address_page.dart';
+import 'package:shop_n_go/account_dir/page/order_page.dart';
 import 'package:shop_n_go/account_dir/page/profile_page.dart';
 import 'package:shop_n_go/account_dir/page/reward_page.dart';
 import 'package:shop_n_go/cart_dir/page/cart_details_page.dart';
@@ -49,6 +50,7 @@ class AppRoutes {
   static const String MapSearchPage = "Map Search Page";
   static const String MapStoreDetailsPage = "Map Store Details Page";
   static const String AllBestSellerProduct = "All Best Seller Product Page";
+  static const String OrderPage = "Order Page";
 }
 
 Map<String, WidgetBuilder> routes = {
@@ -75,4 +77,5 @@ Map<String, WidgetBuilder> routes = {
   AppRoutes.MapSearchPage: (context) => const MapSearchPage(),
   AppRoutes.MapStoreDetailsPage: (context) => const MapStoreDetailsPage(),
   AppRoutes.AllBestSellerProduct: (context) => const AllBestSellerProduct(),
+  AppRoutes.OrderPage: (context) => const OrderPage(),
 };

@@ -50,8 +50,8 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
   }
 
   List imageList = [
-    Images.vegetablesImg,
-    Images.fruitsImg,
+    Images.laysImg,
+    Images.milkImg,
     Images.softDrinksImg,
     Images.nutsImg,
     Images.iceCreamImg,
@@ -144,7 +144,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, AppRoutes.CategoryNamePage,
-                                    arguments: nameList[index]);
+                                    arguments: dataAllCategoryList[index]);
                               },
                               child: categoryWidget(index));
                         },

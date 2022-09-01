@@ -433,7 +433,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                                             SizedBox(width: 8),
                                             Expanded(
                                                 child: Text(
-                                                    "Min. order \$${orderList[index]}")),
+                                                    "Min. order ${AppDetails.currencySign}${orderList[index]}")),
 
                                           ],
                                         ),

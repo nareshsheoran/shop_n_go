@@ -1,4 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
+
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:bottom_picker/resources/arrays.dart';
@@ -10,6 +13,10 @@ import 'package:get/get_utils/get_utils.dart';
 import 'package:shop_n_go/shared/auth/localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/account_dir/model/user_prof_req_res.dart';
+import 'package:shop_n_go/account_dir/model/user_profile_request.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -33,6 +40,99 @@ class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   String _dropDownValue = '';
 
+  bool isUserProfileLoading = false;
+  List<UserProfileRequestData> userProfileList = [];
+
+  Future<void> fetchUserProfileDetails() async {
+    setState(() {
+      isUserProfileLoading = true;
+    });
+    Uri myUri =
+        Uri.parse("${NetworkUtil.getUserProfileUrl}${ProfileDetails.userName}");
+    Response response = await get(myUri);
+    print("statusCode:${response.statusCode}");
+    print("userName:${ProfileDetails.userName}");
+    if (response.statusCode == 200) {
+      debugPrint("fetchUserProfileDetails Response Body: ${response.body}");
+      debugPrint("fetchUserProfileDetails Status Code: ${response.statusCode}");
+
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      // UserProfileRequest userProfileRequest =
+      // UserProfileRequest.fromJson(jsonResponse);
+      // List<UserProfileRequest> list = userProfileRequest.data!;
+      UserProfileRequest userProfileRequest =
+          UserProfileRequest.fromJson(jsonResponse);
+      UserProfileRequestData? userProfileRequestData = userProfileRequest.data;
+      // userProfileList.addAll(list);
+      // userProfileList = list;
+      nameController =
+          TextEditingController(text: userProfileRequestData?.username!);
+      emailController =
+          TextEditingController(text: userProfileRequestData?.email!);
+
+      LocalDataSaver.saveID(userProfileRequestData!.id.toString());
+      LocalDataSaver.saveUserName(userProfileRequestData.username);
+      LocalDataSaver.saveEmail(userProfileRequestData.email);
+
+      ProfileDetails.id = (await LocalDataSaver.getID())!;
+      ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
+      ProfileDetails.email = (await LocalDataSaver.getEmail())!;
+      setState(() {
+        isUserProfileLoading = false;
+      });
+    }
+  }
+
+  Future proFavCart() async {
+    String oldPass = ProfileDetails.password!;
+    String newPass = passwordController.text;
+
+    var requestBody = {
+      'old_password': oldPass,
+      'new_password': newPass,
+    };
+    print("old_password:$oldPass");
+    print("new_password:$newPass");
+
+    Uri myUri = Uri.parse(NetworkUtil.getUpdatePasswordUrl);
+
+    http.Response response = await http.put(
+      myUri,
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: 'Token ${ProfileDetails.loginToken}',
+      },
+      body: requestBody,
+    );
+    print("proFavCart Status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      debugPrint("profileFavCart Response Body: ${response.body}");
+      debugPrint("profileFavCart Status Code: ${response.statusCode}");
+
+      Map<String, dynamic> map =
+          jsonDecode(response.body) as Map<String, dynamic>;
+
+      UserProfResReq userProfResReq = UserProfResReq.fromJson(map);
+      print("message: ${userProfResReq.message}");
+
+      LocalDataSaver.savePhone(mobileController.text);
+      LocalDataSaver.savePassword(newPass);
+      ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
+      ProfileDetails.password = (await LocalDataSaver.getPassword())!;
+
+      await Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
+      Fluttertoast.showToast(
+          msg: "${userProfResReq.message}", timeInSecForIosWeb: 2);
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
+
+  @override
+  void initState() {
+    fetchUserProfileDetails();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,229 +140,263 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 40,
-                  child: Center(
-                      child: Text(
-                    "Profile",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )),
-                ),
-                SizedBox(height: 30),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: nameController,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'NAME',
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()
-                          // border: InputBorder.none
-                          ),
-                      validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 3)
-                            ? null
-                            : "Please Enter Name";
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: emailController,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'EMAIL ID',
-                          // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()
-                          // border: InputBorder.none
-                          ),
-                      validator: (String? value) {
-                        return GetUtils.isEmail(value!)
-                            ? null
-                            : "Please Enter Valid Email";
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: mobileController,
-                      textCapitalization: TextCapitalization.sentences,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'MOBILE NUMBER',
-                          // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()
-                          // border: InputBorder.none
-                          ),
-                      validator: (String? value) {
-                        return GetUtils.isPhoneNumber(value!)
-                            ? null
-                            : "Please Enter Valid Mobile Number";
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: passwordController,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'PASSWORD',
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()
-                          // border: InputBorder.none
-                          ),
-                      validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 5)
-                            ? null
-                            : "Please Enter 5 Digit Password";
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: dateController,
-                      readOnly: true,
-                      textCapitalization: TextCapitalization.sentences,
-                      onTap: () {
-                        buildDateTimePicker(context);
-                      },
-                      decoration: InputDecoration(
-                          suffixIcon: InkWell(
-                              onTap: () {
-                                buildDateTimePicker(context);
-                              },
-                              child: Icon(Icons.calendar_today_outlined)),
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'DD/MM/YYYY',
-                          // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()
-                          // border: InputBorder.none
-                          ),
-                      validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!,1)
-                            ? null
-                            : "Please Choose Date";
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                      controller: genderController,
-                      readOnly: true,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
+            child: (isUserProfileLoading)
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 4,
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 44,
+                        child: Center(
+                            child: Text(
+                          ProfileDetails.userName!,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                      SizedBox(height: 30),
+                      buildText("Name"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            controller: nameController,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'NAME',
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()
+                                // border: InputBorder.none
+                                ),
+                            validator: (String? value) {
+                              return GetUtils.isLengthGreaterOrEqual(value!, 3)
+                                  ? null
+                                  : "Please Enter Name";
+                            }),
+                      ),
+                      buildText("Email ID"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            controller: emailController,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'EMAIL ID',
+                                // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()
+                                // border: InputBorder.none
+                                ),
+                            validator: (String? value) {
+                              return GetUtils.isEmail(value!)
+                                  ? null
+                                  : "Please Enter Valid Email";
+                            }),
+                      ),
+                      buildText("Mobile Number"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            maxLength: 10,
+                            controller: mobileController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'MOBILE NUMBER',
+                                // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()
+                                // border: InputBorder.none
+                                ),
+                            validator: (String? value) {
+                              return GetUtils.isPhoneNumber(value!)
+                                  ? null
+                                  : "Please Enter Valid Mobile Number";
+                            }),
+                      ),
+                      buildText("Password"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            controller: passwordController,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'PASSWORD',
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()
+                                // border: InputBorder.none
+                                ),
+                            validator: (String? value) {
+                              return GetUtils.isLengthGreaterOrEqual(value!, 5)
+                                  ? null
+                                  : "Please Enter 5 Digit Password";
+                            }),
+                      ),
+                      buildText("Date"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            controller: dateController,
+                            readOnly: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            onTap: () {
+                              buildDateTimePicker(context);
+                            },
+                            decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      buildDateTimePicker(context);
+                                    },
+                                    child: Icon(Icons.calendar_today_outlined)),
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'DD/MM/YYYY',
+                                // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()
+                                // border: InputBorder.none
+                                ),
+                            validator: (String? value) {
+                              return GetUtils.isLengthGreaterOrEqual(value!, 1)
+                                  ? null
+                                  : "Please Choose Date";
+                            }),
+                      ),
+                      buildText("Gender"),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: TextFormField(
+                            controller: genderController,
+                            readOnly: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                suffixIcon: Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      // hint: _dropDownValue == ""
+                                      //     ? const Text("")
+                                      //     : Text(_dropDownValue),
+                                      // dropdownColor: Colors.white,
+                                      // focusColor: Colors.white,
 
-                                // hint: _dropDownValue == ""
-                                //     ? const Text("")
-                                //     : Text(_dropDownValue),
-                                // dropdownColor: Colors.white,
-                                // focusColor: Colors.white,
+                                      items: <String>[
+                                        'MALE',
+                                        'FEMALE',
+                                      ].map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        setState(() {
+                                          _dropDownValue = val!;
+                                          genderController =
+                                              TextEditingController(
+                                                  text: _dropDownValue);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'GENDER',
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()),
+                            validator: (String? value) {
+                              return GetUtils.isLengthGreaterOrEqual(value!, 1)
+                                  ? null
+                                  : "Please Choose Gender";
+                            }),
+                      ),
+                      SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                minimumSize:
+                                    Size(MediaQuery.of(context).size.width, 50),
+                                primary: Constant.primaryColor),
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                LocalDataSaver.saveName(
+                                    ProfileDetails.userName!);
+                                LocalDataSaver.saveEmail(ProfileDetails.email);
+                                LocalDataSaver.savePhone(ProfileDetails.phone!);
+                                LocalDataSaver.savePassword(
+                                    ProfileDetails.password!);
 
-                                items: <String>[
-                                  'MALE',
-                                  'FEMALE',
-                                ].map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (val) {
-                                  setState(() {
-                                    _dropDownValue = val!;
-                                    genderController = TextEditingController(
-                                        text: _dropDownValue);
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          fillColor: Colors.white,
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                          hintText: 'GENDER',
-                          helperMaxLines: 2,
-                          hintMaxLines: 2,
-                          focusedBorder: buildFocusedBorder(),
-                          border: buildOutlineInputBorder()),
-                      validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!,1)
-                            ? null
-                            : "Please Choose Gender";
-                      }),
-                ),
-                SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          minimumSize:
-                              Size(MediaQuery.of(context).size.width, 50),
-                          primary: Constant.primaryColor),
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          LocalDataSaver.saveName(nameController.text);
-                          LocalDataSaver.saveEmail(emailController.text);
-                          LocalDataSaver.savePhone(mobileController.text);
-                          LocalDataSaver.savePassword(passwordController.text);
+                                ProfileDetails.name =
+                                    (await LocalDataSaver.getName())!;
+                                ProfileDetails.email =
+                                    (await LocalDataSaver.getEmail())!;
+                                ProfileDetails.phone =
+                                    (await LocalDataSaver.getPhone())!;
+                                ProfileDetails.password =
+                                    (await LocalDataSaver.getPassword())!;
 
-                          ProfileDetails.name =
-                              (await LocalDataSaver.getName())!;
-                          ProfileDetails.email =
-                              (await LocalDataSaver.getEmail())!;
-                          ProfileDetails.phone =
-                              (await LocalDataSaver.getPhone())!;
-                          ProfileDetails.password =
-                              (await LocalDataSaver.getPassword())!;
+                                Fluttertoast.showToast(
+                                    msg: "Data Saved",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    timeInSecForIosWeb: 2);
 
-                          Fluttertoast.showToast(msg: "Data Saved",
-                              toastLength: Toast.LENGTH_SHORT,timeInSecForIosWeb: 2);
-
-                          await Navigator.pushNamed(
-                              context, AppRoutes.DashboardPage);
-                        }
-                      },
-                      child: Text("SAVE AND PROCEED")),
-                ),
-              ],
-            ),
+                                await proFavCart();
+                              }
+                            },
+                            child: Text("SAVE AND PROCEED")),
+                      ),
+                    ],
+                  ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildText(String text) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ],
       ),
     );
   }

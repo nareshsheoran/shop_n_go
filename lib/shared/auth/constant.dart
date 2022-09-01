@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-String appName = "ShopNGo";
+class AppDetails{
+  static  String appName = "ShopNGo";
+  // static  String currencySign = "\u{20B9}";
+  static  String currencySign = "KES ";
+}
+
 
 class Constant {
   // static const Color primaryColor = Color(0xff04448c);
@@ -10,16 +15,16 @@ class Constant {
 }
 
 class ProfileDetails {
-  static String id = '';
-  static String name = '';
-  static String userName = '';
-  static String img = '';
-  static String email = '';
-  static String password = '';
-  static String phone = '';
-  static String resendPhone = '';
-  static String loginToken = '';
-  static String signUpToken = '';
+  static String? id;
+  static String? name ;
+  static String? userName;
+  static String? img ;
+  static String? email ;
+  static String? password ;
+  static String? phone ;
+  static String? resendPhone ;
+  static String? loginToken ;
+  static String? signUpToken ;
 }
 
 class AddressDetails {
@@ -80,6 +85,7 @@ class Images {
 
   static const oilImg =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV-rst5znlqhdxDnnePxrCJqSCXP-MyKUjiA&usqp=CAU";
+
   static const vegetablesImg =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWJCVkUKs1oLVTOEbr4mzqtiW-fxNvjf6SbQ&usqp=CAU";
 
@@ -104,11 +110,15 @@ class Images {
   static const milkImg =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvJwPmv_OMFoCQUNRAp9gYQCChUgZ57lpy0w&usqp=CAU";
 
+  static const laysImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0ioudESTqJoFTRt87xgf8dbfiZ3qtKtljlg&usqp=CAU";
+
 // static const   fruitImg =  ("");
 }
 
 class NetworkUtil {
-  static String baseUrl = "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
+  static String baseUrl =
+      "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
   static String getSignUpUrl = baseUrl + "register/";
   static String getLoginUrl = baseUrl + "login/";
   static String getUserProfileUrl = baseUrl + "user-profile/";
@@ -120,6 +130,9 @@ class NetworkUtil {
   static String getRecommendedUrl = baseUrl + "recommended/";
   static String getBestSellerProductUrl = baseUrl + "best-seller-products/";
   static String getFavouriteUrl = baseUrl + "favourite-products/";
+  static String getProductIntoCardUrl = baseUrl + "products-card/";
+  static String getUpdatePasswordUrl = baseUrl + "update-password/";
+  static String getVendorProductUrl = baseUrl + "vendor-product/";
 }
 
 class ImageDimension {

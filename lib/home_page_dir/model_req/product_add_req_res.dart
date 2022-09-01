@@ -1,22 +1,17 @@
 // ignore_for_file: prefer_collection_literals, unnecessary_this
 
-class AllCategoryRequest {
+class ProdAddedReqRes {
   bool? success;
   String? message;
-  List<AllCategoryData>? data;
+  ProdAddedReqResData? data;
   int? statusCode;
 
-  AllCategoryRequest({this.success, this.message, this.data, this.statusCode});
+  ProdAddedReqRes({this.success, this.message, this.data, this.statusCode});
 
-  AllCategoryRequest.fromJson(Map<String, dynamic> json) {
+  ProdAddedReqRes.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    if (json['data'] != null) {
-      data = <AllCategoryData>[];
-      json['data'].forEach((v) {
-        data!.add( AllCategoryData.fromJson(v));
-      });
-    }
+    data = json['data'] != null ?  ProdAddedReqResData.fromJson(json['data']) : null;
     statusCode = json['status_code'];
   }
 
@@ -25,28 +20,31 @@ class AllCategoryRequest {
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
     }
     data['status_code'] = this.statusCode;
     return data;
   }
 }
 
-class AllCategoryData {
+class ProdAddedReqResData {
   int? id;
-  String? name;
+  int? user;
+  String? addedProIntoCart;
 
-  AllCategoryData({this.id, this.name});
+  ProdAddedReqResData({this.id, this.user, this.addedProIntoCart});
 
-  AllCategoryData.fromJson(Map<String, dynamic> json) {
+  ProdAddedReqResData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'];
+    user = json['user'];
+    addedProIntoCart = json['added_pro_into_cart'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data =  Map<String, dynamic>();
     data['id'] = this.id;
-    data['name'] = this.name;
+    data['user'] = this.user;
+    data['added_pro_into_cart'] = this.addedProIntoCart;
     return data;
   }
 }

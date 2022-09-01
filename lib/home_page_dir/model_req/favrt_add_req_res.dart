@@ -1,22 +1,17 @@
 // ignore_for_file: prefer_collection_literals, unnecessary_this
 
-class AllCategoryRequest {
+class FavAddedReqRes {
   bool? success;
   String? message;
-  List<AllCategoryData>? data;
+  FavAddedReqResData? data;
   int? statusCode;
 
-  AllCategoryRequest({this.success, this.message, this.data, this.statusCode});
+  FavAddedReqRes({this.success, this.message, this.data, this.statusCode});
 
-  AllCategoryRequest.fromJson(Map<String, dynamic> json) {
+  FavAddedReqRes.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    if (json['data'] != null) {
-      data = <AllCategoryData>[];
-      json['data'].forEach((v) {
-        data!.add( AllCategoryData.fromJson(v));
-      });
-    }
+    data = json['data'] != null ? FavAddedReqResData.fromJson(json['data']) : null;
     statusCode = json['status_code'];
   }
 
@@ -25,28 +20,31 @@ class AllCategoryRequest {
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
     }
     data['status_code'] = this.statusCode;
     return data;
   }
 }
 
-class AllCategoryData {
+class FavAddedReqResData {
   int? id;
-  String? name;
+  int? user;
+  String? favProduct;
 
-  AllCategoryData({this.id, this.name});
+  FavAddedReqResData({this.id, this.user, this.favProduct});
 
-  AllCategoryData.fromJson(Map<String, dynamic> json) {
+  FavAddedReqResData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'];
+    user = json['user'];
+    favProduct = json['fav_product'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data =  Map<String, dynamic>();
     data['id'] = this.id;
-    data['name'] = this.name;
+    data['user'] = this.user;
+    data['fav_product'] = this.favProduct;
     return data;
   }
 }

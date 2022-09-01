@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_collection_literals, unnecessary_this
-
 class StoreListRequest {
   bool? success;
   String? message;
@@ -21,7 +19,7 @@ class StoreListRequest {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -36,55 +34,51 @@ class StoreListData {
   String? vendorId;
   String? vendorName;
   String? authPerson;
-  String? gSTNO;
-  String? businessType;
-  String? emailId;
-  String? contactNo;
-  String? vendorProduct;
   String? vendorProfile;
-  String? address;
-  String? description;
+  String? isHomeDelivery;
+  String? distance;
+  int? minimumOrder;
+  int? noOfProducts;
+  String? openTime;
+  String? closeTime;
 
   StoreListData(
       {this.vendorId,
         this.vendorName,
         this.authPerson,
-        this.gSTNO,
-        this.businessType,
-        this.emailId,
-        this.contactNo,
-        this.vendorProduct,
         this.vendorProfile,
-        this.address,
-        this.description});
+        this.isHomeDelivery,
+        this.distance,
+        this.minimumOrder,
+        this.noOfProducts,
+        this.openTime,
+        this.closeTime});
 
   StoreListData.fromJson(Map<String, dynamic> json) {
     vendorId = json['vendor_id'];
     vendorName = json['vendor_name'];
     authPerson = json['auth_person'];
-    gSTNO = json['GST_NO'];
-    businessType = json['business_type'];
-    emailId = json['email_id'];
-    contactNo = json['contact_no'];
-    vendorProduct = json['vendor_product'];
     vendorProfile = json['vendor_profile'];
-    address = json['address'];
-    description = json['description'];
+    isHomeDelivery = json['is_home_delivery'];
+    distance = json['distance'];
+    minimumOrder = json['minimum_order'];
+    noOfProducts = json['no_of_products'];
+    openTime = json['open_time'];
+    closeTime = json['close_time'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['vendor_id'] = this.vendorId;
     data['vendor_name'] = this.vendorName;
     data['auth_person'] = this.authPerson;
-    data['GST_NO'] = this.gSTNO;
-    data['business_type'] = this.businessType;
-    data['email_id'] = this.emailId;
-    data['contact_no'] = this.contactNo;
-    data['vendor_product'] = this.vendorProduct;
     data['vendor_profile'] = this.vendorProfile;
-    data['address'] = this.address;
-    data['description'] = this.description;
+    data['is_home_delivery'] = this.isHomeDelivery;
+    data['distance'] = this.distance;
+    data['minimum_order'] = this.minimumOrder;
+    data['no_of_products'] = this.noOfProducts;
+    data['open_time'] = this.openTime;
+    data['close_time'] = this.closeTime;
     return data;
   }
 }

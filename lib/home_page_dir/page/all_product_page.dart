@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/home_page_dir/model_req/all_product_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import '../model_req/all_product_req.dart';
 import 'package:http/http.dart';
 
@@ -172,7 +174,7 @@ class _AllProductPageState extends State<AllProductPage> {
                 ? SizedBox(
                     height: MediaQuery.of(context).size.width,
                     width: MediaQuery.of(context).size.width,
-                    child: const Center(
+                    child: Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 4,
                       ),
@@ -193,11 +195,20 @@ class _AllProductPageState extends State<AllProductPage> {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              // Navigator.pushNamed(context, AppRoutes.CategoryNamePage,arguments: nameList[index]);
+                              Navigator.pushNamed(
+                                  context, AppRoutes.CategoriesDetailsPage,
+                                  arguments:
+                                  ScreenArguments(
+                              Images.baseUrl +
+                                  dataAllProdList[index].itemImages!,
+                                      dataAllProdList[index].itemName!,
+                                      "description",
+                                      dataAllProdList[index].itemCode!));
                             },
                             child: Container(
                               width: 110,
                               height: 140,
+                              decoration: BoxDecoration(),
                               child: Stack(
                                 children: [
                                   Card(
@@ -207,11 +218,13 @@ class _AllProductPageState extends State<AllProductPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
+                                          SizedBox(height: 4),
                                           Padding(
-                                            padding: const EdgeInsets.all(5),
+                                            padding: const EdgeInsets.all(10),
                                             child: Image(
                                                 width:
-                                                    ImageDimension.imageWidth,
+                                                    ImageDimension.imageWidth -
+                                                        16,
                                                 height:
                                                     ImageDimension.imageHeight,
                                                 fit: BoxFit.fill,
@@ -237,7 +250,7 @@ class _AllProductPageState extends State<AllProductPage> {
                                                   MainAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "\$${dataAllProdList[index].offerPrice?.toStringAsFixed(0)}",
+                                                  "${AppDetails.currencySign}${dataAllProdList[index].offerPrice?.toStringAsFixed(0)}",
                                                   textAlign: TextAlign.left,
                                                 ),
                                               ],

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_collection_literals
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_collection_literals, avoid_print
 
 import 'dart:convert';
 
@@ -250,10 +250,10 @@ class _SignUpPageState extends State<SignUpPage> {
       password: password,
     );
 
-    var map = Map<String, dynamic>();
-    map['userName'] = userName;
-    map['email'] = email;
-    map['password'] = password;
+    // var map = Map<String, dynamic>();
+    // map['userName'] = userName;
+    // map['email'] = email;
+    // map['password'] = password;
 
     var requestBody = {
       'username': userName,
@@ -265,6 +265,7 @@ class _SignUpPageState extends State<SignUpPage> {
     // "${NetworkUtil.getSignUpUrl}username=$userName&email=$email&password=$password");
 
     // Response response = await get(myUri);
+    // Response response = await post(myUri, body: request.toJson());
     // Response response = await post(myUri, body: requestBody);
 
     http.Response response = await http.post(
@@ -292,6 +293,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ProfileDetails.email = (await LocalDataSaver.getEmail())!;
       ProfileDetails.signUpToken = (await LocalDataSaver.getSignUpToken())!;
 
+      print("id: ${ProfileDetails.id}");
       print("userName: ${ProfileDetails.userName}");
       print("email: ${ProfileDetails.email}");
       print("token: ${ProfileDetails.signUpToken}");
@@ -299,10 +301,19 @@ class _SignUpPageState extends State<SignUpPage> {
       Fluttertoast.showToast(msg: "SignUp Successful", timeInSecForIosWeb: 2);
 
       await Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
-    } else {
-      print('Request failed with status: ${response.statusCode}');
+    }
+    else if(response.statusCode == 400) {
+      // Fluttertoast.showToast(
+      //     msg: 'Request failed with status: ${response.statusCode}');
+      nameController.text='';
+      emailController.text='';
+      passwordController.text='';
       Fluttertoast.showToast(
-          msg: 'Request failed with status: ${response.statusCode}');
+          msg: 'User already exists.');
+    }
+    else{
+      print('Request failed with status: ${response.statusCode}');
+
     }
   }
 }

@@ -16,27 +16,67 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
   Object? number = 0;
 
   double sum = 0;
+  double ordersSum = 0;
+  double costTotal = 0;
+  double deliveryCost = 20;
 
   double totalSum() {
     sum = 0;
-    if (number == 0 || number == null) {
-      for (int i = 0; i < itemData.length; i++) {
+    // if (number == 0 || number == null) {
+    for (int i = 0; i < itemData.length; i++) {
+      setState(() {
         sum += itemData[i].counter;
+        print("sum at $i::$sum");
+        print("sum counter $i at ${itemData[i].counter}");
         sum;
-      }
-    } else {
-      for (int i = 0; i < int.parse(number!.toString()); i++) {
-        sum += itemData[i].counter;
-        sum;
-      }
+      });
     }
+    sum;
+    // }
+    // else {
+    //   for (int i = 0; i < int.parse(number!.toString()); i++) {
+    //     setState(() {
+    //       sum += itemData[i].counter;
+    //       sum;
+    //     });
+    //   }
+    // }
 
     return sum;
   }
 
+  double totalOrderSum() {
+    ordersSum = 0;
+    // if (number == 0 || number == null) {
+    for (int i = 0; i < itemData.length; i++) {
+      setState(() {
+        ordersSum += ((itemData[i].price) * itemData[i].counter);
+        print("totalOrderSum at $i::$ordersSum");
+        print("totalOrderSum counter $i at ${itemData[i].price}");
+        ordersSum;
+      });
+    }
+    ordersSum;
+
+    return ordersSum;
+  }
+
+  double totalDeliveryCost() {
+    setState(() {
+      costTotal = deliveryCost + ordersSum;
+    });
+    return costTotal;
+  }
+
+  void init() {
+    totalSum();
+    totalOrderSum();
+    totalDeliveryCost();
+  }
+
   @override
   void initState() {
-    totalSum();
+    init();
     super.initState();
   }
 
@@ -48,63 +88,66 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child:
-                          Icon(Icons.arrow_back_rounded, color: Colors.black)),
-                  SizedBox(width: 8),
-                  Text(
-                    "Cart",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child:
+                            Icon(Icons.arrow_back_rounded, color: Colors.black)),
+                    SizedBox(width: 8),
+                    Text(
+                      "Cart",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                      primary: Constant.primaryColor),
-                  onPressed: () {},
-                  child: Text("PROCEED TO BUY")),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Store Name",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.OrderPage);
+                    },
+                    child: Text("PROCEED TO BUY")),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  (number == 0 || number == null)
-                      ? Text("${sum.toStringAsFixed(0)} Item")
-                      : number == 1
-                          ? Text("$number Item")
-                          : Text("$number Items"),
-                  SizedBox(width: MediaQuery.of(context).size.width / 4),
-                  Text("\$ 60"),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Store Name",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    (number == 0 || number == null)
+                        ? Text("${sum.toStringAsFixed(0)} Item")
+                        : number == 1
+                            ? Text("$number Item")
+                            : Text("$number Items"),
+                    SizedBox(width: MediaQuery.of(context).size.width / 4),
+                    Text("${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
+                  ],
+                ),
+              ),
+              ListView.builder(
                 itemCount: (number == 0 || number == null)
                     ? itemData.length
                     : int.parse(number!.toString()),
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Padding(
                     padding:
@@ -112,129 +155,133 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                     child: Card(
                       elevation: CardDimension.elevation,
                       shadowColor: CardDimension.shadowColor,
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image(
-                                height: ImageDimension.imageHeight - 10,
-                                width: ImageDimension.imageWidth - 10,
-                                fit: BoxFit.fill,
-                                image: itemData[index].image),
-                          ),
-                          SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(itemData[index].name,
-                                  style: TextStyle(fontSize: 18)),
-                              SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image(
+                                  height: ImageDimension.imageHeight - 10,
+                                  width: ImageDimension.imageWidth - 10,
+                                  fit: BoxFit.fill,
+                                  image: itemData[index].image),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("\$${itemData[index].price}",
+                                  Text(itemData[index].name,
                                       style: TextStyle(fontSize: 18)),
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width /
-                                          3),
-                                  counterWidget(index)
+                                  SizedBox(height: 20),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                          "${AppDetails.currencySign}${((itemData[index].price) * (itemData[index].counter))}",
+                                          style: TextStyle(fontSize: 18)),
+                                      counterWidget(index)
+                                    ],
+                                  ),
                                 ],
                               ),
-                            ],
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          (number == 0 || number == null)
-                              ? Text("Total Item Count")
-                              : number == 1
-                                  ? Text("Total Item Count")
-                                  : Text("Total Items Count"),
-                          SizedBox(height: 4),
-                          (number == 0 || number == null)
-                              ? Text("Item Total")
-                              : number == 1
-                                  ? Text("Item Total")
-                                  : Text("Items Total"),
-                          SizedBox(height: 4),
-                          Text("Delivery Cost"),
-                          SizedBox(height: 4),
-                          Text("Total Bill Amount:",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          (number == 0 || number == null)
-                              ? Text("${sum.toStringAsFixed(0)} Item")
-                              : number == 1
-                                  ? Text("$number Item")
-                                  : Text("$number Items"),
-                          SizedBox(height: 4),
-                          Text("\$ 200"),
-                          SizedBox(height: 4),
-                          Text("\$ 20"),
-                          SizedBox(height: 4),
-                          Text("\$ 220",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      )
-                    ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            (number == 0 || number == null)
+                                ? Text("Total Item Count")
+                                : number == 1
+                                    ? Text("Total Item Count")
+                                    : Text("Total Items Count"),
+                            SizedBox(height: 4),
+                            (number == 0 || number == null)
+                                ? Text("Item Total")
+                                : number == 1
+                                    ? Text("Item Total")
+                                    : Text("Items Total"),
+                            SizedBox(height: 4),
+                            Text("Delivery Cost"),
+                            SizedBox(height: 4),
+                            Text("Total Bill Amount:",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            (number == 0 || number == null)
+                                ? Text("${sum.toStringAsFixed(0)} Item")
+                                : number == 1
+                                    ? Text("$number Item")
+                                    : Text("$number Items"),
+                            SizedBox(height: 4),
+                            Text("${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
+                            SizedBox(height: 4),
+                            Text(
+                                "${AppDetails.currencySign} ${deliveryCost.toStringAsFixed(0)}"),
+                            SizedBox(height: 4),
+                            Text("${AppDetails.currencySign} ${costTotal.toStringAsFixed(0)}",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Delivery to HOME",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "Bharat Brance Pvt Ltd, Guduvancer, Kancnipursh, Tamil Nadu- 127291",
-                        style: TextStyle(),
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Delivery to HOME",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Bharat Brance Pvt Ltd, Guduvancer, Kancnipursh, Tamil Nadu- 127291",
+                          style: TextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                      primary: Constant.primaryColor),
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.AddressPage);
-                  },
-                  child: Text("CHANGE ADDRESS")),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.AddressPage);
+                    },
+                    child: Text("CHANGE ADDRESS")),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -297,8 +344,8 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
         //     ):
         Container(
       padding: EdgeInsets.all(5),
-      height: 30,
-      width: 80,
+      height: 35,
+      width: 84,
       decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(4),
@@ -312,7 +359,6 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                   if (itemData[index].counter < 1) {
                     itemData[index].shouldVisible =
                         !itemData[index].shouldVisible;
-                    totalSum();
 
                     (number == 0 || number == null)
                         ? itemData[index].counter--
@@ -324,17 +370,19 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                         int.parse(number!.toString());
                       });
                     }
+                    init();
                   } else {
                     setState(() {
-                      totalSum();
                       (number == 0 || number == null)
                           ? itemData[index].counter--
                           : number.toString().length - 1;
                       if (itemData[index].counter == 0) {
                         setState(() {
                           itemData.removeAt(index);
+                          init();
                         });
                       }
+                      init();
                     });
                   }
                 });
@@ -343,7 +391,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                   child: Icon(
                 Icons.remove,
                 color: Constant.primaryColor,
-                size: 22,
+                size: 24,
               ))),
           SizedBox(width: 4),
           Text(
@@ -354,20 +402,24 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
           InkWell(
               onTap: () {
                 setState(() {
-                  totalSum();
-                  (number == 0 || number == null)
-                      ? itemData[index].counter++
-                      : number.toString().length + 1;
-                  // itemData[index].counter++;
-                  itemData[index].shouldVisible =
-                      !itemData[index].shouldVisible;
+                  if (itemData[index].counter < 100) {
+                    (number == 0 || number == null)
+                        ? itemData[index].counter++
+                        : number.toString().length + 1;
+                    // itemData[index].counter++;
+                    itemData[index].shouldVisible =
+                        !itemData[index].shouldVisible;
+                    init();
+                  } else {
+                    return;
+                  }
                 });
               },
               child: Center(
                   child: Icon(
                 Icons.add,
                 color: Constant.primaryColor,
-                size: 22,
+                size: 24,
               ))),
         ],
       ),

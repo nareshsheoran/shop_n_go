@@ -10,7 +10,7 @@ class ItemData {
   int counter = 1;
   bool shouldVisible = false;
   String weight;
-  String price;
+  int price=0;
   NetworkImage image;
 
   ItemData(
@@ -29,7 +29,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    37,
     NetworkImage(Images.vegetablesImg),
   ),
   ItemData(
@@ -37,7 +37,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    52,
     NetworkImage(Images.chillyImg),
   ),
   ItemData(
@@ -45,7 +45,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    23,
     NetworkImage(Images.tomatoImg),
   ),
   ItemData(
@@ -53,7 +53,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    19,
     NetworkImage(Images.ladiesFingerImg),
   ),
   ItemData(
@@ -61,7 +61,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    31,
     NetworkImage(Images.onionImg),
   ),
   ItemData(
@@ -69,7 +69,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    17,
     NetworkImage(Images.potatoImg),
   ),
   ItemData(
@@ -77,7 +77,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    12,
     NetworkImage(Images.radisImg),
   ),
   ItemData(
@@ -85,7 +85,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    21,
     NetworkImage(Images.fruitsImg),
   ),
   ItemData(
@@ -93,7 +93,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    25,
     NetworkImage(Images.mangoImg),
   ),
   ItemData(
@@ -101,7 +101,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    28,
     NetworkImage(Images.bananaImg),
   ),
   ItemData(
@@ -109,7 +109,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    20,
     NetworkImage(Images.grapesImg),
   ),
   ItemData(
@@ -117,7 +117,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    35,
     NetworkImage(Images.nutsImg),
   ),
   ItemData(
@@ -125,7 +125,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    40,
     NetworkImage(Images.munchesImg),
   ),
   ItemData(
@@ -133,7 +133,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    55,
     NetworkImage(Images.hippoNutsImg),
   ),
   ItemData(
@@ -141,7 +141,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    38,
     NetworkImage(Images.milkImg),
   ),
   ItemData(
@@ -149,7 +149,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    29,
     NetworkImage(Images.softDrinksImg),
   ),
   ItemData(
@@ -157,7 +157,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    77,
     NetworkImage(Images.oreoImg),
   ),
   ItemData(
@@ -165,7 +165,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    69,
     NetworkImage(Images.biscuitsImg),
   ),
   ItemData(
@@ -173,7 +173,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    19,
     NetworkImage(Images.iceCreamImg),
   ),
   ItemData(
@@ -181,7 +181,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    99,
     NetworkImage(Images.oilImg),
   ),
   ItemData(
@@ -189,7 +189,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    83,
     NetworkImage(Images.soapImg),
   ),
   ItemData(
@@ -197,7 +197,7 @@ List<ItemData> itemData = [
     1,
     false,
     "1",
-    "10",
+    17,
     NetworkImage(Images.lifeBoyImg),
   ),
 ];

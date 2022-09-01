@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/auth/localdb.dart';
+import 'package:shop_n_go/shared/auth/mobile_otp_auth.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 
 class MobileLoginPage extends StatefulWidget {
@@ -16,7 +19,11 @@ class _MobileLoginPageState extends State<MobileLoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController phoneController =
-      TextEditingController(text: "9999999999");
+      TextEditingController(text: "");
+
+  phoneNoVerify(context) async {
+    fetchOTP("+91${phoneController.text.toString()}", context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +108,11 @@ class _MobileLoginPageState extends State<MobileLoginPage> {
                   child: GestureDetector(
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushReplacementNamed(
-                            context, AppRoutes.ConfirmOtpPage);
+                        LocalDataSaver.saveResendPhone(
+                            phoneController.text.toString());
+                        ProfileDetails.resendPhone =
+                            (await LocalDataSaver.getResendPhone())!;
+                        phoneNoVerify(context);
                       }
                     },
                     child: Container(

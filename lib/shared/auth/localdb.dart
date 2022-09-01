@@ -1,3 +1,5 @@
+// ignore_for_file: await_only_futures, avoid_print
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalDataSaver {
@@ -9,12 +11,13 @@ class LocalDataSaver {
   static String emailKey = "EmailKey";
   static String passwordKey = "PasswordKey";
   static String phoneKey = "PhoneKey";
+  static String resendPhoneKey = "ResendPhoneKey";
   static String imgKey = "ImgKey";
   static String logKey = "LogKey";
 
-  static Future<bool> saveID(String userID) async {
+  static Future<bool> saveID(String? userID) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.setString(idKey, userID);
+    return await preferences.setString(idKey, userID!);
   }
 
   static Future<String?> getID() async {
@@ -32,9 +35,9 @@ class LocalDataSaver {
     return await preferences.getString(nameKey);
   }
 
-  static Future<bool> saveUserName(String usersName) async {
+  static Future<bool> saveUserName(String? usersName) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.setString(userNameKey, usersName);
+    return await preferences.setString(userNameKey, usersName!);
   }
 
   static Future<String?> getUserName() async {
@@ -42,7 +45,7 @@ class LocalDataSaver {
     return await preferences.getString(userNameKey);
   }
 
- static Future<bool> saveSignUpToken(String userSignUpToken) async {
+  static Future<bool> saveSignUpToken(String userSignUpToken) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setString(tokenSignUpKey, userSignUpToken);
   }
@@ -51,7 +54,8 @@ class LocalDataSaver {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.getString(tokenSignUpKey);
   }
-static Future<bool> saveLoginToken(String userLoginToken) async {
+
+  static Future<bool> saveLoginToken(String userLoginToken) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setString(tokenLoginKey, userLoginToken);
   }
@@ -61,9 +65,9 @@ static Future<bool> saveLoginToken(String userLoginToken) async {
     return await preferences.getString(tokenLoginKey);
   }
 
-  static Future<bool> saveEmail(String userEmail) async {
+  static Future<bool> saveEmail(String? userEmail) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.setString(emailKey, userEmail);
+    return await preferences.setString(emailKey, userEmail!);
   }
 
   static Future<String?> getEmail() async {
@@ -101,6 +105,16 @@ static Future<bool> saveLoginToken(String userLoginToken) async {
     return await preferences.getString(phoneKey);
   }
 
+  static Future<bool> saveResendPhone(String userResendPhone) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(resendPhoneKey, userResendPhone);
+  }
+
+  static Future<String?> getResendPhone() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.getString(resendPhoneKey);
+  }
+
   static Future<bool> saveLoginData(bool isUserLoggedIn) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setBool(logKey, isUserLoggedIn);
@@ -115,10 +129,16 @@ static Future<bool> saveLoginToken(String userLoginToken) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.remove('IdKey');
     await preferences.remove('NameKey');
+    await preferences.remove('UserNameKey');
     await preferences.remove('EmailKey');
     await preferences.remove('PasswordKey');
+    await preferences.remove('TokenLoginKey');
     await preferences.remove('ImgKey');
     await preferences.remove('PhoneKey');
+    await preferences.remove('ResendPhoneKey');
     await preferences.remove('LogKey');
+    await preferences.clear();
   }
+
+
 }

@@ -247,7 +247,7 @@ class _ShopInPageState extends State<ShopInPage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text("\$${itemData[index].price}",
+                                            Text("${AppDetails.currencySign}${itemData[index].price}",
                                                 style: TextStyle(fontSize: 18)),
                                             // SizedBox(
                                             //     width: MediaQuery.of(context).size.width /

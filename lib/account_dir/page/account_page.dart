@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -58,19 +58,27 @@ class _AccountPageState extends State<AccountPage> {
                                       fontWeight: FontWeight.bold),
                                 )
                               : Text(
-                                  ProfileDetails.userName,
+                                  ProfileDetails.userName!,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 ),
-                          Text(
-                            ProfileDetails.email,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          ),
+                          ProfileDetails.email == null
+                              ? Text(
+                                  "Email",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  ProfileDetails.email!,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
                         ],
                       ),
                     ),
@@ -108,7 +116,7 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     buildGestureDetector(AppRoutes.ProfilePage, "Profile"),
                     buildGestureDetector(AppRoutes.AddressPage, "Addresses"),
-                    ListTile(title: Text("Orders")),
+                    buildGestureDetector(AppRoutes.OrderPage, "Orders"),
                     ListTile(title: Text("Payments")),
                     buildGestureDetector(AppRoutes.RewardPage, "Rewards"),
                     ListTile(title: Text("Cancellation & Refund Policy")),
@@ -184,18 +192,23 @@ class _AccountPageState extends State<AccountPage> {
 
   Future<String> signOut() async {
     await LocalDataSaver.removePreferences();
-
+    LocalDataSaver.saveID('');
     LocalDataSaver.saveName('');
     LocalDataSaver.saveUserName('');
     LocalDataSaver.saveEmail('');
     LocalDataSaver.savePhone('');
     LocalDataSaver.savePassword('');
+    LocalDataSaver.saveResendPhone('');
+    LocalDataSaver.removePreferences();
 
     ProfileDetails.name = (await LocalDataSaver.getName())!;
     ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
     ProfileDetails.email = (await LocalDataSaver.getEmail())!;
     ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
+    ProfileDetails.resendPhone = (await LocalDataSaver.getResendPhone())!;
     ProfileDetails.password = (await LocalDataSaver.getPassword())!;
+
+    print("phone:${ProfileDetails.password}");
 
     await Fluttertoast.showToast(
       msg: "Logout Successful",

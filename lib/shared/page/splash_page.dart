@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/auth/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -12,11 +13,36 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
+  Future init() async {
+    ProfileDetails.id = await LocalDataSaver.getID();
+    ProfileDetails.name = await LocalDataSaver.getName();
+    ProfileDetails.userName = await LocalDataSaver.getUserName();
+    ProfileDetails.email = await LocalDataSaver.getEmail();
+    ProfileDetails.phone = await LocalDataSaver.getPhone();
+    ProfileDetails.password = await LocalDataSaver.getPassword();
+    ProfileDetails.img = await LocalDataSaver.getImg();
+    ProfileDetails.signUpToken = await LocalDataSaver.getSignUpToken();
+    ProfileDetails.loginToken = await LocalDataSaver.getLoginToken();
+    ProfileDetails.resendPhone = await LocalDataSaver.getResendPhone();
+    decideScreen();
+  }
+
+  void decideScreen() async {
+    print("decideScreen userName::${ProfileDetails.userName}");
+
+    ProfileDetails.userName == null
+        ? Future.delayed(const Duration(seconds: 4)).then((value) {
+            Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
+          })
+        : Future.delayed(const Duration(seconds: 4)).then((value) {
+            Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
+          });
+  }
+
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 4)).then((value) {
-      Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
-    });
+    init();
     super.initState();
   }
 
@@ -44,7 +70,7 @@ class _SplashPageState extends State<SplashPage> {
               // foregroundImage: Images.logoImg,
               // ),
               const SizedBox(height: 20),
-              Text(appName,
+              Text(AppDetails.appName,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,

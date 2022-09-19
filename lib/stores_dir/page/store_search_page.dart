@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
 
 import 'package:shop_n_go/stores_dir/page/stores_details.dart';
@@ -33,12 +37,8 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
     });
     Uri myUri = Uri.parse(
         "${NetworkUtil.getVendorProductUrl}${storeListRequestData!.authPerson?.toLowerCase()}v");
-    print("lowerCase:${storeListRequestData!.authPerson?.toLowerCase()}");
     Response response = await get(myUri);
     if (response.statusCode == 200) {
-      debugPrint("fetchStoreDetails Response Body: ${response.body}");
-      debugPrint("fetchStoreDetails Status Code: ${response.statusCode}");
-
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
       StoreListDetailsReq storeListDetailsReq =
           StoreListDetailsReq.fromJson(jsonResponse);
@@ -129,10 +129,8 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                 ? SizedBox(
                     height: MediaQuery.of(context).size.height / 2,
                     width: MediaQuery.of(context).size.width,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                      ),
+                    child: Center(
+                      child: CProgressIndicator.circularProgressIndicator,
                     ),
                   )
                 : (_foundDetail.isEmpty ||
@@ -196,7 +194,21 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                                                                 Size(50, 30),
                                                             primary: Constant
                                                                 .primaryColor),
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      ProductAddCartService()
+                                                          .proAddedIntoCart(
+                                                              index,
+                                                              dataAllStoreDetailsList[
+                                                                      index]
+                                                                  .itemCode);
+                                                      setState(() {
+                                                        ProductAddCartService()
+                                                            .statusCode ==
+                                                            200
+                                                            ? dataAllStoreDetailsList.removeAt(index)
+                                                            : null;
+                                                      });
+                                                    },
                                                     child: Text("ADD +")),
                                               ),
                                             ],
@@ -271,7 +283,26 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                                                                 Size(50, 30),
                                                             primary: Constant
                                                                 .primaryColor),
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      // proAddedIntoCart(
+                                                      //     index,
+                                                      //     _foundDetail[index]
+                                                      //         .itemCode);
+
+                                                      ProductAddCartService()
+                                                          .proAddedIntoCart(
+                                                              index,
+                                                              _foundDetail[
+                                                                      index]
+                                                                  .itemCode);
+                                                      setState(() {
+                                                        ProductAddCartService()
+                                                            .statusCode ==
+                                                            200
+                                                            ? _foundDetail.removeAt(index)
+                                                            : null;
+                                                      });
+                                                    },
                                                     child: Text("ADD +")),
                                               ),
                                             ],
@@ -292,7 +323,6 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
     );
   }
 
-
   void _runFilter(String searchKey) {
     List<StoreListDetailsData>? results = [];
     results.clear();
@@ -302,7 +332,7 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
     } else {
       results = dataAllStoreDetailsList
           .where((user) =>
-          user.itemName!.toLowerCase().contains(searchKey.toLowerCase()))
+              user.itemName!.toLowerCase().contains(searchKey.toLowerCase()))
           .cast<StoreListDetailsData>()
           .toList();
       setState(() {
@@ -320,6 +350,4 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
     dataAllStoreDetailsList.clear();
     super.dispose();
   }
-
-
 }

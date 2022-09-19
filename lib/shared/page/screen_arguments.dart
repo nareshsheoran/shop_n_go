@@ -4,5 +4,5 @@ class ScreenArguments {
   final String description;
   final String code;
 
-  ScreenArguments(this.img,this.name,this.description, this.code);
+  ScreenArguments(this.img, this.name, this.description, this.code);
 }

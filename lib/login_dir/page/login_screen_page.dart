@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'dart:convert';
 
@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/login_dir/model/login_response_req.dart';
-import 'package:shop_n_go/shared/auth/localdb.dart';
-import 'package:shop_n_go/login_dir/model/login_request.dart';
+import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_n_go/shared/service/user_profile_service.dart';
 
 class LoginScreenPage extends StatefulWidget {
   const LoginScreenPage({Key? key}) : super(key: key);
@@ -253,15 +253,6 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
       return;
     }
 
-    // LoginRequest request = LoginRequest(
-    //   userName: userName,
-    //   password: password,
-    // );
-
-    // var map = Map<String, dynamic>();
-    // map['userName'] = userName;
-    // map['password'] = password;
-
     var requestBody = {
       'username': userName,
       'password': password,
@@ -277,11 +268,7 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
       body: requestBody,
     );
 
-    print("Status code: ${response.statusCode}");
     if (response.statusCode == 200) {
-      debugPrint("login Response Body: ${response.body}");
-      debugPrint("login Status Code: ${response.statusCode}");
-
       Fluttertoast.showToast(msg: "Login Successful", timeInSecForIosWeb: 2);
 
       Map<String, dynamic> map =
@@ -292,26 +279,24 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
 
       print(loginResponseRequest.token);
 
-
       LocalDataSaver.saveID("01");
       LocalDataSaver.saveUserName(userName);
       LocalDataSaver.savePassword(password);
       LocalDataSaver.saveLoginToken(loginResponseRequest.token!);
-
+      // LocalDataSaver.saveLoginData(true);
       ProfileDetails.id = (await LocalDataSaver.getID())!;
-      // ProfileDetails.id = "01";
       ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
       ProfileDetails.password = (await LocalDataSaver.getPassword())!;
       ProfileDetails.loginToken = (await LocalDataSaver.getLoginToken())!;
+      await UserProfileService().fetchUserProfileDetails();
+      await fetchDataSP();
 
       await Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
     } else {
       print('Request failed with status: ${response.statusCode}');
       Fluttertoast.showToast(
-          msg: 'Request failed with status: ${response.statusCode}', timeInSecForIosWeb: 2);
-
-      // Fluttertoast.showToast(msg: "Please SignUp First", timeInSecForIosWeb: 2);
-      // await Navigator.pushNamed(context, AppRoutes.SignUpPage);
+          msg: 'Request failed with status: ${response.statusCode}',
+          timeInSecForIosWeb: 2);
     }
   }
 }

@@ -8,7 +8,7 @@ import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/login_dir/model/signUp_response_req.dart';
 import 'package:shop_n_go/login_dir/model/sign_up_request.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/auth/localdb.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
@@ -272,12 +272,8 @@ class _SignUpPageState extends State<SignUpPage> {
       myUri,
       body: requestBody,
     );
-    print("Status code: ${response.statusCode}");
     if (response.statusCode == 200) {
-      debugPrint("signUp Response Body: ${response.body}");
-      debugPrint("signUp Status Code: ${response.statusCode}");
-
-      Map<String, dynamic> map =
+       Map<String, dynamic> map =
           jsonDecode(response.body) as Map<String, dynamic>;
 
       SignUpResponseRequest signUpResponseRequest =

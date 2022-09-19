@@ -7,7 +7,7 @@ import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/mobile_otp_auth.dart';
 
-import '../../shared/auth/localdb.dart';
+import '../../shared/shared_preference_data/localdb.dart';
 import '../../shared/auth/routes.dart';
 
 class ConfirmOtpPage extends StatefulWidget {
@@ -48,7 +48,6 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
           verificationFailed: (FirebaseAuthException e) {
             if (e.code == "invalid-phone-number") {
               print("Invalid phone no:$controller");
-              print("Invalid phone no");
 
             } else{
               print("FirebaseAuthException code: $e");

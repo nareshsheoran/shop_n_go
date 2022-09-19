@@ -1,9 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
+import 'package:favorite_button/favorite_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/home_page_dir/model_req/all_category_req.dart';
+import 'package:shop_n_go/home_page_dir/model_req/category_based_prod_req.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
+import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 
 import '../../shared/auth/constant.dart';
 
@@ -18,40 +24,50 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
   TextEditingController searchController = TextEditingController();
   AllCategoryData allCategoryData = AllCategoryData();
 
-  List imageList = [
-    Images.chillyImg,
-    Images.ladiesFingerImg,
-    Images.onionImg,
-    Images.potatoImg,
-    Images.radisImg,
-    Images.tomatoImg,
-  ];
-
-  List nameList = [
-    "Chilly",
-    "Ladies Finger",
-    "Onion",
-    "Potato",
-    "Radius",
-    "Tomato",
-  ];
-  List rateList = [
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "65",
-  ];
-
   bool isFavourite = false;
   late int selectedIndex;
   final List<bool> _selected = List.generate(20, (i) => false);
+  Object? id = '';
   Object? name = '';
+
+  List<CategoryBasedProductData> dataCategoryBasedProductList = [];
+
+  bool isLoading = false;
+
+  Future fetchCategoryBasedProductDetails() async {
+    setState(() {
+      isLoading = true;
+    });
+    Uri myUri =
+        Uri.parse("${NetworkUtil.getCategoryBasedProductUrl}${id.toString()}");
+    Response response = await get(myUri);
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      CategoryBasedProductReq categoryBasedProductReq =
+          CategoryBasedProductReq.fromJson(jsonResponse);
+      List<CategoryBasedProductData> list = categoryBasedProductReq.data!;
+      dataCategoryBasedProductList.addAll(list);
+
+      dataCategoryBasedProductList = list;
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    allCategoryData = ModalRoute.of(context)?.settings.arguments as AllCategoryData;
+    if (id == "") {
+      // id=          ModalRoute.of(context)?.settings.arguments ;
+
+      ScreenArguments arguments =
+          ModalRoute.of(context)?.settings.arguments as ScreenArguments;
+
+      id = arguments.code;
+      name = arguments.name;
+      fetchCategoryBasedProductDetails();
+    }
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -71,7 +87,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                               color: Colors.black)),
                       SizedBox(width: 8),
                       Text(
-                        allCategoryData.name.toString(),
+                        name.toString(),
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -98,29 +114,41 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                     ),
                   ),
                 ),
-                GridView.builder(
-                  itemCount: imageList.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 0.8,
-                  ),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, AppRoutes.CategoriesDetailsPage,
-                              arguments: ScreenArguments(
-                                  Images.baseUrl +
-                                     imageList[index],
-                                  nameList[index],
-                                  "Vegatables",
-                                  rateList[index]));
+                (isLoading)
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.width,
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: CProgressIndicator.circularProgressIndicator,
+                        ),
+                      )
+                    : GridView.builder(
+                        itemCount: dataCategoryBasedProductList.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 0.73,
+                        ),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, AppRoutes.CategoriesDetailsPage,
+                                    arguments: ScreenArguments(
+                                        Images.baseUrl +
+                                            dataCategoryBasedProductList[index]
+                                                .itemImages!,
+                                        dataCategoryBasedProductList[index]
+                                            .itemName!,
+                                        dataCategoryBasedProductList[index]
+                                            .description!,
+                                        dataCategoryBasedProductList[index]
+                                            .itemCode!));
+                              },
+                              child: categoryWidget(index));
                         },
-                        child: categoryWidget(index));
-                  },
-                )
+                      )
               ],
             ),
           ),
@@ -130,9 +158,10 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
   }
 
   Widget categoryWidget(int index) {
-    return SizedBox(
+    return Container(
       width: 110,
-      height: 140,
+      height: 150,
+      decoration: BoxDecoration(),
       child: Stack(
         children: [
           Card(
@@ -141,17 +170,24 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(height: 4),
                   Padding(
-                    padding:  EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(10),
                     child: Image(
-                        width: ImageDimension.imageWidth,
+                        width: ImageDimension.imageWidth - 16,
                         height: ImageDimension.imageHeight,
                         fit: BoxFit.fill,
-                        image: NetworkImage(imageList[index])),
+                        image: NetworkImage(Images.baseUrl +
+                            dataCategoryBasedProductList[index].itemImages!)),
                   ),
-                  Text(
-                    nameList[index],
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                  Expanded(
+                    child: Text(
+                      dataCategoryBasedProductList[index].itemName!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(5),
@@ -159,7 +195,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "${AppDetails.currencySign}${rateList[index]}",
+                          "${AppDetails.currencySign}${dataCategoryBasedProductList[index].price?.toStringAsFixed(0)}",
                           textAlign: TextAlign.left,
                         ),
                       ],
@@ -172,24 +208,48 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
           Positioned(
               top: 6,
               right: 8,
-              child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isFavourite = true;
-                      _selected[index] = !_selected[index];
-                    });
-                  },
-                  child: (_selected[index])
-                      ? Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                        )
-                      : Icon(
-                          Icons.favorite_border_outlined,
-                          color: Colors.black,
-                        )))
+              child: FavoriteButton(
+                iconSize: 32,
+                isFavorite: false,
+                valueChanged: (_isFavorite) {
+                  print('Is Favorite : $_isFavorite');
+                  _isFavorite
+                      ? AddProdIntoFavService()
+                      .addProdIntoFav(
+                      dataCategoryBasedProductList[index]
+                          .itemCode)
+                      : Fluttertoast.showToast(
+                      msg: "Favourite Removed");
+                },
+              ))
         ],
       ),
     );
   }
+
+  List imageList = [
+    Images.chillyImg,
+    Images.ladiesFingerImg,
+    Images.onionImg,
+    Images.potatoImg,
+    Images.radisImg,
+    Images.tomatoImg,
+  ];
+
+  List nameList = [
+    "Chilly",
+    "Ladies Finger",
+    "Onion",
+    "Potato",
+    "Radius",
+    "Tomato",
+  ];
+  List rateList = [
+    "49",
+    "65",
+    "49",
+    "65",
+    "49",
+    "65",
+  ];
 }

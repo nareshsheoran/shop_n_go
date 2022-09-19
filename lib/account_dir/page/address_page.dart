@@ -2,8 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 
 class AddressPage extends StatefulWidget {
   const AddressPage({Key? key}) : super(key: key);
@@ -16,7 +19,7 @@ class _AddressPageState extends State<AddressPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController nameController =
-      TextEditingController(text: ProfileDetails.name);
+      TextEditingController(text: ProfileDetails.userName);
 
   TextEditingController mobileController =
       TextEditingController(text: ProfileDetails.phone);
@@ -318,12 +321,35 @@ class _AddressPageState extends State<AddressPage> {
                                 primary: Constant.primaryColor),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+                                LocalDataSaver.saveName(nameController.text);
+                                LocalDataSaver.savePhone(mobileController.text);
+                                AddressLocalDataSaver.saveFlat(
+                                    flatController.text);
+                                AddressLocalDataSaver.saveVillage(
+                                    villageController.text);
+                                AddressLocalDataSaver.saveCity(
+                                    cityController.text);
+                                AddressLocalDataSaver.saveState(
+                                    stateController.text);
+                                AddressLocalDataSaver.savePinCode(
+                                    pinCodeController.text);
+                                AddressLocalDataSaver.saveCountry(
+                                    countryController.text);
+
+                                await fetchDataSP();
+                                setState(() {});
                                 Fluttertoast.showToast(
                                     msg: "Address Saved",
                                     toastLength: Toast.LENGTH_SHORT);
 
+                                Navigator.pop(context);
                                 await Navigator.pushNamed(
-                                    context, AppRoutes.DashboardPage);
+                                    context, AppRoutes.DashboardPage).then((value){
+                                      setState(() {
+                                        fetchDataSP();
+                                      });
+                                });
+                              // Navigator.pop(context);
                               }
                             },
                             child: Text("Save Address")),
@@ -339,6 +365,7 @@ class _AddressPageState extends State<AddressPage> {
       ),
     );
   }
+
 
   OutlineInputBorder buildOutlineInputBorder() {
     return OutlineInputBorder(

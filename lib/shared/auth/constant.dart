@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class AppDetails{
-  static  String appName = "ShopNGo";
-  // static  String currencySign = "\u{20B9}";
-  static  String currencySign = "KES ";
-}
+class AppDetails {
+  static String appName = "ShopNGo";
 
+  // static  String currencySign = "\u{20B9}";
+  static String currencySign = "KES ";
+}
 
 class Constant {
   // static const Color primaryColor = Color(0xff04448c);
@@ -16,31 +16,42 @@ class Constant {
 
 class ProfileDetails {
   static String? id;
-  static String? name ;
+  static String? name;
   static String? userName;
-  static String? img ;
-  static String? email ;
-  static String? password ;
-  static String? phone ;
-  static String? resendPhone ;
-  static String? loginToken ;
-  static String? signUpToken ;
+  static String? img;
+  static String? email;
+  static String? password;
+  static String? phone;
+  static String? date;
+  static String? gender;
+  static String? resendPhone;
+  static String? loginToken;
+  static String? signUpToken;
+}
+
+class MapDetails {
+  static String? longitude;
+  static String? latitude;
 }
 
 class AddressDetails {
-  static String flat = '';
-  static String village = '';
-  static String city = '';
-  static String state = '';
-  static String pinCode = '';
-  static String country = '';
+  static String? flat;
+
+  static String? village;
+  static String? city;
+
+  static String? state;
+
+  static String? pinCode;
+
+  static String? country;
 }
 
 class Images {
   // static const logoImg =
   //     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiBk1gqnnfaW-yDDr6amkB59pVv91M0aI1JQ&usqp=CAU";
 
-  static const baseUrl = "https://apiforshopandgo.pythonanywhere.com/";
+  static const baseUrl = "https://apiforshopandgo.pythonanywhere.com";
 
   static const logoImg = "assets/images/logo.jpg";
 
@@ -111,7 +122,7 @@ class Images {
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvJwPmv_OMFoCQUNRAp9gYQCChUgZ57lpy0w&usqp=CAU";
 
   static const laysImg =
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0ioudESTqJoFTRt87xgf8dbfiZ3qtKtljlg&usqp=CAU";
+      "${Images.baseUrl}/media/product_image/Lays_brand_logo_cDRB49B.png";
 
 // static const   fruitImg =  ("");
 }
@@ -123,16 +134,33 @@ class NetworkUtil {
   static String getLoginUrl = baseUrl + "login/";
   static String getUserProfileUrl = baseUrl + "user-profile/";
   static String getAllProductUrl = baseUrl + "all-products/";
+  static String getProductDetailsUrl = baseUrl + "all-products/";
   static String getConsumerAddressUrl = baseUrl + "consumer-address/";
   static String getCategoryUrl = baseUrl + "category/";
-  static String getOrdersUrl = baseUrl + "orders/";
+  static String getCategoryBasedProductUrl =
+      baseUrl + "category-based-product/";
+  static String getOrderDetailsUrl = baseUrl + "orders/";
   static String getStoreListUrl = baseUrl + "store-list/";
   static String getRecommendedUrl = baseUrl + "recommended/";
   static String getBestSellerProductUrl = baseUrl + "best-seller-products/";
-  static String getFavouriteUrl = baseUrl + "favourite-products/";
-  static String getProductIntoCardUrl = baseUrl + "products-card/";
+  static String getAddIntoFavouriteUrl = baseUrl + "favourite-products/";
+  static String getFavouriteProdUrl = baseUrl + "favourite-products/";
+  static String getProductIntoCardUrl = baseUrl + "products-card";
+  static String getAllCartProductUrl = baseUrl + "products-card/";
   static String getUpdatePasswordUrl = baseUrl + "update-password/";
   static String getVendorProductUrl = baseUrl + "vendor-product/";
+  static String getNearByStoreUrl = baseUrl + "near-by-store";
+  static String getAddIntoCartStoreBasisUrl =
+      baseUrl + "add-into-cart-store-basis";
+  static String getStoreProductRatingUrl = baseUrl + "store-product-rating";
+  static String getProdDetailsByBarCodeUrl =
+      baseUrl + "get-product-detail-by-barcode";
+  static String getStoreMobileLoginUrl = baseUrl + "store-mobile-login-api";
+  static String getStoreVerifyOtpUrl = baseUrl + "store-verify-otp";
+}
+
+class ApiKey {
+  static String apiKey = "AIzaSyCY-SmJ29RYyqiwa3S8I9WblOlnR-Eqbhw";
 }
 
 class ImageDimension {
@@ -147,4 +175,13 @@ class IconDimension {
 class CardDimension {
   static double elevation = 5;
   static Color shadowColor = Constant.primaryColor;
+}
+
+class CProgressIndicator {
+  static CircularProgressIndicator circularProgressIndicator =
+      CircularProgressIndicator(
+    color: Constant.primaryColor,
+    strokeWidth: 3,
+    // value: 40,
+  );
 }

@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:shop_n_go/account_dir/page/account_page.dart';
 import 'package:shop_n_go/cart_dir/page/cart_page.dart';
 import 'package:shop_n_go/home_page_dir/page/home_page.dart';
+import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/service/user_profile_service.dart';
 import 'package:shop_n_go/shop_in_dir/page/shop_in_page.dart';
 import 'package:shop_n_go/stores_dir/page/stores_page.dart';
 
@@ -29,6 +33,14 @@ class _DashboardPageState extends State<DashboardPage> {
     const AccountPage(),
   ];
 
+
+
+  @override
+  void initState() {
+    // profile();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -37,47 +49,59 @@ class _DashboardPageState extends State<DashboardPage> {
             index: _selectedIndex,
             children: tabPage,
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            selectedFontSize: 16,
-            unselectedFontSize: 12,
-            showUnselectedLabels: false,
-            selectedLabelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            currentIndex: _selectedIndex,
-            onTap: onTabSelect,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Menu',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag_outlined),
-                label: 'Stores',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.camera),
-                label: 'Shop In',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart),
-                label: 'Cart',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Account',
-              ),
-            ],
-          )),
+          bottomNavigationBar: buildBottomNavigationBar()),
+    );
+  }
+
+  Widget buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      selectedFontSize: 16,
+      unselectedFontSize: 12,
+      showUnselectedLabels: false,
+      selectedLabelStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+      currentIndex: _selectedIndex,
+      onTap: onTabSelect,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Menu',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_bag_outlined),
+          label: 'Stores',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.camera),
+          label: 'Shop In',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_cart),
+          label: 'Cart',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Account',
+        ),
+      ],
     );
   }
 
   void onTabSelect(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index != 3) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    } else {
+      setState(() {
+        _selectedIndex = 3;
+
+        // Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
+      });
+    }
   }
 
   Future<dynamic> buildShowModalBottomSheet(BuildContext context) {

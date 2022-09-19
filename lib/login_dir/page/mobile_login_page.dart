@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/auth/localdb.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/mobile_otp_auth.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 

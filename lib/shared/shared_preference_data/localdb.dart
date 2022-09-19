@@ -12,6 +12,8 @@ class LocalDataSaver {
   static String passwordKey = "PasswordKey";
   static String phoneKey = "PhoneKey";
   static String resendPhoneKey = "ResendPhoneKey";
+  static String dateKey = "DateKey";
+  static String genderKey = "GenderKey";
   static String imgKey = "ImgKey";
   static String logKey = "LogKey";
 
@@ -115,6 +117,26 @@ class LocalDataSaver {
     return await preferences.getString(resendPhoneKey);
   }
 
+  static Future<bool> saveDate(String userDate) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(dateKey, userDate);
+  }
+
+  static Future<String?> getDate() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.getString(dateKey);
+  }
+
+  static Future<bool> saveGender(String userGender) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(genderKey, userGender);
+  }
+
+  static Future<String?> getGender() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.getString(genderKey);
+  }
+
   static Future<bool> saveLoginData(bool isUserLoggedIn) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setBool(logKey, isUserLoggedIn);
@@ -137,8 +159,8 @@ class LocalDataSaver {
     await preferences.remove('PhoneKey');
     await preferences.remove('ResendPhoneKey');
     await preferences.remove('LogKey');
+    await preferences.remove('DateKey');
+    await preferences.remove('GenderKey');
     await preferences.clear();
   }
-
-
 }

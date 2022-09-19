@@ -26,9 +26,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
     for (int i = 0; i < itemData.length; i++) {
       setState(() {
         sum += itemData[i].counter;
-        print("sum at $i::$sum");
-        print("sum counter $i at ${itemData[i].counter}");
-        sum;
+       sum;
       });
     }
     sum;
@@ -51,8 +49,6 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
     for (int i = 0; i < itemData.length; i++) {
       setState(() {
         ordersSum += ((itemData[i].price) * itemData[i].counter);
-        print("totalOrderSum at $i::$ordersSum");
-        print("totalOrderSum counter $i at ${itemData[i].price}");
         ordersSum;
       });
     }

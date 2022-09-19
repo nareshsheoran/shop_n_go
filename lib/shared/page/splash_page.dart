@@ -1,9 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/home_page_dir/service/best_seller_service.dart';
+import 'package:shop_n_go/home_page_dir/service/category_service.dart';
+import 'package:shop_n_go/home_page_dir/service/new_product_service.dart';
+import 'package:shop_n_go/home_page_dir/service/recommended_service.dart';
+import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/auth/localdb.dart';
+import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/service/user_profile_service.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -13,22 +20,24 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-
   Future init() async {
-    ProfileDetails.id = await LocalDataSaver.getID();
-    ProfileDetails.name = await LocalDataSaver.getName();
-    ProfileDetails.userName = await LocalDataSaver.getUserName();
-    ProfileDetails.email = await LocalDataSaver.getEmail();
-    ProfileDetails.phone = await LocalDataSaver.getPhone();
-    ProfileDetails.password = await LocalDataSaver.getPassword();
-    ProfileDetails.img = await LocalDataSaver.getImg();
-    ProfileDetails.signUpToken = await LocalDataSaver.getSignUpToken();
-    ProfileDetails.loginToken = await LocalDataSaver.getLoginToken();
-    ProfileDetails.resendPhone = await LocalDataSaver.getResendPhone();
+    await fetchDataSP();
+    profile;
     decideScreen();
+    RecommendedService().fetchRecommendedDetails();
+    CategoryService().fetchAllCategory();
+    BestSellerService().fetchBestSellerDetails();
+    NewProductService().fetchNewProduct();
+  }
+
+  Future profile() async {
+    ProfileDetails.userName == null
+        ? ProfileDetails.userName == ''
+        : await UserProfileService().fetchUserProfileDetails();
   }
 
   void decideScreen() async {
+    print("decideScreen email::${ProfileDetails.email}");
     print("decideScreen userName::${ProfileDetails.userName}");
 
     ProfileDetails.userName == null

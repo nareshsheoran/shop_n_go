@@ -1,9 +1,14 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_n_go/cart_dir/model/all_cart_prod_req.dart';
+import 'package:shop_n_go/home_page_dir/model_req/product_details_req.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -14,292 +19,559 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   Object? number = 0;
+  Object? id = '';
+
+  List<AllCartProductData> dataAllCartProductList = [];
+  bool isLoading = false;
+
+  Future fetchAllCartProductDataDetails() async {
+    setState(() {
+      isLoading = true;
+      number = 1;
+    });
+    Uri myUri =
+        // Uri.parse("${NetworkUtil.getOrderDetailsUrl}${ProfileDetails.id}");
+        Uri.parse("${NetworkUtil.getAllCartProductUrl}${ProfileDetails.id}");
+    Response response = await get(myUri);
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      AllCartProductReq allCartProductData =
+          AllCartProductReq.fromJson(jsonResponse);
+      List<AllCartProductData> list = allCartProductData.data!;
+
+      dataAllCartProductList.addAll(list);
+      fetchProductDetails();
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  double sum = 0;
+  double ordersSum = 0;
+  double costTotal = 0;
+  double deliveryCost = 0;
+
+  double totalSum() {
+    sum = 0;
+    // if (number == 0 || number == null) {
+    for (int i = 0; i < productDetailsDataList.length; i++) {
+      setState(() {
+        sum += productDetailsDataList[i].id!;
+        sum;
+      });
+    }
+    sum;
+    // }
+    // else {
+    //   for (int i = 0; i < int.parse(number!.toString()); i++) {
+    //     setState(() {
+    //       sum += itemData[i].counter;
+    //       sum;
+    //     });
+    //   }
+    // }
+
+    return sum;
+  }
+
+  double totalOrderSum() {
+    ordersSum = 0;
+    // if (number == 0 || number == null) {
+    for (int i = 0; i < productDetailsDataList.length; i++) {
+      setState(() {
+        // ordersSum += ((productDetailsDataList[i].price) * productDetailsDataList[i].price);
+        ordersSum += ((productDetailsDataList[i].price));
+        ordersSum;
+      });
+    }
+    ordersSum;
+
+    return ordersSum;
+  }
+
+  double totalDeliveryCost() {
+    setState(() {
+      costTotal = deliveryCost + ordersSum;
+    });
+    return costTotal;
+  }
+
+  void init() {
+    // totalSum();
+    totalOrderSum();
+    totalDeliveryCost();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllCartProductDataDetails();
+  }
+
+  Future<bool>? _onBackPressed() {
+    Navigator.canPop(context);
+    Navigator.popAndPushNamed(context, AppRoutes.DashboardPage);
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    number == 0
-        ? number = ModalRoute.of(context)?.settings.arguments
-        : number == imgList;
-    return Scaffold(
-      body: SafeArea(
-        child:
-        // (number == 0 || number == null)?
-        //     Column(
-        //   children: [
-        //     Padding(
-        //       padding: const EdgeInsets.all(8),
-        //       child: Row(
-        //         children: [
-        //           GestureDetector(
-        //               onTap: () {
-        //                 Navigator.pop(context);
-        //               },
-        //               child: Icon(Icons.arrow_back_rounded,
-        //                   color: Colors.black)),
-        //           SizedBox(width: 8),
-        //           Text(
-        //             "Cart",
-        //             style: TextStyle(
-        //                 fontWeight: FontWeight.bold, fontSize: 18),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     SizedBox(height: MediaQuery.of(context).size.width / 1.5),
-        //     Text("Please add product to your Cart first!"),
-        //     ElevatedButton(
-        //         style: ElevatedButton.styleFrom(
-        //             minimumSize: Size(50, 30),
-        //             primary: Constant.primaryColor),
-        //         onPressed: () {
-        //           Navigator.pushNamed(context, AppRoutes.ShopInPage);
-        //         },
-        //         child: Text("Add to Cart")),
-        //   ],
-        // ):
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "CART",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount:(number ==0 ||number==null) ? imgList.length : int.parse(number!.toString()),
-                shrinkWrap: true,
-                // physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      // Navigator.pushNamed(context, AppRoutes.StoresDetailsPage,
-                      //     arguments: nameList[index]);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+    return WillPopScope(
+      onWillPop: () async {
+        return _onBackPressed()!;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text("CART",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18))
+                    ],
+                  ),
+                ),
+                (isDetailsLoading || isLoading)
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CProgressIndicator.circularProgressIndicator,
+                            SizedBox(height: 16),
+                            Text("Please Wait..",
+                                style: TextStyle(fontWeight: FontWeight.w500)),
+                            // Text(
+                            //     "${(dataAllCartProductList.length) - (productDetailsDataList.length)}",
+                            //     style: TextStyle(fontWeight: FontWeight.w500))
+                          ],
+                        )),
+                      )
+                    : productDetailsDataList.isEmpty
+                        ? SizedBox(
+                            height: MediaQuery.of(context).size.height / 1.5,
+                            width: MediaQuery.of(context).size.width,
+                            child: Center(child: Text("No Item In Cart")))
+                        : Column(
                             children: [
-                              Text(
-                                nameList[index],
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ListView.builder(
+                                // itemCount: imgList.length,
+                                itemCount: productDetailsDataList.length,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // Navigator.pushNamed(context, AppRoutes.StoresDetailsPage,
+                                      //     arguments: nameList[index]);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2, horizontal: 8),
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  // nameList[index],
+                                                  productDetailsDataList[index]
+                                                      .itemName,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              SizedBox(height: 6),
+                                              Row(
+                                                children: [
+                                                  Image(
+                                                    height: 70,
+                                                    width: 70,
+                                                    fit: BoxFit.fill,
+                                                    image: NetworkImage(Images
+                                                            .baseUrl +
+                                                        productDetailsDataList[
+                                                                index]
+                                                            .itemImages),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                                Icons
+                                                                    .directions,
+                                                                size: IconDimension
+                                                                    .iconSize),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                                child: Text(
+                                                                    "${productDetailsDataList[index].itemCategory} KMS")),
+                                                            Icon(
+                                                                Icons
+                                                                    .card_travel,
+                                                                size: IconDimension
+                                                                    .iconSize),
+                                                            SizedBox(width: 8),
+                                                            Text(
+                                                                // "${itemData[index].counter} Items"),
+                                                                "1 Item"),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 8),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Icon(Icons.star,
+                                                                size: IconDimension
+                                                                    .iconSize),
+                                                            SizedBox(width: 8),
+                                                            // counterWidget(index),
+                                                            ElevatedButton(
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                        // minimumSize: Size(50, 30),
+                                                                        primary:
+                                                                            Constant
+                                                                                .primaryColor),
+                                                                onPressed: () {
+                                                                  // Navigator.pushNamed(
+                                                                  //     context,
+                                                                  //     AppRoutes
+                                                                  //         .CartDetailsPage,
+                                                                  //     arguments: number);
+                                                                },
+                                                                child: Text(
+                                                                    "VIEW ITEMS"))
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                              SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Image(
-                                    height: 70,
-                                    width: 70,
-                                    fit: BoxFit.fill,
-                                    image: NetworkImage(imgList[index]),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
                                       children: [
-                                        Row(
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Icon(
-                                              Icons.directions,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Expanded(
-                                                child: Text(
-                                                    "${distanceList[index]} KMS")),
-                                            Icon(
-                                              Icons.card_travel,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                            // (number == 0 || number == null)
-                                            //     ? Text("1 Item")
-                                            //     : number == 1
-                                            //     ? Text("$number Item")
-                                            //     : Text("$number Items"),
-                                            Text("${itemData[index].counter} Items"),
+                                            productDetailsDataList.length == 1
+                                                ? Text("Total Item Count:")
+                                                : Text("Total Items Count:"),
+                                            SizedBox(height: 4),
+                                            productDetailsDataList.length == 1
+                                                ? Text("Total Item Amount:")
+                                                : Text("Total Items Amount:"),
+                                            SizedBox(height: 4),
+                                            Text("Delivery Cost:"),
+                                            SizedBox(height: 4),
+                                            Text("Total Bill Amount:",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ],
                                         ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
                                           children: [
-                                            Icon(
-                                              Icons.star,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                            // counterWidget(index),
-                                            ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    // minimumSize: Size(50, 30),
-                                                    primary:
-                                                        Constant.primaryColor),
-                                                onPressed: () {
-                                                  Navigator.pushNamed(
-                                                      context,
-                                                      AppRoutes
-                                                          .CartDetailsPage,arguments: number);
-                                                },
-                                                child:(number == 0 || number == null)
-                                                    ? Text("VIEW ITEM")
-                                                    : number == 1
-                                                    ? Text("VIEW ITEM")
-                                                    : Text("VIEW ITEMS"), )
+                                            productDetailsDataList.length == 1
+                                                ? Text(
+                                                    "${productDetailsDataList.length} Item")
+                                                : Text(
+                                                    "${productDetailsDataList.length} Items"),
+                                            SizedBox(height: 4),
+                                            Text(
+                                                "${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
+                                            // Text("${AppDetails.currencySign}"),
+                                            SizedBox(height: 4),
+                                            Text(
+                                                "${AppDetails.currencySign} ${deliveryCost.toStringAsFixed(0)}"),
+                                            // "${AppDetails.currencySign}"),
+                                            SizedBox(height: 4),
+                                            Text(
+                                                "${AppDetails.currencySign} ${costTotal.toStringAsFixed(0)}",
+                                                // Text("${AppDetails.currencySign} ",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ],
-                                        ),
+                                        )
                                       ],
                                     ),
                                   ),
-                                ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Delivery to HOME",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 4),
+                                          AddressDetails.flat == ''
+                                              ? GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pushNamed(context,
+                                                        AppRoutes.AddressPage);
+                                                  },
+                                                  child: Text("Enter Address",
+                                                      style: TextStyle(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline,
+                                                          color: Colors.blue)))
+                                              : SizedBox(
+                                                  height: 0,
+                                                  width: 0,
+                                                ),
+                                          AddressDetails.flat == ''
+                                              ? Text("")
+                                              : GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pushNamed(context,
+                                                        AppRoutes.AddressPage);
+                                                  },
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Text("Change Address",
+                                                          style: TextStyle(
+                                                              decoration:
+                                                                  TextDecoration
+                                                                      .underline,
+                                                              color:
+                                                                  Colors.blue))
+                                                    ],
+                                                  ),
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(
+                                            MediaQuery.of(context).size.width,
+                                            50),
+                                        primary: Constant.primaryColor),
+                                    onPressed: () {
+                                      AddressDetails.flat == ""
+                                          ? Fluttertoast.showToast(
+                                              msg:
+                                                  "Please Enter Delivery Address")
+                                          : Navigator.pushNamed(
+                                              context, AppRoutes.OrderPage,
+                                              arguments:
+                                                  costTotal.toStringAsFixed(0));
+                                    },
+                                    child: Text("PROCEED TO BUY")),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  bool isDetailsLoading = false;
+  late ProductDetailsData productDetailsData;
+  List productDetailsDataList = [];
+
+  Future fetchProductDetails() async {
+    setState(() {
+      isDetailsLoading = true;
+    });
+    for (int i = 0; i < dataAllCartProductList.length; i++) {
+      Uri myUri = Uri.parse(
+          "${NetworkUtil.getProductDetailsUrl}${dataAllCartProductList[i].addedProIntoCart}");
+      Response response = await get(myUri);
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+        ProductDetailsReq productDetailsReq =
+            ProductDetailsReq.fromJson(jsonResponse);
+
+        productDetailsData = productDetailsReq.data!;
+        productDetailsDataList.add(productDetailsData);
+        init();
+      }
+    }
+    setState(() {
+      isDetailsLoading = false;
+      id = ProfileDetails.id;
+    });
+  }
+
   Widget counterWidget(int index) {
     return
-      // itemData[index].shouldVisible ?
-      //    Center(
-      //       child: Container(
-      //       height: 30,
-      //       width: 70,
-      //       decoration: BoxDecoration(
-      //           color: Colors.grey[200],
-      //           borderRadius: BorderRadius.circular(4),
-      //           border: Border.all(color: Colors.white70)),
-      //       child: Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //         children: <Widget>[
-      //           InkWell(
-      //               onTap: () {
-      //                 setState(() {
-      //                   if (itemData[index].counter < 1) {
-      //                     itemData[index].shouldVisible =
-      //                         !itemData[index].shouldVisible;
-      //                   } else {
-      //                     itemData[index].counter--;
-      //                   }
-      //                 });
-      //               },
-      //               child: Icon(
-      //                 Icons.remove,
-      //                 color: Constant.primaryColor,
-      //                 size: 22,
-      //               )),
-      //           SizedBox(width: 4),
-      //           (itemData[index].counter == 0 ||
-      //                   itemData[index].counter == null)
-      //               ? Text(
-      //                   '${itemData[index].counter}',
-      //                   style: TextStyle(color: Colors.black),
-      //                 )
-      //               : Text(
-      //                   '${itemData[index].counter}',
-      //                   style: const TextStyle(color: Colors.black),
-      //                 ),
-      //           SizedBox(width: 4),
-      //           InkWell(
-      //               onTap: () {
-      //                 setState(() {
-      //                   itemData[index].counter++;
-      //                 });
-      //               },
-      //               child: Icon(
-      //                 Icons.add,
-      //                 color: Constant.primaryColor,
-      //                 size: 22,
-      //               )),
-      //         ],
-      //       ),
-      //     )):
-      Container(
-        padding: EdgeInsets.all(5),
-        height: 30,
-        width: 80,
-        decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: Colors.white70)),
-        child: Row(          children: <Widget>[
-            InkWell(
-                onTap: () {
-                  setState(() {
-
-                    // itemData[index].counter--;
-                    if (itemData[index].counter < 1) {
-                      itemData[index].shouldVisible =
-                      !itemData[index].shouldVisible;
-                      if (itemData[index].counter == 0) {
-                        setState(() {
-                          itemData.removeAt(index);
-                        });
-                      }
-                    } else {
-                      itemData[index].counter--;
-                      if (itemData[index].counter == 0) {
-                        setState(() {
-                          itemData.removeAt(index);
-                        });
-                      }
-                    }
-                  });
-                },
-                child: Center(
-                    child: Icon(
-                      Icons.remove,
-                      color: Constant.primaryColor,
-                      size: 22,
-                    ))),
-            SizedBox(width: 2),
-            Text(
-              '${itemData[index].counter}',
-              style: const TextStyle(color: Colors.black),
-            ),
-            SizedBox(width: 2),
-            InkWell(
-                onTap: () {
-                  setState(() {
-                    itemData[index].counter++;
+        // itemData[index].shouldVisible ?
+        //    Center(
+        //       child: Container(
+        //       height: 30,
+        //       width: 70,
+        //       decoration: BoxDecoration(
+        //           color: Colors.grey[200],
+        //           borderRadius: BorderRadius.circular(4),
+        //           border: Border.all(color: Colors.white70)),
+        //       child: Row(
+        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //         children: <Widget>[
+        //           InkWell(
+        //               onTap: () {
+        //                 setState(() {
+        //                   if (itemData[index].counter < 1) {
+        //                     itemData[index].shouldVisible =
+        //                         !itemData[index].shouldVisible;
+        //                   } else {
+        //                     itemData[index].counter--;
+        //                   }
+        //                 });
+        //               },
+        //               child: Icon(
+        //                 Icons.remove,
+        //                 color: Constant.primaryColor,
+        //                 size: 22,
+        //               )),
+        //           SizedBox(width: 4),
+        //           (itemData[index].counter == 0 ||
+        //                   itemData[index].counter == null)
+        //               ? Text(
+        //                   '${itemData[index].counter}',
+        //                   style: TextStyle(color: Colors.black),
+        //                 )
+        //               : Text(
+        //                   '${itemData[index].counter}',
+        //                   style: const TextStyle(color: Colors.black),
+        //                 ),
+        //           SizedBox(width: 4),
+        //           InkWell(
+        //               onTap: () {
+        //                 setState(() {
+        //                   itemData[index].counter++;
+        //                 });
+        //               },
+        //               child: Icon(
+        //                 Icons.add,
+        //                 color: Constant.primaryColor,
+        //                 size: 22,
+        //               )),
+        //         ],
+        //       ),
+        //     )):
+        Container(
+      padding: EdgeInsets.all(5),
+      height: 30,
+      width: 80,
+      decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.white70)),
+      child: Row(
+        children: <Widget>[
+          InkWell(
+              onTap: () {
+                setState(() {
+                  // itemData[index].counter--;
+                  if (itemData[index].counter < 1) {
                     itemData[index].shouldVisible =
-                    !itemData[index].shouldVisible;
-                  });
-                },
-                child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Constant.primaryColor,
-                      size: 22,
-                    ))),
-          ],
-        ),
-      );
+                        !itemData[index].shouldVisible;
+                    if (itemData[index].counter == 0) {
+                      setState(() {
+                        itemData.removeAt(index);
+                      });
+                    }
+                  } else {
+                    itemData[index].counter--;
+                    if (itemData[index].counter == 0) {
+                      setState(() {
+                        itemData.removeAt(index);
+                      });
+                    }
+                  }
+                });
+              },
+              child: Center(
+                  child: Icon(
+                Icons.remove,
+                color: Constant.primaryColor,
+                size: 22,
+              ))),
+          SizedBox(width: 2),
+          Text(
+            '${itemData[index].counter}',
+            style: const TextStyle(color: Colors.black),
+          ),
+          SizedBox(width: 2),
+          InkWell(
+              onTap: () {
+                setState(() {
+                  itemData[index].counter++;
+                  itemData[index].shouldVisible =
+                      !itemData[index].shouldVisible;
+                });
+              },
+              child: Center(
+                  child: Icon(
+                Icons.add,
+                color: Constant.primaryColor,
+                size: 22,
+              ))),
+        ],
+      ),
+    );
   }
 
   List imgList = [

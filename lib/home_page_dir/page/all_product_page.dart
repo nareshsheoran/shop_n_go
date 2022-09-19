@@ -1,11 +1,15 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:convert';
+import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_n_go/home_page_dir/model_req/all_product_req.dart';
+import 'package:shop_n_go/home_page_dir/service/new_product_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
+import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 import '../model_req/all_product_req.dart';
 import 'package:http/http.dart';
 
@@ -18,113 +22,6 @@ class AllProductPage extends StatefulWidget {
 
 class _AllProductPageState extends State<AllProductPage> {
   TextEditingController searchController = TextEditingController();
-
-  late int selectedIndex;
-  final List<bool> _selected = List.generate(50, (i) => false);
-  bool isLoading = false;
-  List<AllProductData> dataAllProdList = [];
-
-  Future<void> fetchAllProduct() async {
-    setState(() {
-      isLoading = true;
-    });
-    Uri myUri = Uri.parse(NetworkUtil.getAllProductUrl);
-    Response response = await get(myUri);
-    if (response.statusCode == 200) {
-      debugPrint("fetchAllProduct Response Body: ${response.body}");
-      debugPrint("fetchAllProduct Status Code: ${response.statusCode}");
-
-      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      AllProductRequest allProductRequest =
-          AllProductRequest.fromJson(jsonResponse);
-      List<AllProductData> list = allProductRequest.data!;
-      dataAllProdList.addAll(list);
-      dataAllProdList = list;
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    fetchAllProduct();
-    super.initState();
-  }
-
-  List imageList = [
-    Images.vegetablesImg,
-    Images.chillyImg,
-    Images.tomatoImg,
-    Images.ladiesFingerImg,
-    Images.onionImg,
-    Images.potatoImg,
-    Images.radisImg,
-    Images.fruitsImg,
-    Images.mangoImg,
-    Images.bananaImg,
-    Images.grapesImg,
-    Images.nutsImg,
-    Images.munchesImg,
-    Images.hippoNutsImg,
-    Images.milkImg,
-    Images.softDrinksImg,
-    Images.oreoImg,
-    Images.biscuitsImg,
-    Images.iceCreamImg,
-    Images.oilImg,
-    Images.soapImg,
-    Images.lifeBoyImg,
-  ];
-
-  List nameList = [
-    "Vegetables",
-    "Chilly",
-    "Tomato",
-    "Ladies Finger",
-    "Onion",
-    "Potato",
-    "Radis",
-    "Fruits",
-    "Mango",
-    "Banana",
-    "Grapes",
-    "Nuts",
-    "Munchies",
-    "Happilo Nuts",
-    "Milk",
-    "Soft Drinks",
-    "Oreo",
-    "Biscuits",
-    "Ice Cream",
-    "Oil",
-    "Soaps",
-    "Life Boy",
-  ];
-  List rateList = [
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "49",
-    "65",
-    "65",
-    "49",
-    "65",
-    "65",
-    "65",
-    "49",
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -170,21 +67,19 @@ class _AllProductPageState extends State<AllProductPage> {
                 ),
               ),
             ),
-            (isLoading)
+            (NewProductService().isLoadingAllProd)
                 ? SizedBox(
                     height: MediaQuery.of(context).size.width,
                     width: MediaQuery.of(context).size.width,
                     child: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                      ),
+                      child: CProgressIndicator.circularProgressIndicator,
                     ),
                   )
                 : Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
-                        itemCount: dataAllProdList.length,
+                        itemCount: NewProductService().dataAllProdList.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 0.7,
@@ -197,13 +92,18 @@ class _AllProductPageState extends State<AllProductPage> {
                             onTap: () {
                               Navigator.pushNamed(
                                   context, AppRoutes.CategoriesDetailsPage,
-                                  arguments:
-                                  ScreenArguments(
-                              Images.baseUrl +
-                                  dataAllProdList[index].itemImages!,
-                                      dataAllProdList[index].itemName!,
+                                  arguments: ScreenArguments(
+                                      Images.baseUrl +
+                                          NewProductService()
+                                              .dataAllProdList[index]
+                                              .itemImages!,
+                                      NewProductService()
+                                          .dataAllProdList[index]
+                                          .itemName!,
                                       "description",
-                                      dataAllProdList[index].itemCode!));
+                                      NewProductService()
+                                          .dataAllProdList[index]
+                                          .itemCode!));
                             },
                             child: Container(
                               width: 110,
@@ -230,12 +130,15 @@ class _AllProductPageState extends State<AllProductPage> {
                                                 fit: BoxFit.fill,
                                                 image: NetworkImage(Images
                                                         .baseUrl +
-                                                    dataAllProdList[index]
+                                                    NewProductService()
+                                                        .dataAllProdList[index]
                                                         .itemImages!)),
                                           ),
                                           Expanded(
                                             child: Text(
-                                              dataAllProdList[index].itemName!,
+                                              NewProductService()
+                                                  .dataAllProdList[index]
+                                                  .itemName!,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 2,
                                               style: TextStyle(
@@ -250,7 +153,7 @@ class _AllProductPageState extends State<AllProductPage> {
                                                   MainAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "${AppDetails.currencySign}${dataAllProdList[index].offerPrice?.toStringAsFixed(0)}",
+                                                  "${AppDetails.currencySign}${NewProductService().dataAllProdList[index].offerPrice?.toStringAsFixed(0)}",
                                                   textAlign: TextAlign.left,
                                                 ),
                                               ],
@@ -263,24 +166,22 @@ class _AllProductPageState extends State<AllProductPage> {
                                   Positioned(
                                       top: 6,
                                       right: 8,
-                                      child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              // isFavourite = true;
-                                              _selected[index] =
-                                                  !_selected[index];
-                                            });
-                                          },
-                                          child: (_selected[index])
-                                              ? Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.red,
-                                                )
-                                              : Icon(
-                                                  Icons
-                                                      .favorite_border_outlined,
-                                                  color: Colors.black,
-                                                )))
+                                      child: FavoriteButton(
+                                        iconSize: 32,
+                                        isFavorite: false,
+                                        valueChanged: (_isFavorite) {
+                                          print('Is Favorite : $_isFavorite');
+                                          _isFavorite
+                                              ? AddProdIntoFavService()
+                                                  .addProdIntoFav(
+                                                      NewProductService()
+                                                          .dataAllProdList[
+                                                              index]
+                                                          .itemCode)
+                                              : Fluttertoast.showToast(
+                                                  msg: "Favourite Removed");
+                                        },
+                                      ))
                                 ],
                               ),
                             ),
@@ -295,3 +196,77 @@ class _AllProductPageState extends State<AllProductPage> {
     );
   }
 }
+
+List imageList = [
+  Images.vegetablesImg,
+  Images.chillyImg,
+  Images.tomatoImg,
+  Images.ladiesFingerImg,
+  Images.onionImg,
+  Images.potatoImg,
+  Images.radisImg,
+  Images.fruitsImg,
+  Images.mangoImg,
+  Images.bananaImg,
+  Images.grapesImg,
+  Images.nutsImg,
+  Images.munchesImg,
+  Images.hippoNutsImg,
+  Images.milkImg,
+  Images.softDrinksImg,
+  Images.oreoImg,
+  Images.biscuitsImg,
+  Images.iceCreamImg,
+  Images.oilImg,
+  Images.soapImg,
+  Images.lifeBoyImg,
+];
+
+List nameList = [
+  "Vegetables",
+  "Chilly",
+  "Tomato",
+  "Ladies Finger",
+  "Onion",
+  "Potato",
+  "Radis",
+  "Fruits",
+  "Mango",
+  "Banana",
+  "Grapes",
+  "Nuts",
+  "Munchies",
+  "Happilo Nuts",
+  "Milk",
+  "Soft Drinks",
+  "Oreo",
+  "Biscuits",
+  "Ice Cream",
+  "Oil",
+  "Soaps",
+  "Life Boy",
+];
+List rateList = [
+  "49",
+  "65",
+  "49",
+  "65",
+  "49",
+  "49",
+  "65",
+  "65",
+  "49",
+  "65",
+  "65",
+  "65",
+  "49",
+  "49",
+  "65",
+  "49",
+  "65",
+  "49",
+  "65",
+  "49",
+  "65",
+  "49",
+];

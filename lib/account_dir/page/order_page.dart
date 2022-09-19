@@ -15,16 +15,15 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
   TextEditingController amountController = TextEditingController(text: "10");
-  TextEditingController phoneController =
-      TextEditingController(text: "9999999999");
-  TextEditingController mailController =
-      TextEditingController(text: ProfileDetails.email);
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController mailController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   late HttpHelper helper;
   static String _phone = '';
   static String? _email = '';
   static String _amount = '';
+  Object? totalAmount;
 
   late bool _isSubmitted = false;
   late String result = '';
@@ -37,6 +36,11 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    totalAmount = ModalRoute.of(context)?.settings.arguments;
+    totalAmount == null
+        ? amountController.text = "10"
+        : amountController.text = totalAmount.toString();
+    // amountController.text=totalAmount.toString();
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -83,6 +87,7 @@ class _OrderPageState extends State<OrderPage> {
                       child: TextFormField(
                           controller: amountController,
                           textCapitalization: TextCapitalization.sentences,
+                          readOnly: true,
                           decoration: InputDecoration(
                               fillColor: Colors.white,
                               filled: true,
@@ -105,30 +110,30 @@ class _OrderPageState extends State<OrderPage> {
                           //     _amount = value;
                           //   });
                           // },
-                          onSaved: (value){
-                            setState((){
+                          onSaved: (value) {
+                            setState(() {
                               _amount = value!;
                             });
                           },
-
                           validator: (String? value) {
                             return GetUtils.isLengthGreaterOrEqual(value!, 1)
                                 ? null
                                 : "Please Enter Amount";
                           }),
                     ),
-                    buildText("Phone No"),
+                    buildText("Mobile No"),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 6),
                       child: TextFormField(
                           controller: phoneController,
                           textCapitalization: TextCapitalization.sentences,
+                          keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
                               fillColor: Colors.white,
                               filled: true,
                               contentPadding: EdgeInsets.all(16),
-                              hintText: 'Enter PhoneNo',
+                              hintText: 'Enter MobileNo',
                               helperMaxLines: 2,
                               hintMaxLines: 2,
                               focusedBorder: OutlineInputBorder(
@@ -143,7 +148,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                           onSaved: (value) => _phone = value!,
                           validator: (String? value) {
-                            return GetUtils.isLengthGreaterOrEqual(value!, 1)
+                            return GetUtils.isPhoneNumber(value!)
                                 ? null
                                 : "Please Enter Phone";
                           }),
@@ -155,6 +160,7 @@ class _OrderPageState extends State<OrderPage> {
                       child: TextFormField(
                           controller: mailController,
                           textCapitalization: TextCapitalization.sentences,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                               fillColor: Colors.white,
                               filled: true,
@@ -202,21 +208,21 @@ class _OrderPageState extends State<OrderPage> {
                     // ),
                     SizedBox(height: 28),
                     ElevatedButton(
-                            child: const Text('Checkout'),
-                            style: ElevatedButton.styleFrom(
-                                primary: Constant.primaryColor,
-                                elevation: 5.0,
-                                minimumSize: const Size(250.0, 40.0),
-                                textStyle: const TextStyle(
-                                  fontSize: 20.0,
-                                  color: Colors.black,
-                                )),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _buttonSubmitted();
-                              }
-                            },
-                          ),
+                      child: const Text('Checkout'),
+                      style: ElevatedButton.styleFrom(
+                          primary: Constant.primaryColor,
+                          elevation: 5.0,
+                          minimumSize: const Size(250.0, 40.0),
+                          textStyle: const TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          )),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _buttonSubmitted();
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),

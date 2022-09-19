@@ -1,13 +1,21 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scan/scan.dart';
+import 'package:http/http.dart' as http;
+import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:images_picker/images_picker.dart';
+import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
+import 'package:shop_n_go/shop_in_dir/model/add_into_cart_store_basis_req.dart';
+import 'package:shop_n_go/shop_in_dir/model/get_prod_based_on_barCode_req.dart';
 
 class ShopInPage extends StatefulWidget {
   const ShopInPage({Key? key}) : super(key: key);
@@ -55,11 +63,7 @@ class _ShopInPageState extends State<ShopInPage> {
     super.initState();
   }
 
-  Future<void> startBarcodeScanStream() async {
-    FlutterBarcodeScanner.getBarcodeStreamReceiver(
-            '#ff6666', 'Cancel', true, ScanMode.BARCODE)!
-        .listen((barcode) => print(barcode));
-  }
+  String? barCode;
 
   Future<void> scanQR() async {
     String barcodeScanRes;
@@ -73,31 +77,21 @@ class _ShopInPageState extends State<ShopInPage> {
     if (!mounted) return;
 
     setState(() {
-      _scanBarcode = barcodeScanRes;
-      scannerList.add(barcodeScanRes);
+      if (barcodeScanRes == "-1") {
+
+        setState(() {
+          _scanBarcode = "Unknown";
+        });
+      } else {
+        fetchScan(barcodeScanRes);
+      }
     });
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> scanBarcodeNormal() async {
-    String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
-      print(barcodeScanRes);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _scanBarcode = barcodeScanRes;
-    });
+  void fetchScan(String barcodeScanRes) {
+    _scanBarcode = barcodeScanRes;
+    scannerList.add(barcodeScanRes);
+    fetchProdBasedOnBarCode(barcodeScanRes);
   }
 
   List scannerList = [];
@@ -106,7 +100,7 @@ class _ShopInPageState extends State<ShopInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: scannerList.isEmpty
+        child: getProdBasedOnBarCodeList.isEmpty
             ? Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,7 +109,8 @@ class _ShopInPageState extends State<ShopInPage> {
                     ElevatedButton(
                         onPressed: () => scanQR(),
                         child: Text('Start QR scan')),
-                    Text('Scan result : $_scanBarcode\n',
+                    Text('Scan result:\n $_scanBarcode',
+                        textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20)),
                   ],
                 ),
@@ -128,22 +123,22 @@ class _ShopInPageState extends State<ShopInPage> {
                   ElevatedButton(
                       onPressed: () => scanQR(), child: Text('Scan QR Code')),
                   Text('Scanned Result: $_scanBarcode\n',
-                      style: TextStyle(fontSize: 10)),
+                      style: TextStyle(fontSize: 14)),
                   // SizedBox(height: 4),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Total Product Scanned: ${scannerList.length}",
+                        Text(
+                            "Total Product Scanned: ${getProdBasedOnBarCodeList.length}",
                             style: TextStyle(fontSize: 20)),
                         ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 minimumSize: Size(50, 30),
                                 primary: Constant.primaryColor),
                             onPressed: () {
-                              Navigator.pushNamed(context, AppRoutes.CartPage,
-                                  arguments: scannerList.length);
+                              Navigator.pushNamed(context, AppRoutes.CartPage);
                             },
                             child: Text("Cart")),
                       ],
@@ -152,10 +147,12 @@ class _ShopInPageState extends State<ShopInPage> {
                   SizedBox(height: 4),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: scannerList.length,
+                      itemCount: getProdBasedOnBarCodeList.length,
                       shrinkWrap: true,
                       // physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
+                        GetProductBasedOnBarCodeReqData item =
+                            getProdBasedOnBarCodeList[index];
                         return GestureDetector(
                           onTap: () {
                             // Navigator.pushNamed(context, AppRoutes.StoresDetailsPage,
@@ -169,13 +166,28 @@ class _ShopInPageState extends State<ShopInPage> {
                               shadowColor: CardDimension.shadowColor,
                               child: Row(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image(
-                                        height: ImageDimension.imageHeight,
-                                        width: ImageDimension.imageWidth,
-                                        fit: BoxFit.fill,
-                                        image: itemData[index].image),
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 6, 8, 4),
+                                        child: Image(
+                                            height:
+                                                ImageDimension.imageHeight - 20,
+                                            width: ImageDimension.imageWidth,
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(
+                                                "${Images.baseUrl}${item.itemImages!}")),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 2, 8, 4),
+                                        child: Text(
+                                          item.barcodeSequence!,
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   SizedBox(width: 12),
                                   Expanded(
@@ -187,7 +199,7 @@ class _ShopInPageState extends State<ShopInPage> {
                                         Row(
                                           children: [
                                             Expanded(
-                                              child: Text(scannerList[index],
+                                              child: Text(item.itemName!,
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -219,6 +231,10 @@ class _ShopInPageState extends State<ShopInPage> {
                                                               child: const Text(
                                                                   'OK'),
                                                               onPressed: () {
+                                                                getProdBasedOnBarCodeList
+                                                                    .removeAt(
+                                                                        index);
+
                                                                 setState(() {
                                                                   scannerList
                                                                       .removeAt(
@@ -247,7 +263,8 @@ class _ShopInPageState extends State<ShopInPage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text("${AppDetails.currencySign}${itemData[index].price}",
+                                            Text(
+                                                "${AppDetails.currencySign}${(item.price)?.toStringAsFixed(0)}",
                                                 style: TextStyle(fontSize: 18)),
                                             // SizedBox(
                                             //     width: MediaQuery.of(context).size.width /
@@ -257,8 +274,33 @@ class _ShopInPageState extends State<ShopInPage> {
                                                     minimumSize: Size(50, 30),
                                                     primary:
                                                         Constant.primaryColor),
-                                                onPressed: () {},
-                                                child: Text("Buy Now")),
+                                                onPressed: () {
+                                                  ProductAddCartService()
+                                                      .proAddedIntoCart(
+                                                          index, item.itemCode);
+
+                                                  setState(() {
+                                                    print(
+                                                        "ProductAddCartService statusCode:${ProductAddCartService().statusCode}");
+                                                    ProductAddCartService()
+                                                                .statusCode ==
+                                                            200
+                                                        ? getProdBasedOnBarCodeList
+                                                            .removeAt(index)
+                                                        : null;
+                                                  });
+
+                                                  // proAddedIntoCart(
+                                                  //     index, item.itemCode);
+                                                  // fetchAddCartStoreBasis(
+                                                  //     index,
+                                                  //     item.itemCode,
+                                                  //     "V001",
+                                                  //     item.vendorMasters
+                                                  //         ?.replaceAll(
+                                                  //             "v", ""));
+                                                },
+                                                child: Text("ADD +")),
                                           ],
                                         )
                                       ],
@@ -277,6 +319,87 @@ class _ShopInPageState extends State<ShopInPage> {
               ),
       ),
     );
+  }
+
+  bool isLoading = false;
+  List<GetProductBasedOnBarCodeReqData> getProdBasedOnBarCodeList = [];
+  GetProductBasedOnBarCodeReq? getProductBasedOnBarCodeReq;
+
+  Future fetchProdBasedOnBarCode(barCode) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    var requestBody = {
+      'barcode_sequence': barCode,
+    };
+
+    Uri myUri = Uri.parse(NetworkUtil.getProdDetailsByBarCodeUrl);
+    //
+    http.Response response = await http.post(
+      myUri,
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      GetProductBasedOnBarCodeReq getProductBasedOnBarCodeRequ =
+          GetProductBasedOnBarCodeReq.fromJson(jsonResponse);
+      if (getProductBasedOnBarCodeRequ.statusCode == 200) {
+        getProductBasedOnBarCodeReq = getProductBasedOnBarCodeRequ;
+
+        getProdBasedOnBarCodeList.add(getProductBasedOnBarCodeReq!.data!);
+        getProdBasedOnBarCodeList;
+      } else if (getProductBasedOnBarCodeRequ.statusCode == 400) {
+        Fluttertoast.showToast(
+            msg: "$barCode: ${getProductBasedOnBarCodeRequ.message!}");
+        setState(() {
+          _scanBarcode = "UnMatched Barcode: $barCode";
+        });
+        // Fluttertoast.showToast(msg: "No product found for that BarCode");
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future fetchAddCartStoreBasis(index, itemCode, storeId, storeName) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String user = ProfileDetails.id!;
+
+    var requestBody = {
+      'item_code': itemCode,
+      'store_id': storeId,
+      'store_name': storeName,
+      'user': user,
+    };
+
+    Uri myUri = Uri.parse(NetworkUtil.getAddIntoCartStoreBasisUrl);
+    http.Response response = await http.post(
+      myUri,
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      AddIntoCartStoreBasisReq addIntoCartStoreBasisReq =
+          AddIntoCartStoreBasisReq.fromJson(jsonResponse);
+      if (addIntoCartStoreBasisReq.success == true) {
+        Fluttertoast.showToast(
+          msg: "Product Added Successful",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 2,
+        );
+        getProdBasedOnBarCodeList.removeAt(index);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<dynamic> buildShowModalBottomSheet(BuildContext context) {

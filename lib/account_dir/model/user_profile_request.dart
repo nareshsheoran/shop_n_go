@@ -6,17 +6,24 @@ class UserProfileRequest {
   UserProfileRequestData? data;
   int? statusCode;
 
-  UserProfileRequest({this.success, this.message, this.data, this.statusCode});
+  UserProfileRequest({
+    this.success,
+    this.message,
+    this.data,
+    this.statusCode,
+  });
 
   UserProfileRequest.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ?  UserProfileRequestData.fromJson(json['data']) : null;
+    data = json['data'] != null
+        ? UserProfileRequestData.fromJson(json['data'])
+        : null;
     statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -33,7 +40,12 @@ class UserProfileRequestData {
   String? email;
   String? dateJoined;
 
-  UserProfileRequestData({this.id, this.username, this.email, this.dateJoined});
+  UserProfileRequestData({
+    this.id,
+    this.username,
+    this.email,
+    this.dateJoined,
+  });
 
   UserProfileRequestData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -43,7 +55,7 @@ class UserProfileRequestData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['username'] = this.username;
     data['email'] = this.email;

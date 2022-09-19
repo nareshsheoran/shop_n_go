@@ -3,9 +3,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/home_page_dir/service/category_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:http/http.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 
 import '../model_req/all_category_req.dart';
 
@@ -18,36 +20,6 @@ class AllCategorySearch extends StatefulWidget {
 
 class _AllCategorySearchState extends State<AllCategorySearch> {
   TextEditingController searchController = TextEditingController();
-  bool isLoading = false;
-  List<AllCategoryData> dataAllCategoryList = [];
-
-  Future<void> fetchAllCategory() async {
-    setState(() {
-      isLoading = true;
-    });
-    Uri myUri = Uri.parse(NetworkUtil.getCategoryUrl);
-    Response response = await get(myUri);
-    if (response.statusCode == 200) {
-      debugPrint("fetchAllProduct Response Body: ${response.body}");
-      debugPrint("fetchAllProduct Status Code: ${response.statusCode}");
-
-      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      AllCategoryRequest allCategoryRequest =
-          AllCategoryRequest.fromJson(jsonResponse);
-      List<AllCategoryData> list = allCategoryRequest.data!;
-      dataAllCategoryList.addAll(list);
-      dataAllCategoryList = list;
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    fetchAllCategory();
-    super.initState();
-  }
 
   List imageList = [
     Images.laysImg,
@@ -121,18 +93,16 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     ),
                   ),
                 ),
-                (isLoading)
+                (CategoryService().isLoadingAllCategory)
                     ? SizedBox(
                         height: MediaQuery.of(context).size.width,
                         width: MediaQuery.of(context).size.width,
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                          ),
+                        child:  Center(
+                          child: CProgressIndicator.circularProgressIndicator,
                         ),
                       )
                     : GridView.builder(
-                        itemCount: dataAllCategoryList.length,
+                        itemCount: CategoryService().dataAllCategoryList.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 0.8,
@@ -144,7 +114,11 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, AppRoutes.CategoryNamePage,
-                                    arguments: dataAllCategoryList[index]);
+                                    arguments: ScreenArguments(
+                                        imageList[index],
+                                        CategoryService().dataAllCategoryList[index].name!,
+                                        "description",
+                                        CategoryService().dataAllCategoryList[index].id.toString()));
                               },
                               child: categoryWidget(index));
                         },
@@ -179,7 +153,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     image: NetworkImage(imageList[index])),
               ),
               Text(
-                dataAllCategoryList[index].name!,
+                CategoryService().dataAllCategoryList[index].name!,
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             ],

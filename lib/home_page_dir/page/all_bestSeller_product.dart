@@ -1,13 +1,17 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:convert';
 
+import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shop_n_go/home_page_dir/model_req/best_seller_req.dart';
+import 'package:shop_n_go/home_page_dir/service/best_seller_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
+import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 
 class AllBestSellerProduct extends StatefulWidget {
   const AllBestSellerProduct({Key? key}) : super(key: key);
@@ -19,39 +23,6 @@ class AllBestSellerProduct extends StatefulWidget {
 class _AllBestSellerProductState extends State<AllBestSellerProduct> {
   TextEditingController searchController = TextEditingController();
 
-  late int selectedIndex;
-  final List<bool> _selected = List.generate(50, (i) => false);
-  bool isLoading = false;
-
-  List<BestSellerData> dataBestSellerList = [];
-
-  Future<void> fetchBestSellerDetails() async {
-    setState(() {
-      isLoading = true;
-    });
-    Uri myUri = Uri.parse(NetworkUtil.getBestSellerProductUrl);
-    Response response = await get(myUri);
-    if (response.statusCode == 200) {
-      debugPrint("fetchBestSellerDetails Response Body: ${response.body}");
-      debugPrint("fetchBestSellerDetails Status Code: ${response.statusCode}");
-
-      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      BestSellerRequest bestSellerRequest =
-          BestSellerRequest.fromJson(jsonResponse);
-      List<BestSellerData> list = bestSellerRequest.data!;
-      dataBestSellerList.addAll(list);
-      dataBestSellerList = list;
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    fetchBestSellerDetails();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,21 +68,19 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                 ),
               ),
             ),
-            (isLoading)
+            (BestSellerService().isLoadingBestSeller)
                 ? SizedBox(
                     height: MediaQuery.of(context).size.width,
                     width: MediaQuery.of(context).size.width,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                      ),
+                    child: Center(
+                      child: CProgressIndicator.circularProgressIndicator,
                     ),
                   )
                 : Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
-                        itemCount: dataBestSellerList.length,
+                        itemCount: BestSellerService().dataBestSellerList.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 0.7,
@@ -127,10 +96,10 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                   context, AppRoutes.CategoriesDetailsPage,
                                   arguments: ScreenArguments(
                                       Images.baseUrl +
-                                          dataBestSellerList[index].itemImages!,
-                                      dataBestSellerList[index].itemName!,
-                                      dataBestSellerList[index].description!,
-                                      dataBestSellerList[index].itemCode!));
+                                          BestSellerService().dataBestSellerList[index].itemImages!,
+                                      BestSellerService().dataBestSellerList[index].itemName!,
+                                      BestSellerService().dataBestSellerList[index].description!,
+                                      BestSellerService().dataBestSellerList[index].itemCode!));
                             },
                             child: Container(
                               width: 110,
@@ -155,12 +124,12 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                                 fit: BoxFit.fill,
                                                 image: NetworkImage(Images
                                                         .baseUrl +
-                                                    dataBestSellerList[index]
+                                                    BestSellerService().dataBestSellerList[index]
                                                         .itemImages!)),
                                           ),
                                           Expanded(
                                             child: Text(
-                                              dataBestSellerList[index]
+                                              BestSellerService().dataBestSellerList[index]
                                                   .itemName!,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 2,
@@ -176,7 +145,7 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                                   MainAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "${AppDetails.currencySign}${dataBestSellerList[index].price?.toStringAsFixed(0)}",
+                                                  "${AppDetails.currencySign}${BestSellerService().dataBestSellerList[index].price?.toStringAsFixed(0)}",
                                                   textAlign: TextAlign.left,
                                                 ),
                                               ],
@@ -189,24 +158,20 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                   Positioned(
                                       top: 6,
                                       right: 8,
-                                      child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              // isFavourite = true;
-                                              _selected[index] =
-                                                  !_selected[index];
-                                            });
-                                          },
-                                          child: (_selected[index])
-                                              ? Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.red,
-                                                )
-                                              : Icon(
-                                                  Icons
-                                                      .favorite_border_outlined,
-                                                  color: Colors.black,
-                                                )))
+                                      child: FavoriteButton(
+                                        iconSize: 32,
+                                        isFavorite: false,
+                                        valueChanged: (_isFavorite) {
+                                          print('Is Favorite : $_isFavorite');
+                                          _isFavorite
+                                              ? AddProdIntoFavService()
+                                                  .addProdIntoFav(
+                                              BestSellerService().dataBestSellerList[index]
+                                                          .itemCode)
+                                              : Fluttertoast.showToast(
+                                                  msg: "Favourite Removed");
+                                        },
+                                      ))
                                 ],
                               ),
                             ),

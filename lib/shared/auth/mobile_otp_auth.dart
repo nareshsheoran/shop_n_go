@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 
-import 'localdb.dart';
+import '../shared_preference_data/localdb.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 String verificationID = '';
@@ -26,7 +26,6 @@ Future fetchOTP(controller,context) async {
         verificationFailed: (FirebaseAuthException e) {
           if (e.code == "invalid-phone-number") {
             print("Invalid phone no:$controller");
-            print("Invalid phone no");
 
           } else{
             print("FirebaseAuthException code: $e");

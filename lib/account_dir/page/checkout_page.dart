@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -22,36 +23,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-
           body: Stack(
-            children: <Widget>[
-              WebView(
-                initialUrl: widget.url,
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _controller.complete(webViewController);
-                },
-                onProgress: (int progress) {},
-                javascriptChannels: <JavascriptChannel>{
-                  _toasterJavascriptChannel(context),
-                },
-                onPageStarted: (String url) {
-                  setState(() {
-                    isLoading = true;
-                  });
-                },
-                onPageFinished: (String url) {
-                  setState(() {
-                    isLoading = false;
-                  });
-                },
-                gestureNavigationEnabled: true,
-              ),
-              isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(),
-            ],
-          )),
+        children: <Widget>[
+          WebView(
+            initialUrl: widget.url,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) {
+              _controller.complete(webViewController);
+            },
+            onProgress: (int progress) {},
+            javascriptChannels: <JavascriptChannel>{
+              _toasterJavascriptChannel(context),
+            },
+            onPageStarted: (String url) {
+              setState(() {
+                isLoading = true;
+              });
+            },
+            onPageFinished: (String url) {
+              setState(() {
+                isLoading = false;
+              });
+            },
+            gestureNavigationEnabled: true,
+          ),
+          isLoading
+              ? Center(
+                  child: CProgressIndicator.circularProgressIndicator,)
+              : Stack(),
+        ],
+      )),
     );
   }
 

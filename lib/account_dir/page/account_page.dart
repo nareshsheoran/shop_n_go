@@ -3,7 +3,9 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shop_n_go/shared/auth/localdb.dart';
+import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
+import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
+import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 
@@ -191,30 +193,20 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<String> signOut() async {
-    await LocalDataSaver.removePreferences();
-    LocalDataSaver.saveID('');
-    LocalDataSaver.saveName('');
-    LocalDataSaver.saveUserName('');
-    LocalDataSaver.saveEmail('');
-    LocalDataSaver.savePhone('');
-    LocalDataSaver.savePassword('');
-    LocalDataSaver.saveResendPhone('');
     LocalDataSaver.removePreferences();
-
-    ProfileDetails.name = (await LocalDataSaver.getName())!;
-    ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
-    ProfileDetails.email = (await LocalDataSaver.getEmail())!;
-    ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
-    ProfileDetails.resendPhone = (await LocalDataSaver.getResendPhone())!;
-    ProfileDetails.password = (await LocalDataSaver.getPassword())!;
-
-    print("phone:${ProfileDetails.password}");
+    AddressLocalDataSaver.removePreferences();
+    await AddressLocalDataSaver.removePreferences();
+    await LocalDataSaver.removePreferences();
+    await clearDataSP();
+    await fetchDataSP();
 
     await Fluttertoast.showToast(
       msg: "Logout Successful",
       toastLength: Toast.LENGTH_SHORT,
       timeInSecForIosWeb: 2,
     );
+    Navigator.of(context).pop();
+
     await Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
 
     return "Success";

@@ -23,7 +23,7 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
   TextEditingController otpController = TextEditingController(text: "123456");
 
   Future otpNoVerify() async {
-    verifyOTP(otpController.text.toString(), context);
+    verifyOTP(otpController.text.trim().toString(), context);
     // await Navigator.pushReplacementNamed(context, AppRoutes.WelcomeAboardPage);
   }
 

@@ -1,14 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
-import 'dart:convert';
-import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get_utils/get_utils.dart';
-import 'package:shop_n_go/home_page_dir/model_req/all_category_req.dart';
-import 'package:shop_n_go/home_page_dir/model_req/all_product_req.dart';
-import 'package:shop_n_go/home_page_dir/model_req/best_seller_req.dart';
-import 'package:shop_n_go/home_page_dir/model_req/recommended_req.dart';
 import 'package:shop_n_go/home_page_dir/widget/best_seller_widget.dart';
 import 'package:shop_n_go/home_page_dir/widget/category_widget.dart';
 import 'package:shop_n_go/home_page_dir/widget/favourite_widget.dart';
@@ -16,11 +8,6 @@ import 'package:shop_n_go/home_page_dir/widget/new_product_widget.dart';
 import 'package:shop_n_go/home_page_dir/widget/recommended_widget.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
-import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
-import 'package:shop_n_go/home_page_dir/model_req/favrt_add_req_res.dart';
-import 'package:shop_n_go/shared/page/screen_arguments.dart';
-import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,11 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  // bool isFavourite = false;
-
-  // late int selectedRecommendedIndex;
-
-  // late int selectedProductIndex;
   int tabIndex = 1;
 
   Widget? tabWidget() {
@@ -61,10 +43,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool isFavourite = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,27 +60,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         child: Text("Hi, ${ProfileDetails.userName}!",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18))),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFavourite = !isFavourite;
-                        });
-                      },
-                      child: isFavourite
-                          ? Icon(
-                              Icons.favorite,
-                              size: IconDimension.iconSize + 4,
-                            )
-                          : Icon(
-                              Icons.favorite_border_outlined,
-                              size: IconDimension.iconSize + 4,
-                            ),
-                    ),
-                    SizedBox(width: 14),
-                    Icon(
-                      Icons.info_outline,
-                      size: IconDimension.iconSize + 4,
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     setState(() {
+                    //       isFavourite = !isFavourite;
+                    //     });
+                    //   },
+                    //   child: isFavourite
+                    //       ? Icon(
+                    //           Icons.favorite,
+                    //           size: IconDimension.iconSize + 4,
+                    //         )
+                    //       : Icon(
+                    //           Icons.favorite_border_outlined,
+                    //           size: IconDimension.iconSize + 4,
+                    //         ),
+                    // ),
+                    // SizedBox(width: 14),
+                    // Icon(
+                    //   Icons.info_outline,
+                    //   size: IconDimension.iconSize + 4,
+                    // ),
                     SizedBox(width: 12),
                   ],
                 ),
@@ -176,10 +154,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           children: [
                             tabIndex == 2
                                 ? buildTextStyle(
-                                    "Favorite",
+                                    "Favourite",
                                     Constant.primaryColor,
                                   )
-                                : buildTextStyle("Favorite", Colors.black),
+                                : buildTextStyle("Favourite", Colors.black),
                             SizedBox(height: 6),
                             Container(
                                 height: 2,

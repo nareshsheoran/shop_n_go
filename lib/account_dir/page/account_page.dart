@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
@@ -21,6 +20,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        top: true,
         child: Column(
           children: [
             Container(
@@ -53,7 +53,7 @@ class _AccountPageState extends State<AccountPage> {
                           ProfileDetails.userName == '' ||
                                   ProfileDetails.userName == null
                               ? Text(
-                                  "Name",
+                                  "User Name",
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
@@ -68,7 +68,7 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                           ProfileDetails.email == null
                               ? Text(
-                                  "Email",
+                                  "User Email",
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
@@ -119,35 +119,19 @@ class _AccountPageState extends State<AccountPage> {
                     buildGestureDetector(AppRoutes.ProfilePage, "Profile"),
                     buildGestureDetector(AppRoutes.AddressPage, "Addresses"),
                     buildGestureDetector(AppRoutes.OrderPage, "Orders"),
-                    ListTile(title: Text("Payments")),
+                    buildGestureDetector(AppRoutes.PaymentPage, "Payments"),
                     buildGestureDetector(AppRoutes.RewardPage, "Rewards"),
-                    ListTile(title: Text("Cancellation & Refund Policy")),
-                    ListTile(title: Text("Privacy Policy")),
-                    ListTile(title: Text("Terms & Conditions")),
-                    ListTile(title: Text("About Us")),
-                    ListTile(title: Text("Help")),
-                    ListTile(title: Text("Settings")),
+                    buildGestureDetector(AppRoutes.CancelRefundPage,
+                        "Cancellation & Refund Policy"),
+                    buildGestureDetector(
+                        AppRoutes.PrivacyPolicyPage, "Privacy Policy"),
+                    buildGestureDetector(
+                        AppRoutes.TermConditionPage, "Terms & Conditions"),
+                    buildGestureDetector(AppRoutes.AboutUsPage, "About Us"),
+                    buildGestureDetector(AppRoutes.HelpPage, "Help"),
+                    buildGestureDetector(AppRoutes.SettingPage, "Settings"),
                     GestureDetector(
                         onTap: () {
-                          // AwesomeDialog(
-                          //     context: context,
-                          //     dialogType: DialogType.WARNING,
-                          //     headerAnimationLoop: false,
-                          //     animType: AnimType.BOTTOMSLIDE,
-                          //     title: 'Warning',
-                          //     titleTextStyle: const TextStyle(
-                          //         fontWeight: FontWeight.bold, fontSize: 20),
-                          //     desc: 'Are you sure to Logout?',
-                          //     descTextStyle: TextStyle(
-                          //         fontSize: 16, fontWeight: FontWeight.w600),
-                          //     buttonsTextStyle: TextStyle(color: Colors.black),
-                          //     showCloseIcon: true,
-                          //     btnCancelOnPress: () {},
-                          //     btnOkOnPress: () async {
-                          //       signOut();
-                          //       await Navigator.pushReplacementNamed(
-                          //           context, AppRoutes.LoginScreenPage);
-                          //     }).show();
                           showDialog<String>(
                               context: context,
                               builder: (BuildContext context) {
@@ -172,6 +156,25 @@ class _AccountPageState extends State<AccountPage> {
                                   ],
                                 );
                               });
+                          // AwesomeDialog(
+                          //     context: context,
+                          //     dialogType: DialogType.WARNING,
+                          //     headerAnimationLoop: false,
+                          //     animType: AnimType.BOTTOMSLIDE,
+                          //     title: 'Warning',
+                          //     titleTextStyle: const TextStyle(
+                          //         fontWeight: FontWeight.bold, fontSize: 20),
+                          //     desc: 'Are you sure to Logout?',
+                          //     descTextStyle: TextStyle(
+                          //         fontSize: 16, fontWeight: FontWeight.w600),
+                          //     buttonsTextStyle: TextStyle(color: Colors.black),
+                          //     showCloseIcon: true,
+                          //     btnCancelOnPress: () {},
+                          //     btnOkOnPress: () async {
+                          //       signOut();
+                          //       await Navigator.pushReplacementNamed(
+                          //           context, AppRoutes.LoginScreenPage);
+                          //     }).show();
                         },
                         child: ListTile(title: Text("Log Out"))),
                   ],
@@ -193,6 +196,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<String> signOut() async {
+    await LocalDataSaver.saveLoginData(false);
     LocalDataSaver.removePreferences();
     AddressLocalDataSaver.removePreferences();
     await AddressLocalDataSaver.removePreferences();

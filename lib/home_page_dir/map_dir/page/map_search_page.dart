@@ -1,8 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields, avoid_print
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields, avoid_print, library_prefixes
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -13,15 +12,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:google_place/google_place.dart';
 import 'package:google_maps_webservice/places.dart' as Component;
-import 'package:google_maps_webservice/places.dart' as Country;
-import 'package:google_maps_webservice/places.dart' as country;
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_n_go/home_page_dir/map_dir/model/near_by_stores_req.dart';
-import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
+import 'package:shop_n_go/home_page_dir/map_dir/model/vendor_profile_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
+
 
 class MapSearchPage extends StatefulWidget {
   const MapSearchPage({Key? key}) : super(key: key);
@@ -59,6 +57,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
   void _onAddMarkerButtonPressed() {
     dataNearByStoresList.clear();
+    vendorProfileList.clear();
     _markers.clear();
     _lastMapPosition.longitude;
     _lastMapPosition.latitude;
@@ -97,7 +96,6 @@ class _MapSearchPageState extends State<MapSearchPage> {
   void autoCompleteSearch(String value) async {
     // var result = await googlePlace?.autocomplete.get(value);
     var result = await googlePlace?.queryAutocomplete.get(value);
-    // var result = await googlePlace?.autocomplete.get(value);
     if (result != null && result.predictions != null && mounted) {
       setState(() {
         predictions = result.predictions!;
@@ -131,37 +129,6 @@ class _MapSearchPageState extends State<MapSearchPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.start,
-            //     children: [
-            //       Text("SELECT A LOCATION",
-            //           style:
-            //               TextStyle(fontWeight: FontWeight.bold, fontSize: 18))
-            //     ],
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Container(
-            //     decoration: BoxDecoration(
-            //         color: Colors.grey.shade200,
-            //         borderRadius: BorderRadius.circular(32.0)),
-            //     height: 40,
-            //     width: MediaQuery.of(context).size.width,
-            //     child: TextField(
-            //       controller: searchController,
-            //       textCapitalization: TextCapitalization.sentences,
-            //       decoration: const InputDecoration(
-            //           prefixIcon: Icon(Icons.search),
-            //           contentPadding:
-            //               EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            //           hintText: 'Search Location',
-            //           border: InputBorder.none),
-            //     ),
-            //   ),
-            // ),
             Stack(
               children: [
                 SizedBox(
@@ -379,17 +346,16 @@ class _MapSearchPageState extends State<MapSearchPage> {
             //         ),
             //       )
             //     :
-            isLoading
+            (isLoading || isProfileLoading)
                 ? SizedBox(
                     width: MediaQuery.of(context).size.width / 1.5,
                     height: MediaQuery.of(context).size.width / 1.5,
                     child: Center(
-                      child: CProgressIndicator.circularProgressIndicator,
-                    ),
-                  )
-                : Expanded(
+                        child: CProgressIndicator.circularProgressIndicator))
+                :(isAvailable==false)?SizedBox(  width: MediaQuery.of(context).size.width / 1.2,
+                height: MediaQuery.of(context).size.width / 1.2,child: Center(child: Text("Could Not Able To Find Nearby Store...!!!"))): Expanded(
                     child: ListView.builder(
-                      itemCount: dataNearByStoresList.length,
+                      itemCount: vendorProfileList.length,
                       shrinkWrap: true,
                       // physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
@@ -399,7 +365,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                                 context, AppRoutes.MapStoreDetailsPage,
                                 arguments:
                                     // "${Images.baseUrl}${dataNearByStoresList[index].vendorProfile}");
-                                    dataNearByStoresList[index]);
+                                    vendorProfileList[index]);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -418,29 +384,26 @@ class _MapSearchPageState extends State<MapSearchPage> {
                                       children: [
                                         Expanded(
                                             child: Text(
-                                          "${dataNearByStoresList[index].vendorName}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                        Icon(
-                                          Icons.alarm,
-                                          size: IconDimension.iconSize,
-                                        ),
+                                                "${vendorProfileList[index].vendorName}",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                        Icon(Icons.alarm,
+                                            size: IconDimension.iconSize),
                                         SizedBox(width: 8),
                                         Text(
-                                            "${startTimeList[index]}-${endTimeList[index]}"),
+                                            "${vendorProfileList[index].openTime!.substring(0, 5)}-${vendorProfileList[index].closeTime!.substring(0, 5)}"),
                                       ],
                                     ),
                                     SizedBox(height: 6),
                                     Row(
                                       children: [
                                         Image(
-                                          height: 70,
-                                          width: 70,
-                                          fit: BoxFit.fill,
-                                          image: NetworkImage(
-                                              "${Images.baseUrl}${dataNearByStoresList[index].vendorProfile}"),
-                                        ),
+                                            height: 70,
+                                            width: 70,
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(
+                                                "${Images.baseUrl}${vendorProfileList[index].vendorProfile}")),
                                         SizedBox(width: 14),
                                         Expanded(
                                           child: Column(
@@ -451,50 +414,49 @@ class _MapSearchPageState extends State<MapSearchPage> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Icon(
-                                                    Icons.directions,
-                                                    size:
-                                                        IconDimension.iconSize,
-                                                  ),
+                                                  Icon(Icons.directions,
+                                                      size: IconDimension
+                                                          .iconSize),
                                                   SizedBox(width: 8),
                                                   Expanded(
                                                       child: Text(
-                                                          "${distanceList[index]} KMS")),
-                                                  Icon(
-                                                    Icons.card_travel,
-                                                    size:
-                                                        IconDimension.iconSize,
-                                                  ),
+                                                          "${vendorProfileList[index].distance}")),
+                                                  Icon(Icons.card_travel,
+                                                      size: IconDimension
+                                                          .iconSize),
                                                   SizedBox(width: 8),
-                                                  Text(
-                                                      "${itemList[index]} Items"),
+                                                  vendorProfileList[index]
+                                                              .noOfProducts! <=
+                                                          1
+                                                      ? Text(
+                                                          "${vendorProfileList[index].noOfProducts} Item")
+                                                      : Text(
+                                                          "${vendorProfileList[index].noOfProducts} Items"),
+                                                ],
+                                              ),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.shopping_cart,
+                                                      size: IconDimension
+                                                          .iconSize),
+                                                  SizedBox(width: 8),
+                                                  Expanded(
+                                                      child: Text(
+                                                          "Min. order ${AppDetails.currencySign}${vendorProfileList[index].minimumOrder}")),
                                                 ],
                                               ),
                                               SizedBox(height: 4),
                                               Row(
                                                 children: [
                                                   Icon(
-                                                    Icons.shopping_cart,
-                                                    size:
-                                                        IconDimension.iconSize,
-                                                  ),
+                                                      Icons
+                                                          .directions_bike_sharp,
+                                                      size: IconDimension
+                                                          .iconSize),
                                                   SizedBox(width: 8),
-                                                  Expanded(
-                                                      child: Text(
-                                                          "Min. order ${AppDetails.currencySign}${orderList[index]}")),
-                                                ],
-                                              ),
-                                              SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.directions_bike_sharp,
-                                                    size:
-                                                        IconDimension.iconSize,
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                      "Home Delivery Available")
+                                                  Text(vendorProfileList[index]
+                                                      .isHomeDelivery!)
                                                 ],
                                               ),
                                             ],
@@ -518,11 +480,14 @@ class _MapSearchPageState extends State<MapSearchPage> {
   }
 
   bool isLoading = false;
+  bool isAvailable = false;
   List<NearByStoresReqData> dataNearByStoresList = [];
+
 
   Future fetchNearByStoresDetails(longitudeAxis, latitudeAxis) async {
     setState(() {
       isLoading = true;
+      isAvailable=true;
     });
 
     String user = ProfileDetails.id!;
@@ -538,7 +503,6 @@ class _MapSearchPageState extends State<MapSearchPage> {
     };
 
     Uri myUri = Uri.parse(NetworkUtil.getNearByStoreUrl);
-    //
     http.Response response = await http.post(
       myUri,
       body: requestBody,
@@ -556,65 +520,45 @@ class _MapSearchPageState extends State<MapSearchPage> {
         MapDetails.latitude = (await AddressLocalDataSaver.getLatitude())!;
         print("MapDetails.longitude:${MapDetails.longitude}");
         print("MapDetails.latitude:${MapDetails.latitude}");
+        fetchVendorProfile();
       } else if (nearByStoresReq.statusCode == 400) {
         Fluttertoast.showToast(msg: nearByStoresReq.message!);
+        setState(() {
+          isAvailable=false;
+        });
       }
-
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  List imgList = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-DjY67mzulVMRq80hvI-mq8dImIOgKt5Cw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREArY26l80lxfHNDyJ_kcZZWVav8i4kPadgA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiT2KSFH6y04zyIvWox_XKHa7rOZfmv8RPzw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdQjJbw3mOduJzO3hGipOnI-q0JzduC8kfzA&usqp=CAU",
-    // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdckMBb1G75l-pI607XL2qItYa0sVc8vG--g&usqp=CAU",
-  ];
+  VendorProfileReqData? vendorProfileReqData;
+  List<VendorProfileReqData> vendorProfileList = [];
+  bool isProfileLoading = false;
 
-  List nameList = [
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-    // "Spencer Stores",
-  ];
+  Future fetchVendorProfile() async {
+    setState(() {
+      isProfileLoading = true;
+    });
+    for (int i = 0; i < dataNearByStoresList.length; i++) {
+      Uri myUri = Uri.parse(
+          "${NetworkUtil.getVendorProfileUrl}${dataNearByStoresList[i].vendorId}");
+      Response response = await get(myUri);
 
-  List distanceList = [
-    "5",
-    "6",
-    "10",
-    "1",
-    "6",
-  ];
-  List orderList = [
-    "5",
-    "6",
-    "10",
-    "1",
-    "8",
-  ];
-  List itemList = [
-    "55",
-    "66",
-    "80",
-    "31",
-    "66",
-  ];
-  List startTimeList = [
-    "10.00",
-    "11.00",
-    "12.00",
-    "09.00",
-    "08.00",
-  ];
-  List endTimeList = [
-    "20.00",
-    "21.00",
-    "22.00",
-    "19.00",
-    "18.00",
-  ];
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+        VendorProfileReq vendorProfileReq =
+            VendorProfileReq.fromJson(jsonResponse);
+        vendorProfileReqData = vendorProfileReq.data!;
+        vendorProfileList.add(vendorProfileReqData!);
+
+        setState(() {
+          (dataNearByStoresList.length == vendorProfileList.length)
+              ? isProfileLoading = false
+              : isProfileLoading = true;
+        });
+      }
+    }
+  }
 }

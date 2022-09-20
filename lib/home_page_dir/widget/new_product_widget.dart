@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +25,19 @@ class _NewProductWidgetState extends State<NewProductWidget> {
             width: MediaQuery.of(context).size.width,
             height: 150,
             child: Center(
-              child: CProgressIndicator.circularProgressIndicator,
-            ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CProgressIndicator.circularProgressIndicator,
+                    SizedBox(height: 16),
+                    Text("Please Wait..",
+                        style: TextStyle(fontWeight: FontWeight.w500)),
+                  ],
+                )),
           )
         : SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 160,
+            height: 170,
             child: Padding(
               padding: const EdgeInsets.all(5),
               child: ListView.builder(
@@ -39,8 +48,8 @@ class _NewProductWidgetState extends State<NewProductWidget> {
                   // physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return SizedBox(
-                      width: 110,
-                      height: 154,
+                      width: 120,
+                      height: 164,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
@@ -90,8 +99,9 @@ class _NewProductWidgetState extends State<NewProductWidget> {
                                                 .itemName!,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
+                                            textAlign: TextAlign.center,
                                             style: TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 14,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),

@@ -26,8 +26,15 @@ class _BestSellerWidgetState extends State<BestSellerWidget> {
       width: MediaQuery.of(context).size.width,
       height: 140,
       child: Center(
-        child: CProgressIndicator.circularProgressIndicator,
-      ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CProgressIndicator.circularProgressIndicator,
+              SizedBox(height: 16),
+              Text("Please Wait..",
+                  style: TextStyle(fontWeight: FontWeight.w500)),
+             ],
+          )),
     )
         : SizedBox(
       width: MediaQuery.of(context).size.width,

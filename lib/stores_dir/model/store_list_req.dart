@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this, prefer_collection_literals
+
 class StoreListRequest {
   bool? success;
   String? message;
@@ -12,14 +14,14 @@ class StoreListRequest {
     if (json['data'] != null) {
       data = <StoreListData>[];
       json['data'].forEach((v) {
-        data!.add( StoreListData.fromJson(v));
+        data!.add(StoreListData.fromJson(v));
       });
     }
     statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -44,15 +46,15 @@ class StoreListData {
 
   StoreListData(
       {this.vendorId,
-        this.vendorName,
-        this.authPerson,
-        this.vendorProfile,
-        this.isHomeDelivery,
-        this.distance,
-        this.minimumOrder,
-        this.noOfProducts,
-        this.openTime,
-        this.closeTime});
+      this.vendorName,
+      this.authPerson,
+      this.vendorProfile,
+      this.isHomeDelivery,
+      this.distance,
+      this.minimumOrder,
+      this.noOfProducts,
+      this.openTime,
+      this.closeTime});
 
   StoreListData.fromJson(Map<String, dynamic> json) {
     vendorId = json['vendor_id'];
@@ -68,7 +70,7 @@ class StoreListData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['vendor_id'] = this.vendorId;
     data['vendor_name'] = this.vendorName;
     data['auth_person'] = this.authPerson;

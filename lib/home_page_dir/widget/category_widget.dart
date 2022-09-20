@@ -24,8 +24,15 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             width: MediaQuery.of(context).size.width,
             height: 140,
             child: Center(
-              child: CProgressIndicator.circularProgressIndicator,
-            ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CProgressIndicator.circularProgressIndicator,
+                    SizedBox(height: 16),
+                    Text("Please Wait..",
+                        style: TextStyle(fontWeight: FontWeight.w500)),
+                   ],
+                )),
           )
         : SizedBox(
             width: MediaQuery.of(context).size.width,
@@ -95,11 +102,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
 
 List imageList = [
   Images.laysImg,
-  Images.milkImg,
-  Images.radisImg,
-  Images.potatoImg,
-  Images.tomatoImg,
-  Images.onionImg,
+  Images.softDrinksImg,
+  Images.bakeryImg,
+  Images.diaryImg,
+  Images.frozenImg,
+  Images.cookingEssImg,
   Images.chillyImg,
   Images.ladiesFingerImg,
   Images.radisImg,

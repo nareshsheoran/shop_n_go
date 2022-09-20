@@ -23,7 +23,6 @@ class AllBestSellerProduct extends StatefulWidget {
 class _AllBestSellerProductState extends State<AllBestSellerProduct> {
   TextEditingController searchController = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,130 +58,317 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                 child: TextField(
                   controller: searchController,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
+                  decoration:  InputDecoration(
+                      prefixIcon: Icon(Icons.search,color: Constant.primaryColor),
+                      suffixIcon: IconButton(color: Constant.primaryColor,
+                        onPressed: () {
+                          setState(() {
+                            searchController.clear();
+                            _foundDetail.clear();
+                            searchController.text.isEmpty;
+                            _foundDetail.isEmpty;
+                          });
+                        },
+                        icon: Icon(Icons.clear),
+                      ),
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       hintText: 'Search',
                       border: InputBorder.none),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.contains(" ")) {
+                        searchController.clear();
+                        _foundDetail.clear();
+                        // _runFilter(value);
+                      } else if (searchController.text=="") {
+                        searchController.clear();
+                        _foundDetail.clear();
+                      } else {
+                        _runFilter(value);
+                      }
+                    });
+                  },
                 ),
               ),
             ),
-            (BestSellerService().isLoadingBestSeller)
-                ? SizedBox(
-                    height: MediaQuery.of(context).size.width,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: CProgressIndicator.circularProgressIndicator,
+            if (isLoading)
+              SizedBox(
+                height: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: CProgressIndicator.circularProgressIndicator,
+                ),
+              )
+            else if (searchController.text.isEmpty && _foundDetail.isEmpty)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    itemCount: BestSellerService().dataBestSellerList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.7,
                     ),
-                  )
-                : Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GridView.builder(
-                        itemCount: BestSellerService().dataBestSellerList.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 0.7,
-                        ),
-                        // physics: NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              // Navigator.pushNamed(context, AppRoutes.CategoriesDetailsPage,arguments:Images.baseUrl+ dataBestSellerList[index].itemImages! );
-                              Navigator.pushNamed(
-                                  context, AppRoutes.CategoriesDetailsPage,
-                                  arguments: ScreenArguments(
-                                      Images.baseUrl +
-                                          BestSellerService().dataBestSellerList[index].itemImages!,
-                                      BestSellerService().dataBestSellerList[index].itemName!,
-                                      BestSellerService().dataBestSellerList[index].description!,
-                                      BestSellerService().dataBestSellerList[index].itemCode!));
-                            },
-                            child: Container(
-                              width: 110,
-                              height: 140,
-                              child: Stack(
-                                children: [
-                                  Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(10),
-                                            child: Image(
-                                                width:
-                                                    ImageDimension.imageWidth -
-                                                        16,
-                                                height:
-                                                    ImageDimension.imageHeight,
-                                                fit: BoxFit.fill,
-                                                image: NetworkImage(Images
-                                                        .baseUrl +
-                                                    BestSellerService().dataBestSellerList[index]
-                                                        .itemImages!)),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              BestSellerService().dataBestSellerList[index]
-                                                  .itemName!,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 14),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "${AppDetails.currencySign}${BestSellerService().dataBestSellerList[index].price?.toStringAsFixed(0)}",
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                      top: 6,
-                                      right: 8,
-                                      child: FavoriteButton(
-                                        iconSize: 32,
-                                        isFavorite: false,
-                                        valueChanged: (_isFavorite) {
-                                          print('Is Favorite : $_isFavorite');
-                                          _isFavorite
-                                              ? AddProdIntoFavService()
-                                                  .addProdIntoFav(
-                                              BestSellerService().dataBestSellerList[index]
-                                                          .itemCode)
-                                              : Fluttertoast.showToast(
-                                                  msg: "Favourite Removed");
-                                        },
-                                      ))
-                                ],
-                              ),
-                            ),
-                          );
+                    // physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigator.pushNamed(context, AppRoutes.CategoriesDetailsPage,arguments:Images.baseUrl+ dataBestSellerList[index].itemImages! );
+                          Navigator.pushNamed(
+                              context, AppRoutes.CategoriesDetailsPage,
+                              arguments: ScreenArguments(
+                                  Images.baseUrl +
+                                      BestSellerService()
+                                          .dataBestSellerList[index]
+                                          .itemImages!,
+                                  BestSellerService()
+                                      .dataBestSellerList[index]
+                                      .itemName!,
+                                  BestSellerService()
+                                      .dataBestSellerList[index]
+                                      .description!,
+                                  BestSellerService()
+                                      .dataBestSellerList[index]
+                                      .itemCode!));
                         },
-                      ),
+                        child: Container(
+                          width: 110,
+                          height: 140,
+                          child: Stack(
+                            children: [
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Image(
+                                            width:
+                                                ImageDimension.imageWidth - 16,
+                                            height: ImageDimension.imageHeight,
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(Images.baseUrl +
+                                                BestSellerService()
+                                                    .dataBestSellerList[index]
+                                                    .itemImages!)),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          BestSellerService()
+                                              .dataBestSellerList[index]
+                                              .itemName!,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${AppDetails.currencySign}${BestSellerService().dataBestSellerList[index].price?.toStringAsFixed(0)}",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                  top: 6,
+                                  right: 8,
+                                  child: FavoriteButton(
+                                    iconSize: 32,
+                                    isFavorite: false,
+                                    valueChanged: (_isFavorite) {
+                                      print('Is Favorite : $_isFavorite');
+                                      _isFavorite
+                                          ? AddProdIntoFavService()
+                                              .addProdIntoFav(
+                                                  BestSellerService()
+                                                      .dataBestSellerList[index]
+                                                      .itemCode)
+                                          : Fluttertoast.showToast(
+                                              msg: "Favourite Removed");
+                                    },
+                                  ))
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+            else if (_foundDetail.isNotEmpty)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    itemCount: _foundDetail.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.7,
                     ),
-                  )
+                    // physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, AppRoutes.CategoriesDetailsPage,
+                              arguments: ScreenArguments(
+                                  Images.baseUrl +
+                                      _foundDetail[index].itemImages!,
+                                  _foundDetail[index].itemName!,
+                                  "description",
+                                  _foundDetail[index].itemCode!));
+                        },
+                        child: Container(
+                          width: 110,
+                          height: 140,
+                          decoration: BoxDecoration(),
+                          child: Stack(
+                            children: [
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 4),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Image(
+                                            width:
+                                                ImageDimension.imageWidth - 16,
+                                            height: ImageDimension.imageHeight,
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(Images.baseUrl +
+                                                _foundDetail[index]
+                                                    .itemImages!)),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          _foundDetail[index].itemName!,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${AppDetails.currencySign}${_foundDetail[index].offerPrice?.toStringAsFixed(0)}",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                  top: 6,
+                                  right: 8,
+                                  child: FavoriteButton(
+                                    iconSize: 32,
+                                    isFavorite: false,
+                                    valueChanged: (_isFavorite) {
+                                      print('Is Favorite : $_isFavorite');
+                                      _isFavorite
+                                          ? AddProdIntoFavService()
+                                              .addProdIntoFav(
+                                                  _foundDetail[index].itemCode)
+                                          : Fluttertoast.showToast(
+                                              msg: "Favourite Removed");
+                                    },
+                                  ))
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+            else if (isLoading == false && _foundDetail.isEmpty)
+              SizedBox(
+                height: MediaQuery.of(context).size.width / 1.2,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text("No matched Item found."),
+                ),
+              ),
           ],
         ),
       ),
     );
+  }
+
+  List<BestSellerData> _foundDetail = [];
+  bool isLoading = false;
+
+  Future<dynamic> _runFilter(String searchKey) async {
+    if (searchController.text.characters.first.contains(" ")) {
+      setState(() {
+        searchController.clear();
+        _foundDetail.clear();
+      });
+    } else {
+      List<BestSellerData> results = [];
+      results.clear();
+      if (searchKey.isEmpty ||
+          (searchController.text.isEmpty &&
+              searchController.text.contains(""))) {
+        results = _foundDetail;
+        results.clear();
+      } else {
+        setState(() {
+          isLoading = true;
+        });
+        results = BestSellerService()
+            .dataBestSellerList
+            .where((user) =>
+                user.itemName!.toLowerCase().contains(searchKey.toLowerCase()))
+            .toList();
+        setState(() {
+          _foundDetail = results;
+        });
+      }
+      setState(() {
+        _foundDetail = results;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _foundDetail.clear();
+    // dataAllStoreDetailsList.clear();
+    super.dispose();
   }
 }

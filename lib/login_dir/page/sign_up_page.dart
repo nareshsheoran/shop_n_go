@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_collection_literals, avoid_print
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
@@ -10,7 +9,6 @@ import 'package:shop_n_go/login_dir/model/sign_up_request.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
 class SignUpPage extends StatefulWidget {
@@ -96,9 +94,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           // border: InputBorder.none
                           ),
                       validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 4)
-                            ? null
-                            : "Please Enter valid User Name";
+                        return nameController.text.trim().isEmpty
+                            ? "Please Enter UserName"
+                            : GetUtils.isLengthGreaterOrEqual(value!, 4)
+                                ? null
+                                : "Please Enter valid User Name";
                       }),
                 ),
                 SizedBox(height: 10),
@@ -126,9 +126,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           // border: InputBorder.none
                           ),
                       validator: (String? value) {
-                        return GetUtils.isEmail(value!)
-                            ? null
-                            : "Please Enter valid Email Address.";
+                        return emailController.text.trim().isEmpty
+                            ? "Please Enter Email"
+                            : GetUtils.isEmail(value!)
+                                ? null
+                                : "Please Enter valid Email";
                       }),
                 ),
                 SizedBox(height: 10),
@@ -155,40 +157,46 @@ class _SignUpPageState extends State<SignUpPage> {
                                   BorderSide(color: Constant.primaryColor))
                           // border: InputBorder.none
                           ),
-                      validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 5)
-                            ? null
-                            : "Please Enter 5 Digit Password";
+                      // validator: (String? value) {
+                      //   return passwordController.text.trim().isEmpty
+                      //       ? "Please Enter Password"
+                      //       : validatePassword(passwordController.text.trim());
+                      //
+                        validator: (String? value) {
+                          return passwordController.text.trim().isEmpty
+                              ? "Please Enter Password"
+                              : GetUtils.isLengthGreaterOrEqual(value!, 8)
+                              ? null
+                              : "Please Enter 8 Digit Password";
                       }),
                 ),
                 SizedBox(height: 20),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: GestureDetector(
-                    onTap: () async {
+                  child: ElevatedButton(
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Fluttertoast.showToast(
-                        //     msg: "SignUp Successful");
-                        signUp();
-                        // await Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
+                        signUp(
+                            nameController.text.trim(),
+                            emailController.text.trim(),
+                            passwordController.text.trim());
                       }
                     },
-                    child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Constant.primaryColor,
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Constant.primaryColor),
-                        ),
-                        child: Center(
-                            child: Text(
-                          "SIGN UP",
-                          style: TextStyle(color: Colors.white),
-                        ))),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize:
+                            Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    child: Text(
+                      "SIGN UP",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -234,27 +242,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   List<SignUpRequest> signUpList = [];
 
-  Future signUp() async {
-    String userName = nameController.text;
-    String email = emailController.text;
-    String password = passwordController.text;
-
-    if (userName.isEmpty) {
-      // Fluttertoast.showToast(msg: "Please Login First");
-      return;
-    }
-
-    SignUpRequest request = SignUpRequest(
-      userName: userName,
-      email: email,
-      password: password,
-    );
-
-    // var map = Map<String, dynamic>();
-    // map['userName'] = userName;
-    // map['email'] = email;
-    // map['password'] = password;
-
+  Future signUp(userName, email, password) async {
     var requestBody = {
       'username': userName,
       'email': email,
@@ -262,18 +250,12 @@ class _SignUpPageState extends State<SignUpPage> {
     };
 
     Uri myUri = Uri.parse(NetworkUtil.getSignUpUrl);
-    // "${NetworkUtil.getSignUpUrl}username=$userName&email=$email&password=$password");
-
-    // Response response = await get(myUri);
-    // Response response = await post(myUri, body: request.toJson());
-    // Response response = await post(myUri, body: requestBody);
-
     http.Response response = await http.post(
       myUri,
       body: requestBody,
     );
     if (response.statusCode == 200) {
-       Map<String, dynamic> map =
+      Map<String, dynamic> map =
           jsonDecode(response.body) as Map<String, dynamic>;
 
       SignUpResponseRequest signUpResponseRequest =
@@ -297,31 +279,29 @@ class _SignUpPageState extends State<SignUpPage> {
       Fluttertoast.showToast(msg: "SignUp Successful", timeInSecForIosWeb: 2);
 
       await Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
-    }
-    else if(response.statusCode == 400) {
+    } else if (response.statusCode == 400) {
       // Fluttertoast.showToast(
       //     msg: 'Request failed with status: ${response.statusCode}');
-      nameController.text='';
-      emailController.text='';
-      passwordController.text='';
-      Fluttertoast.showToast(
-          msg: 'User already exists.');
-    }
-    else{
+      nameController.text = '';
+      emailController.text = '';
+      passwordController.text = '';
+      Fluttertoast.showToast(msg: 'User already exists.');
+    } else {
       print('Request failed with status: ${response.statusCode}');
+    }
+  }
 
+  String? validatePassword(String value) {
+    RegExp regex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+     if (value.length < 8) {
+      return 'Password must be 8 digit';
+    } else {
+      if (!regex.hasMatch(value)) {
+        return 'Enter valid password';
+      } else {
+        return null;
+      }
     }
   }
 }
-
-// {
-// "user":
-// {"id":9,
-// "username":"userName",
-// "email":"mcs01@gmail.com"},
-//
-// "token":"e845f8f849181f34d0a19f6131aa598640922d46066f7018db08ac8f02723313"}
-
-//userName05
-//mcs05@gmail.com
-//12345

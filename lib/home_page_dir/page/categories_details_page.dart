@@ -1,13 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
+import 'package:shop_n_go/cart_dir/service/product_details_service.dart';
 import 'package:shop_n_go/home_page_dir/model_req/product_details_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
@@ -49,6 +48,12 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
   }
 
   int listLength = 1;
+
+  Future<bool>? _onBackPressed() {
+    Navigator.canPop(context);
+    Navigator.popAndPushNamed(context, AppRoutes.DashboardPage);
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,17 +204,18 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
                                                   primary:
                                                       Constant.primaryColor),
                                               onPressed: () {
+                                                buildFetchProductDetails();
                                                 ProductAddCartService()
                                                     .proAddedIntoCart(
                                                         index,
                                                         productDetailsData
                                                             .itemCode);
                                                 setState(() {
-                                                // ProductAddCartService()
-                                                //               .statusCode ==
-                                                //           200
-                                                //       ? listLength = 0
-                                                //       : null;
+                                                  // ProductAddCartService()
+                                                  //               .statusCode ==
+                                                  //           200
+                                                  //       ? listLength = 0
+                                                  //       : null;
                                                 });
                                                 // proAddedIntoCart(
                                                 //     index,
@@ -235,40 +241,13 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
     );
   }
 
-  List imgList = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-DjY67mzulVMRq80hvI-mq8dImIOgKt5Cw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREArY26l80lxfHNDyJ_kcZZWVav8i4kPadgA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiT2KSFH6y04zyIvWox_XKHa7rOZfmv8RPzw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiT2KSFH6y04zyIvWox_XKHa7rOZfmv8RPzw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdQjJbw3mOduJzO3hGipOnI-q0JzduC8kfzA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdckMBb1G75l-pI607XL2qItYa0sVc8vG--g&usqp=CAU",
-  ];
+  Future<dynamic>? buildFetchProductDetails()async {
+  // await  CartProductService.getInstance().fetchAllCartProductDataDetails();
 
-  List nameList = [
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-    "Spencer Stores",
-  ];
-
-  List distanceList = [
-    "5",
-    "6",
-    "10",
-    "10",
-    "1",
-    "8",
-  ];
-  List rateList = [
-    "55",
-    "66",
-    "80",
-    "31",
-    "31",
-    "18",
-  ];
+  // await ProductService.getInstance.fetchProductDetails(
+  //       CartProductService.getInstance().dataAllCartProductList.length);
+    return null;
+  }
 }
 
 //

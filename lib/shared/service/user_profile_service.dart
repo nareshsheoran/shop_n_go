@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shop_n_go/account_dir/model/user_profile_request.dart';
+import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
 import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
@@ -27,7 +28,9 @@ class UserProfileService {
         Uri.parse("${NetworkUtil.getUserProfileUrl}${ProfileDetails.userName}");
     Response response = await get(myUri);
     if (response.statusCode == 200) {
+      print("response.body::${response.body}");
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+
       UserProfileRequest userProfileRequest =
           UserProfileRequest.fromJson(jsonResponse);
       UserProfileRequestData? userProfileRequestData = userProfileRequest.data;
@@ -39,8 +42,9 @@ class UserProfileService {
       ProfileDetails.id = (await LocalDataSaver.getID())!;
       ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
       ProfileDetails.email = (await LocalDataSaver.getEmail())!;
-      print("ProfileDetails.email::${ProfileDetails.email}");
+      print("UserProfileService.email::${ProfileDetails.email}");
 
+      // CartProductService().fetchAllCartProductDataDetails();
       isUserProfileLoading = false;
     }
   }

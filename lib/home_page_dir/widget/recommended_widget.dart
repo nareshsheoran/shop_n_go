@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/home_page_dir/service/recommended_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
@@ -23,104 +24,125 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
   Widget build(BuildContext context) {
     return (RecommendedService().isLoadingRecommended)
         ? SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 170,
-      child: Center(
-        child: CProgressIndicator.circularProgressIndicator,
-      ),
-    )
+            width: MediaQuery.of(context).size.width,
+            height: 170,
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CProgressIndicator.circularProgressIndicator,
+                SizedBox(height: 16),
+                Text("Please Wait..",
+                    style: TextStyle(fontWeight: FontWeight.w500)),
+              ],
+            )),
+          )
         : SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 170,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-            itemCount: RecommendedService().dataRecommendedList.length,
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            // physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return SizedBox(
-                width: 115,
-                height: 160,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                        context, AppRoutes.CategoriesDetailsPage,
-                        arguments: ScreenArguments(
-                            Images.baseUrl +
-                                RecommendedService().dataRecommendedList[index].itemImages!,
-                            RecommendedService().dataRecommendedList[index].itemName!,
-                            RecommendedService().dataRecommendedList[index].description!,
-                            RecommendedService().dataRecommendedList[index].itemCode!));
-                  },
-                  child: Stack(
-                    children: [
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: Image(
-                                    width: ImageDimension.imageWidth - 16,
-                                    height: ImageDimension.imageHeight,
-                                    // fit: BoxFit.fill,
-                                    fit: BoxFit.scaleDown,
-                                    image: NetworkImage(Images.baseUrl +
-                                        RecommendedService().dataRecommendedList[index]
-                                            .itemImages!)),
-                                // image: NetworkImage("${NetworkUtil.baseUrl}${dataRecommendedList[index].itemImages!}")),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  RecommendedService().dataRecommendedList[index].itemName!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w800),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.start,
+            width: MediaQuery.of(context).size.width,
+            height: 170,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                  itemCount: RecommendedService().dataRecommendedList.length,
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      width: 115,
+                      height: 160,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, AppRoutes.CategoriesDetailsPage,
+                              arguments: ScreenArguments(
+                                  Images.baseUrl +
+                                      RecommendedService()
+                                          .dataRecommendedList[index]
+                                          .itemImages!,
+                                  RecommendedService()
+                                      .dataRecommendedList[index]
+                                      .itemName!,
+                                  RecommendedService()
+                                      .dataRecommendedList[index]
+                                      .description!,
+                                  RecommendedService()
+                                      .dataRecommendedList[index]
+                                      .itemCode!));
+                        },
+                        child: Stack(
+                          children: [
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "${AppDetails.currencySign}${RecommendedService().dataRecommendedList[index].price?.toStringAsFixed(0)}",
-                                      textAlign: TextAlign.left,
+                                    Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Image(
+                                          width: ImageDimension.imageWidth - 16,
+                                          height: ImageDimension.imageHeight,
+                                          // fit: BoxFit.fill,
+                                          fit: BoxFit.scaleDown,
+                                          image: NetworkImage(Images.baseUrl +
+                                              RecommendedService()
+                                                  .dataRecommendedList[index]
+                                                  .itemImages!)),
+                                      // image: NetworkImage("${NetworkUtil.baseUrl}${dataRecommendedList[index].itemImages!}")),
                                     ),
-
+                                    Expanded(
+                                      child: Text(
+                                        RecommendedService()
+                                            .dataRecommendedList[index]
+                                            .itemName!,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${AppDetails.currencySign}${RecommendedService().dataRecommendedList[index].price?.toStringAsFixed(0)}",
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                              )
-                            ],
-                          ),
+                              ),
+                            ),
+                            Positioned(
+                                top: 6,
+                                right: 8,
+                                child: FavoriteButton(
+                                  iconSize: 32,
+                                  isFavorite: false,
+                                  valueChanged: (_isFavorite) {
+                                    print('Is Favorite : $_isFavorite');
+                                   if( _isFavorite) {
+                                     FavouriteService.getInstance().fetchFavouriteDetails();
+                                     AddProdIntoFavService()
+                                         .addProdIntoFav(RecommendedService()
+                                         .dataRecommendedList[index]
+                                         .itemCode);
+                                   } else {Fluttertoast.showToast(
+                                            msg: "Favourite Removed");}
+                                  },
+                                ))
+                          ],
                         ),
                       ),
-                      Positioned(
-                          top: 6,
-                          right: 8,
-                          child: FavoriteButton(
-                            iconSize: 32,
-                            isFavorite: false,
-                            valueChanged: (_isFavorite) {
-                              print('Is Favorite : $_isFavorite');
-                              _isFavorite ? AddProdIntoFavService()
-                                  .addProdIntoFav(
-                                  RecommendedService().dataRecommendedList[index]
-                                      .itemCode) : Fluttertoast.showToast(msg: "Favourite Removed");
-                            },
-                          ))
-                    ],
-                  ),
-                ),
-              );
-            }),
-      ),
-    );
+                    );
+                  }),
+            ),
+          );
   }
 }

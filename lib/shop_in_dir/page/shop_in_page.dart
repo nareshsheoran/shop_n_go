@@ -8,6 +8,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scan/scan.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
 import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
@@ -280,6 +281,8 @@ class _ShopInPageState extends State<ShopInPage> {
                                                           index, item.itemCode);
 
                                                   setState(() {
+                                                    // CartProductService.getInstance()
+                                                    //     .fetchAllCartProductDataDetails();
                                                     print(
                                                         "ProductAddCartService statusCode:${ProductAddCartService().statusCode}");
                                                     ProductAddCartService()

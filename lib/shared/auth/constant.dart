@@ -27,6 +27,7 @@ class ProfileDetails {
   static String? resendPhone;
   static String? loginToken;
   static String? signUpToken;
+  static String? otp;
 }
 
 class MapDetails {
@@ -35,16 +36,72 @@ class MapDetails {
 }
 
 class AddressDetails {
-  static String? flat;
-
-  static String? village;
   static String? city;
-
-  static String? state;
-
-  static String? pinCode;
-
   static String? country;
+  static String? flat;
+  static String? pinCode;
+  static String? state;
+  static String? village;
+}
+
+class NetworkUtil {
+  static String baseUrl =
+      "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
+  static String getSignUpUrl = baseUrl + "register/";
+  static String getLoginUrl = baseUrl + "login/";
+  static String getUserProfileUrl = baseUrl + "user-profile/";
+  static String getAllProductUrl = baseUrl + "all-products/";
+  static String getProductDetailsUrl = baseUrl + "all-products/";
+  static String getConsumerAddressUrl = baseUrl + "consumer-address/";
+  static String getCategoryUrl = baseUrl + "category/";
+  static String getCategoryBasedProductUrl =
+      baseUrl + "category-based-product/";
+  static String getOrderDetailsUrl = baseUrl + "orders/";
+  static String getStoreListUrl = baseUrl + "store-list/";
+  static String getRecommendedUrl = baseUrl + "recommended/";
+  static String getBestSellerProductUrl = baseUrl + "best-seller-products/";
+  static String getAddIntoFavouriteUrl = baseUrl + "favourite-products/";
+  static String getFavouriteProdUrl = baseUrl + "favourite-products/";
+  static String getProductIntoCardUrl = baseUrl + "products-card";
+  static String getAllCartProductUrl = baseUrl + "products-card/";
+  static String getUpdatePasswordUrl = baseUrl + "update-password/";
+  static String getVendorProductUrl = baseUrl + "vendor-product/";
+  static String getVendorProfileUrl = baseUrl + "store-list/";
+  static String getNearByStoreUrl = baseUrl + "near-by-store";
+  static String getAddIntoCartStoreBasisUrl =
+      baseUrl + "add-into-cart-store-basis";
+  static String getStoreProductRatingUrl = baseUrl + "store-product-rating";
+  static String getProdDetailsByBarCodeUrl =
+      baseUrl + "get-product-detail-by-barcode";
+  static String getStoreMobileLoginUrl = baseUrl + "store-mobile-login-api";
+  static String getStoreVerifyOtpUrl = baseUrl + "store-verify-otp";
+}
+
+class ApiKey {
+  static String apiKey = "AIzaSyCY-SmJ29RYyqiwa3S8I9WblOlnR-Eqbhw";
+}
+
+class ImageDimension {
+  static double imageHeight = 75;
+  static double imageWidth = 75;
+}
+
+class IconDimension {
+  static double iconSize = 18;
+}
+
+class CardDimension {
+  static double elevation = 5;
+  static Color shadowColor = Constant.primaryColor;
+}
+
+class CProgressIndicator {
+  static CircularProgressIndicator circularProgressIndicator =
+      CircularProgressIndicator(
+    color: Constant.primaryColor,
+    strokeWidth: 3,
+    // value: 40,
+  );
 }
 
 class Images {
@@ -121,67 +178,20 @@ class Images {
   static const milkImg =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvJwPmv_OMFoCQUNRAp9gYQCChUgZ57lpy0w&usqp=CAU";
 
+  static const bakeryImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuCkmG4EcLtxTLgqVswWTT-l0BQNbvcIIhaA&usqp=CAU";
+
+  static const diaryImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKbxkM9sqO36bCwMVRXis6VDuJpYeOqscVzg&usqp=CAU";
+
+  static const frozenImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuV9CfIEMyX6wDRvrgvZq7sOxWHiwkNmhApw&usqp=CAU";
+
+  static const cookingEssImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHeWhvga7-wGVvyUqRXbuin6Rim2KAGOMhNw&usqp=CAU";
+
   static const laysImg =
       "${Images.baseUrl}/media/product_image/Lays_brand_logo_cDRB49B.png";
 
 // static const   fruitImg =  ("");
-}
-
-class NetworkUtil {
-  static String baseUrl =
-      "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
-  static String getSignUpUrl = baseUrl + "register/";
-  static String getLoginUrl = baseUrl + "login/";
-  static String getUserProfileUrl = baseUrl + "user-profile/";
-  static String getAllProductUrl = baseUrl + "all-products/";
-  static String getProductDetailsUrl = baseUrl + "all-products/";
-  static String getConsumerAddressUrl = baseUrl + "consumer-address/";
-  static String getCategoryUrl = baseUrl + "category/";
-  static String getCategoryBasedProductUrl =
-      baseUrl + "category-based-product/";
-  static String getOrderDetailsUrl = baseUrl + "orders/";
-  static String getStoreListUrl = baseUrl + "store-list/";
-  static String getRecommendedUrl = baseUrl + "recommended/";
-  static String getBestSellerProductUrl = baseUrl + "best-seller-products/";
-  static String getAddIntoFavouriteUrl = baseUrl + "favourite-products/";
-  static String getFavouriteProdUrl = baseUrl + "favourite-products/";
-  static String getProductIntoCardUrl = baseUrl + "products-card";
-  static String getAllCartProductUrl = baseUrl + "products-card/";
-  static String getUpdatePasswordUrl = baseUrl + "update-password/";
-  static String getVendorProductUrl = baseUrl + "vendor-product/";
-  static String getNearByStoreUrl = baseUrl + "near-by-store";
-  static String getAddIntoCartStoreBasisUrl =
-      baseUrl + "add-into-cart-store-basis";
-  static String getStoreProductRatingUrl = baseUrl + "store-product-rating";
-  static String getProdDetailsByBarCodeUrl =
-      baseUrl + "get-product-detail-by-barcode";
-  static String getStoreMobileLoginUrl = baseUrl + "store-mobile-login-api";
-  static String getStoreVerifyOtpUrl = baseUrl + "store-verify-otp";
-}
-
-class ApiKey {
-  static String apiKey = "AIzaSyCY-SmJ29RYyqiwa3S8I9WblOlnR-Eqbhw";
-}
-
-class ImageDimension {
-  static double imageHeight = 75;
-  static double imageWidth = 75;
-}
-
-class IconDimension {
-  static double iconSize = 18;
-}
-
-class CardDimension {
-  static double elevation = 5;
-  static Color shadowColor = Constant.primaryColor;
-}
-
-class CProgressIndicator {
-  static CircularProgressIndicator circularProgressIndicator =
-      CircularProgressIndicator(
-    color: Constant.primaryColor,
-    strokeWidth: 3,
-    // value: 40,
-  );
 }

@@ -14,6 +14,9 @@ class _RewardPageState extends State<RewardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Reward"),
+      ),
       body: SafeArea(
         child: Column(
           children: [

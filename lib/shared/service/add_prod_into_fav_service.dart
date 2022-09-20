@@ -21,11 +21,13 @@ class AddProdIntoFavService {
   Future addProdIntoFav(code) async {
     String user = ProfileDetails.id!;
     String favProduct = code;
+    // String storeID = code;
     print("user: $user===prodICart:$favProduct");
 
     var requestBody = {
       'user': user,
       'fav_product': favProduct,
+      // 'store_id': storeID,
     };
 
     Uri myUri = Uri.parse(NetworkUtil.getAddIntoFavouriteUrl);

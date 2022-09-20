@@ -12,6 +12,7 @@ class LocalDataSaver {
   static String passwordKey = "PasswordKey";
   static String phoneKey = "PhoneKey";
   static String resendPhoneKey = "ResendPhoneKey";
+  static String otpKey = "otpKey";
   static String dateKey = "DateKey";
   static String genderKey = "GenderKey";
   static String imgKey = "ImgKey";
@@ -115,6 +116,16 @@ class LocalDataSaver {
   static Future<String?> getResendPhone() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.getString(resendPhoneKey);
+  }
+
+   static Future<bool> saveOTP(String userOTP) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(otpKey, userOTP);
+  }
+
+  static Future<String?> getOTP() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.getString(otpKey);
   }
 
   static Future<bool> saveDate(String userDate) async {

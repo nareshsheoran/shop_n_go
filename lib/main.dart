@@ -64,7 +64,8 @@ class MyApp extends StatelessWidget {
               elevation: 0,
               color: Constant.primaryColor,
               iconTheme: IconThemeData(
-                color: Constant.primaryColor,
+                // color: Constant.primaryColor,
+                color: Colors.white,
               )),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             selectedItemColor: Constant.primaryColor,

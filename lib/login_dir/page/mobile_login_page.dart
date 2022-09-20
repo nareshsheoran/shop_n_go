@@ -22,7 +22,7 @@ class _MobileLoginPageState extends State<MobileLoginPage> {
       TextEditingController(text: "");
 
   phoneNoVerify(context) async {
-    fetchOTP("+91${phoneController.text.toString()}", context);
+    fetchOTP("+91${phoneController.text.trim().toString()}", context);
   }
 
   @override

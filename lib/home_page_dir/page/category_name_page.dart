@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:convert';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:shop_n_go/home_page_dir/model_req/all_category_req.dart';
 import 'package:shop_n_go/home_page_dir/model_req/category_based_prod_req.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
@@ -22,11 +21,9 @@ class CategoryNamePage extends StatefulWidget {
 
 class _CategoryNamePageState extends State<CategoryNamePage> {
   TextEditingController searchController = TextEditingController();
-  AllCategoryData allCategoryData = AllCategoryData();
 
   bool isFavourite = false;
   late int selectedIndex;
-  final List<bool> _selected = List.generate(20, (i) => false);
   Object? id = '';
   Object? name = '';
 
@@ -59,16 +56,14 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
   @override
   Widget build(BuildContext context) {
     if (id == "") {
-      // id=          ModalRoute.of(context)?.settings.arguments ;
-
       ScreenArguments arguments =
           ModalRoute.of(context)?.settings.arguments as ScreenArguments;
-
       id = arguments.code;
       name = arguments.name;
       fetchCategoryBasedProductDetails();
     }
     return Scaffold(
+      // appBar: AppBar(title: Text(""),),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -105,50 +100,111 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                     child: TextField(
                       controller: searchController,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.search),
+                      decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.search, color: Constant.primaryColor),
+                          suffixIcon: IconButton(
+                            color: Constant.primaryColor,
+                            onPressed: () {
+                              setState(() {
+                                searchController.clear();
+                                _foundDetail.clear();
+                                searchController.text.isEmpty;
+                                _foundDetail.isEmpty;
+                              });
+                            },
+                            icon: Icon(Icons.clear),
+                          ),
                           contentPadding:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           hintText: 'Search',
                           border: InputBorder.none),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value.contains(" ")) {
+                            searchController.clear();
+                            _foundDetail.clear();
+                            // _runFilter(value);
+                          } else if (searchController.text == "") {
+                            searchController.clear();
+                            _foundDetail.clear();
+                          } else {
+                            _runFilter(value);
+                          }
+                        });
+                      },
                     ),
                   ),
                 ),
-                (isLoading)
-                    ? SizedBox(
-                        height: MediaQuery.of(context).size.width,
-                        width: MediaQuery.of(context).size.width,
-                        child: Center(
-                          child: CProgressIndicator.circularProgressIndicator,
-                        ),
-                      )
-                    : GridView.builder(
-                        itemCount: dataCategoryBasedProductList.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 0.73,
-                        ),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.CategoriesDetailsPage,
-                                    arguments: ScreenArguments(
-                                        Images.baseUrl +
-                                            dataCategoryBasedProductList[index]
-                                                .itemImages!,
+                if (isLoading)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.width,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: CProgressIndicator.circularProgressIndicator,
+                    ),
+                  )
+                else if (searchController.text.isEmpty && _foundDetail.isEmpty)
+                  GridView.builder(
+                    itemCount: dataCategoryBasedProductList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.73,
+                    ),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.CategoriesDetailsPage,
+                                arguments: ScreenArguments(
+                                    Images.baseUrl +
                                         dataCategoryBasedProductList[index]
-                                            .itemName!,
-                                        dataCategoryBasedProductList[index]
-                                            .description!,
-                                        dataCategoryBasedProductList[index]
-                                            .itemCode!));
-                              },
-                              child: categoryWidget(index));
-                        },
-                      )
+                                            .itemImages!,
+                                    dataCategoryBasedProductList[index]
+                                        .itemName!,
+                                    dataCategoryBasedProductList[index]
+                                        .description!,
+                                    dataCategoryBasedProductList[index]
+                                        .itemCode!));
+                          },
+                          child: categoryWidget(
+                              index, dataCategoryBasedProductList));
+                    },
+                  )
+                else if (_foundDetail.isNotEmpty)
+                  GridView.builder(
+                    itemCount: _foundDetail.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.73,
+                    ),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.CategoriesDetailsPage,
+                                arguments: ScreenArguments(
+                                    Images.baseUrl +
+                                        _foundDetail[index].itemImages!,
+                                    _foundDetail[index].itemName!,
+                                    _foundDetail[index].description!,
+                                    _foundDetail[index].itemCode!));
+                          },
+                          child: categoryWidget(index, _foundDetail));
+                    },
+                  )
+                else if (isLoading == false && _foundDetail.isEmpty)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.width / 1.2,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text("No matched Item found."),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -157,7 +213,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
     );
   }
 
-  Widget categoryWidget(int index) {
+  Widget categoryWidget(int index, List list) {
     return Container(
       width: 110,
       height: 150,
@@ -177,12 +233,12 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                         width: ImageDimension.imageWidth - 16,
                         height: ImageDimension.imageHeight,
                         fit: BoxFit.fill,
-                        image: NetworkImage(Images.baseUrl +
-                            dataCategoryBasedProductList[index].itemImages!)),
+                        image: NetworkImage(
+                            Images.baseUrl + list[index].itemImages!)),
                   ),
                   Expanded(
                     child: Text(
-                      dataCategoryBasedProductList[index].itemName!,
+                      list[index].itemName!,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       style:
@@ -195,7 +251,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "${AppDetails.currencySign}${dataCategoryBasedProductList[index].price?.toStringAsFixed(0)}",
+                          "${AppDetails.currencySign}${list[index].price?.toStringAsFixed(0)}",
                           textAlign: TextAlign.left,
                         ),
                       ],
@@ -215,11 +271,8 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                   print('Is Favorite : $_isFavorite');
                   _isFavorite
                       ? AddProdIntoFavService()
-                      .addProdIntoFav(
-                      dataCategoryBasedProductList[index]
-                          .itemCode)
-                      : Fluttertoast.showToast(
-                      msg: "Favourite Removed");
+                          .addProdIntoFav(list[index].itemCode)
+                      : Fluttertoast.showToast(msg: "Favourite Removed");
                 },
               ))
         ],
@@ -227,29 +280,45 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
     );
   }
 
-  List imageList = [
-    Images.chillyImg,
-    Images.ladiesFingerImg,
-    Images.onionImg,
-    Images.potatoImg,
-    Images.radisImg,
-    Images.tomatoImg,
-  ];
+  List<CategoryBasedProductData> _foundDetail = [];
+  bool isSearchLoading = false;
 
-  List nameList = [
-    "Chilly",
-    "Ladies Finger",
-    "Onion",
-    "Potato",
-    "Radius",
-    "Tomato",
-  ];
-  List rateList = [
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "65",
-  ];
+  Future<dynamic> _runFilter(String searchKey) async {
+    if (searchController.text.characters.first.contains(" ")) {
+      setState(() {
+        searchController.clear();
+        _foundDetail.clear();
+      });
+    } else {
+      List<CategoryBasedProductData> results = [];
+      results.clear();
+      if (searchKey.isEmpty ||
+          (searchController.text.isEmpty &&
+              searchController.text.contains(""))) {
+        results = _foundDetail;
+      } else {
+        setState(() {
+          isSearchLoading = true;
+        });
+        results = dataCategoryBasedProductList
+            .where((user) =>
+                user.itemName!.toLowerCase().contains(searchKey.toLowerCase()))
+            .toList();
+        setState(() {
+          _foundDetail = results;
+        });
+      }
+      setState(() {
+        _foundDetail = results;
+        isSearchLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _foundDetail.clear();
+    dataCategoryBasedProductList.clear();
+    super.dispose();
+  }
 }

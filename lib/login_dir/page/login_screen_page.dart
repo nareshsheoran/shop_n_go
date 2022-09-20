@@ -22,10 +22,8 @@ class LoginScreenPage extends StatefulWidget {
 
 class _LoginScreenPageState extends State<LoginScreenPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController userNameController =
-      TextEditingController(text: "sheoran01");
-  TextEditingController passwordController =
-      TextEditingController(text: "sheoran01");
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +133,13 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Forgot Password?"),
-                    SizedBox(width: 10),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, AppRoutes.ForgotPasswordPage);
+                        },
+                        child: Text("Forgot Password?")),
+                    SizedBox(width: 20),
                   ],
                 ),
                 SizedBox(height: 20),

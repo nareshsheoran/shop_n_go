@@ -14,13 +14,14 @@ import 'package:shop_n_go/home_page_dir/page/categories_details_page.dart';
 import 'package:shop_n_go/home_page_dir/page/category_name_page.dart';
 import 'package:shop_n_go/home_page_dir/map_dir/page/map_search_page.dart';
 import 'package:shop_n_go/home_page_dir/map_dir/page/map_store_details.dart';
-import 'package:shop_n_go/login_dir/page/confirm_otp_page.dart';
-import 'package:shop_n_go/shared/page/dashboard_page.dart';
 import 'package:shop_n_go/home_page_dir/page/home_page.dart';
-import 'package:shop_n_go/login_dir/page/login_screen_page.dart';
+import 'package:shop_n_go/login_dir/page/confirm_otp_page.dart';
+import 'package:shop_n_go/login_dir/page/forgot_password_page.dart';
 import 'package:shop_n_go/login_dir/page/mobile_login_page.dart';
-import 'package:shop_n_go/shared/page/splash_page.dart';
+import 'package:shop_n_go/login_dir/page/login_screen_page.dart';
 import 'package:shop_n_go/login_dir/page/sign_up_page.dart';
+import 'package:shop_n_go/shared/page/dashboard_page.dart';
+import 'package:shop_n_go/shared/page/splash_page.dart';
 import 'package:shop_n_go/shop_in_dir/page/shop_in_page.dart';
 import 'package:shop_n_go/stores_dir/page/store_search_page.dart';
 import 'package:shop_n_go/stores_dir/page/stores_details.dart';
@@ -51,6 +52,7 @@ class AppRoutes {
   static const String MapStoreDetailsPage = "Map Store Details Page";
   static const String AllBestSellerProduct = "All Best Seller Product Page";
   static const String OrderPage = "Order Page";
+  static const String ForgotPasswordPage = "Forgot Password Page";
 }
 
 Map<String, WidgetBuilder> routes = {
@@ -78,4 +80,5 @@ Map<String, WidgetBuilder> routes = {
   AppRoutes.MapStoreDetailsPage: (context) => const MapStoreDetailsPage(),
   AppRoutes.AllBestSellerProduct: (context) => const AllBestSellerProduct(),
   AppRoutes.OrderPage: (context) => const OrderPage(),
+  AppRoutes.ForgotPasswordPage: (context) => const ForgotPasswordPage(),
 };

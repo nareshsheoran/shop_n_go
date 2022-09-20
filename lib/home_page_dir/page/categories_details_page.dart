@@ -50,6 +50,12 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
 
   int listLength = 1;
 
+  Future<bool>? _onBackPressed() {
+    Navigator.canPop(context);
+    Navigator.popAndPushNamed(context, AppRoutes.DashboardPage);
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (id == "" || id == null) {
@@ -58,179 +64,187 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
       id = arguments.code;
       fetchProductDetails();
     }
-    return Scaffold(
-      body: SafeArea(
-        child: isLoading
-            ? Center(
-                child: CProgressIndicator.circularProgressIndicator,
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        height: 250,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(color: Colors.white),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: MediaQuery.of(context).size.width / 4,
-                              vertical: 40),
-                          child: Image(
-                            height: 150,
-                            fit: BoxFit.fill,
-                            image: NetworkImage(
-                              Images.baseUrl + productDetailsData.itemImages!,
-                              // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiBk1gqnnfaW-yDDr6amkB59pVv91M0aI1JQ&usqp=CAU",
+    return WillPopScope(
+      onWillPop: () async {
+        return _onBackPressed()!;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: isLoading
+              ? Center(
+                  child: CProgressIndicator.circularProgressIndicator,
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          height: 250,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width / 4,
+                                vertical: 40),
+                            child: Image(
+                              height: 150,
+                              fit: BoxFit.fill,
+                              image: NetworkImage(
+                                Images.baseUrl + productDetailsData.itemImages!,
+                                // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiBk1gqnnfaW-yDDr6amkB59pVv91M0aI1JQ&usqp=CAU",
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                          top: 10,
-                          right: 12,
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.CartPage);
-                              },
-                              child: Icon(
-                                Icons.shopping_cart,
-                                color: Colors.black,
-                              ))),
-                      Positioned(
-                          top: 10,
-                          left: 12,
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Icon(
-                                Icons.arrow_back_outlined,
-                                color: Colors.black,
-                              ))),
-                    ],
-                  ),
-                  SizedBox(height: 4),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          productDetailsData.itemName!,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          productDetailsData.description!,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 14),
-                        ),
-                        SizedBox(height: 4),
+                        Positioned(
+                            top: 10,
+                            right: 12,
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, AppRoutes.CartPage);
+                                },
+                                child: Icon(
+                                  Icons.shopping_cart,
+                                  color: Colors.black,
+                                ))),
+                        Positioned(
+                            top: 10,
+                            left: 12,
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Icon(
+                                  Icons.arrow_back_outlined,
+                                  color: Colors.black,
+                                ))),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListView.builder(
-                        itemCount: listLength,
-                        shrinkWrap: true,
-                        // physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "${productDetailsData.vendorMasters?.toUpperCase().replaceAll("V", "")}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16),
-                                  ),
-                                  // SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      Image(
-                                        height: 90,
-                                        width: 90,
-                                        fit: BoxFit.fill,
-                                        image: NetworkImage(Images.baseUrl +
-                                            productDetailsData.itemImages!),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.directions,
-                                                  size: IconDimension.iconSize,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                    "${productDetailsData.itemCategory!} KMS")
-                                              ],
-                                            ),
-                                            Icon(
-                                              Icons.star,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                              "${AppDetails.currencySign} ${productDetailsData.price?.toStringAsFixed(0)}"),
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  primary:
-                                                      Constant.primaryColor),
-                                              onPressed: () {
-                                                ProductAddCartService()
-                                                    .proAddedIntoCart(
-                                                        index,
-                                                        productDetailsData
-                                                            .itemCode);
-                                                setState(() {
-                                                // ProductAddCartService()
-                                                //               .statusCode ==
-                                                //           200
-                                                //       ? listLength = 0
-                                                //       : null;
-                                                });
-                                                // proAddedIntoCart(
-                                                //     index,
-                                                //     productDetailsData
-                                                //         .itemCode);
-                                              },
-                                              child: Text("ADD +"))
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                    SizedBox(height: 4),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            productDetailsData.itemName!,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            productDetailsData.description!,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 14),
+                          ),
+                          SizedBox(height: 4),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: ListView.builder(
+                          itemCount: listLength,
+                          shrinkWrap: true,
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${productDetailsData.vendorMasters?.toUpperCase().replaceAll("V", "")}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16),
+                                    ),
+                                    // SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Image(
+                                          height: 90,
+                                          width: 90,
+                                          fit: BoxFit.fill,
+                                          image: NetworkImage(Images.baseUrl +
+                                              productDetailsData.itemImages!),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.directions,
+                                                    size:
+                                                        IconDimension.iconSize,
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                      "${productDetailsData.itemCategory!} KMS")
+                                                ],
+                                              ),
+                                              Icon(
+                                                Icons.star,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                            ],
+                                          ),
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                                "${AppDetails.currencySign} ${productDetailsData.price?.toStringAsFixed(0)}"),
+                                            ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    primary:
+                                                        Constant.primaryColor),
+                                                onPressed: () {
+                                                  ProductAddCartService()
+                                                      .proAddedIntoCart(
+                                                          index,
+                                                          productDetailsData
+                                                              .itemCode);
+                                                  setState(() {
+                                                    // ProductAddCartService()
+                                                    //               .statusCode ==
+                                                    //           200
+                                                    //       ? listLength = 0
+                                                    //       : null;
+                                                  });
+                                                  // proAddedIntoCart(
+                                                  //     index,
+                                                  //     productDetailsData
+                                                  //         .itemCode);
+                                                },
+                                                child: Text("ADD +"))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

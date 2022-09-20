@@ -23,24 +23,14 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
 
   List imageList = [
     Images.laysImg,
-    Images.milkImg,
     Images.softDrinksImg,
-    Images.nutsImg,
-    Images.iceCreamImg,
-    Images.soapImg,
-    Images.oilImg,
-    Images.biscuitsImg,
-  ];
-
-  List nameList = [
-    "Vegetables",
-    "Fruits",
-    "Soft Drinks",
-    "Nuts",
-    "Ice Cream",
-    "Soaps",
-    "Oils",
-    "Biscuits",
+    Images.bakeryImg,
+    Images.diaryImg,
+    Images.frozenImg,
+    Images.cookingEssImg,
+    Images.chillyImg,
+    Images.ladiesFingerImg,
+    Images.radisImg,
   ];
   Object? name = '';
 
@@ -97,7 +87,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     ? SizedBox(
                         height: MediaQuery.of(context).size.width,
                         width: MediaQuery.of(context).size.width,
-                        child:  Center(
+                        child: Center(
                           child: CProgressIndicator.circularProgressIndicator,
                         ),
                       )
@@ -116,9 +106,14 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                                     context, AppRoutes.CategoryNamePage,
                                     arguments: ScreenArguments(
                                         imageList[index],
-                                        CategoryService().dataAllCategoryList[index].name!,
+                                        CategoryService()
+                                            .dataAllCategoryList[index]
+                                            .name!,
                                         "description",
-                                        CategoryService().dataAllCategoryList[index].id.toString()));
+                                        CategoryService()
+                                            .dataAllCategoryList[index]
+                                            .id
+                                            .toString()));
                               },
                               child: categoryWidget(index));
                         },

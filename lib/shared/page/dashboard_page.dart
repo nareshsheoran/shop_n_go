@@ -4,12 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shop_n_go/account_dir/page/account_page.dart';
 import 'package:shop_n_go/cart_dir/page/cart_page.dart';
 import 'package:shop_n_go/home_page_dir/page/home_page.dart';
-import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
-import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
-import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
-import 'package:shop_n_go/shared/service/user_profile_service.dart';
 import 'package:shop_n_go/shop_in_dir/page/shop_in_page.dart';
 import 'package:shop_n_go/stores_dir/page/stores_page.dart';
 

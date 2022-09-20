@@ -30,11 +30,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  // bool isFavourite = false;
-
-  // late int selectedRecommendedIndex;
-
-  // late int selectedProductIndex;
   int tabIndex = 1;
 
   Widget? tabWidget() {
@@ -61,10 +56,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool isFavourite = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,27 +73,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         child: Text("Hi, ${ProfileDetails.userName}!",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18))),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFavourite = !isFavourite;
-                        });
-                      },
-                      child: isFavourite
-                          ? Icon(
-                              Icons.favorite,
-                              size: IconDimension.iconSize + 4,
-                            )
-                          : Icon(
-                              Icons.favorite_border_outlined,
-                              size: IconDimension.iconSize + 4,
-                            ),
-                    ),
-                    SizedBox(width: 14),
-                    Icon(
-                      Icons.info_outline,
-                      size: IconDimension.iconSize + 4,
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     setState(() {
+                    //       isFavourite = !isFavourite;
+                    //     });
+                    //   },
+                    //   child: isFavourite
+                    //       ? Icon(
+                    //           Icons.favorite,
+                    //           size: IconDimension.iconSize + 4,
+                    //         )
+                    //       : Icon(
+                    //           Icons.favorite_border_outlined,
+                    //           size: IconDimension.iconSize + 4,
+                    //         ),
+                    // ),
+                    // SizedBox(width: 14),
+                    // Icon(
+                    //   Icons.info_outline,
+                    //   size: IconDimension.iconSize + 4,
+                    // ),
                     SizedBox(width: 12),
                   ],
                 ),
@@ -176,10 +167,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           children: [
                             tabIndex == 2
                                 ? buildTextStyle(
-                                    "Favorite",
+                                    "Favourite",
                                     Constant.primaryColor,
                                   )
-                                : buildTextStyle("Favorite", Colors.black),
+                                : buildTextStyle("Favourite", Colors.black),
                             SizedBox(height: 6),
                             Container(
                                 height: 2,

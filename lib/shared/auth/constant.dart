@@ -27,6 +27,7 @@ class ProfileDetails {
   static String? resendPhone;
   static String? loginToken;
   static String? signUpToken;
+  static String? otp;
 }
 
 class MapDetails {
@@ -121,6 +122,18 @@ class Images {
   static const milkImg =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvJwPmv_OMFoCQUNRAp9gYQCChUgZ57lpy0w&usqp=CAU";
 
+  static const bakeryImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuCkmG4EcLtxTLgqVswWTT-l0BQNbvcIIhaA&usqp=CAU";
+
+  static const diaryImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKbxkM9sqO36bCwMVRXis6VDuJpYeOqscVzg&usqp=CAU";
+
+   static const frozenImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuV9CfIEMyX6wDRvrgvZq7sOxWHiwkNmhApw&usqp=CAU";
+
+  static const cookingEssImg =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHeWhvga7-wGVvyUqRXbuin6Rim2KAGOMhNw&usqp=CAU";
+
   static const laysImg =
       "${Images.baseUrl}/media/product_image/Lays_brand_logo_cDRB49B.png";
 
@@ -149,6 +162,7 @@ class NetworkUtil {
   static String getAllCartProductUrl = baseUrl + "products-card/";
   static String getUpdatePasswordUrl = baseUrl + "update-password/";
   static String getVendorProductUrl = baseUrl + "vendor-product/";
+  static String getVendorProfileUrl = baseUrl + "store-list/";
   static String getNearByStoreUrl = baseUrl + "near-by-store";
   static String getAddIntoCartStoreBasisUrl =
       baseUrl + "add-into-cart-store-basis";

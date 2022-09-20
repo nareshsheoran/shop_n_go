@@ -95,11 +95,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
 
 List imageList = [
   Images.laysImg,
-  Images.milkImg,
-  Images.radisImg,
-  Images.potatoImg,
-  Images.tomatoImg,
-  Images.onionImg,
+  Images.softDrinksImg,
+  Images.bakeryImg,
+  Images.diaryImg,
+  Images.frozenImg,
+  Images.cookingEssImg,
   Images.chillyImg,
   Images.ladiesFingerImg,
   Images.radisImg,

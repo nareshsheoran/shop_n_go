@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
+import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
 
@@ -151,15 +153,32 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                                 shadowColor: Constant.primaryColor,
                                 child: Row(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image(
-                                          height: ImageDimension.imageHeight,
-                                          width: ImageDimension.imageWidth,
-                                          fit: BoxFit.fill,
-                                          image: NetworkImage(Images.baseUrl +
-                                              dataAllStoreDetailsList[index]
-                                                  .itemImages!)),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(context,
+                                            AppRoutes.CategoriesDetailsPage,
+                                            arguments: ScreenArguments(
+                                                Images.baseUrl +
+                                                    dataAllStoreDetailsList[
+                                                            index]
+                                                        .itemImages!,
+                                                dataAllStoreDetailsList[index]
+                                                    .itemName!,
+                                                dataAllStoreDetailsList[index]
+                                                    .description!,
+                                                dataAllStoreDetailsList[index]
+                                                    .itemCode!));
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Image(
+                                            height: ImageDimension.imageHeight,
+                                            width: ImageDimension.imageWidth,
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(Images.baseUrl +
+                                                dataAllStoreDetailsList[index]
+                                                    .itemImages!)),
+                                      ),
                                     ),
                                     SizedBox(width: 12),
                                     Expanded(

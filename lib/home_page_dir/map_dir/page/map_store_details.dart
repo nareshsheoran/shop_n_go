@@ -7,9 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop_n_go/home_page_dir/map_dir/model/near_by_stores_req.dart';
-import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
-import 'package:shop_n_go/item_data.dart';
+import 'package:shop_n_go/home_page_dir/map_dir/model/vendor_profile_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
@@ -26,11 +24,10 @@ class MapStoreDetailsPage extends StatefulWidget {
 class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
   // Object? image = '';
   String _scanBarcode = 'Unknown';
-  NearByStoresReqData? nearByStoresReqData;
+  VendorProfileReqData? vendorProfileReqData;
 
   Future<void> scanQR() async {
     String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
@@ -61,8 +58,8 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    nearByStoresReqData =
-        ModalRoute.of(context)?.settings.arguments! as NearByStoresReqData?;
+    vendorProfileReqData =
+        ModalRoute.of(context)?.settings.arguments! as VendorProfileReqData?;
 
     return Scaffold(
       body: SafeArea(
@@ -77,17 +74,17 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.fill,
                           image: NetworkImage(
-                            "${Images.baseUrl}${nearByStoresReqData?.vendorProfile!}",
+                            "${Images.baseUrl}${vendorProfileReqData?.vendorProfile!}",
                           )),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(nearByStoresReqData!.vendorName!,
+                            Text(vendorProfileReqData!.vendorName!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Text(nearByStoresReqData!.address!,
+                            Text(vendorProfileReqData!.address!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 14)),
                           ],
@@ -140,17 +137,17 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.fill,
                           image: NetworkImage(
-                            "${Images.baseUrl}${nearByStoresReqData?.vendorProfile!}",
+                            "${Images.baseUrl}${vendorProfileReqData?.vendorProfile!}",
                           )),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(nearByStoresReqData!.vendorName!,
+                            Text(vendorProfileReqData!.vendorName!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Text(nearByStoresReqData!.address!,
+                            Text(vendorProfileReqData!.address!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 14)),
                           ],

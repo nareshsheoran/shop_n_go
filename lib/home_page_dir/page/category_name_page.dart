@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:convert';
 import 'package:favorite_button/favorite_button.dart';
@@ -227,29 +227,4 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
     );
   }
 
-  List imageList = [
-    Images.chillyImg,
-    Images.ladiesFingerImg,
-    Images.onionImg,
-    Images.potatoImg,
-    Images.radisImg,
-    Images.tomatoImg,
-  ];
-
-  List nameList = [
-    "Chilly",
-    "Ladies Finger",
-    "Onion",
-    "Potato",
-    "Radius",
-    "Tomato",
-  ];
-  List rateList = [
-    "49",
-    "65",
-    "49",
-    "65",
-    "49",
-    "65",
-  ];
 }

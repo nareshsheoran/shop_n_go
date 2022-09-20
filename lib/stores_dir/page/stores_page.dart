@@ -63,13 +63,6 @@ class _StoresPageState extends State<StoresPage> {
                     "STORES",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  Text(
-                    "Filter",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Constant.primaryColor),
-                  ),
                 ],
               ),
             ),
@@ -91,304 +84,342 @@ class _StoresPageState extends State<StoresPage> {
                       hintText: 'Search',
                       border: InputBorder.none),
                   onChanged: (value) {
-                    _runFilter(value);
+                    setState(() {
+                      if (value.contains(" ")) {
+                        searchController.clear();
+                        _foundDetail.clear();
+                        // _runFilter(value);
+                      } else {
+                        _runFilter(value);
+                      }
+                    });
                   },
                 ),
               ),
             ),
-            (isLoading)
-                ? SizedBox(
-                    height: MediaQuery.of(context).size.width,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: CProgressIndicator.circularProgressIndicator,
-                    ),
-                  )
-                : (_foundDetail.isEmpty ||
-                        (searchController.text.isEmpty &&
-                            searchController.text.contains("")))
-                    ? Expanded(
-                        child: ListView.builder(
-                          itemCount: dataAllStoreList.length,
-                          shrinkWrap: true,
-                          // physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.StoresDetailsPage,
-                                    arguments: dataAllStoreList[index]);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                child: Card(
-                                  elevation: CardDimension.elevation,
-                                  shadowColor: CardDimension.shadowColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                                child: Text(
-                                              "${dataAllStoreList[index].vendorName}",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            Icon(
-                                              Icons.alarm,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              "${dataAllStoreList[index].openTime!.substring(0, 5)}-${dataAllStoreList[index].closeTime!.substring(0, 5)}",
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            Image(
-                                              height: 70,
-                                              width: 70,
-                                              fit: BoxFit.fill,
-                                              image: NetworkImage(
-                                                  Images.baseUrl +
-                                                      dataAllStoreList[index]
-                                                          .vendorProfile!),
-                                            ),
-                                            SizedBox(width: 14),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.directions,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                          child: Text(
-                                                              "${dataAllStoreList[index].distance}")),
-                                                      Icon(
-                                                        Icons.card_travel,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                          "${dataAllStoreList[index].noOfProducts} Items"),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.shopping_cart,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                          child: Text(
-                                                              "Min. order ${AppDetails.currencySign}${dataAllStoreList[index].minimumOrder}")),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons
-                                                            .directions_bike_sharp,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                          "${dataAllStoreList[index].isHomeDelivery}")
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+            if (isLoading)
+              SizedBox(
+                height: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: CProgressIndicator.circularProgressIndicator,
+                ),
+              )
+            else if (searchController.text.isEmpty && _foundDetail.isEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: dataAllStoreList.length,
+                  shrinkWrap: true,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, AppRoutes.StoresDetailsPage,
+                            arguments: dataAllStoreList[index]);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
+                        child: Card(
+                          elevation: CardDimension.elevation,
+                          shadowColor: CardDimension.shadowColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                        child: Text(
+                                      "${dataAllStoreList[index].vendorName}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    Icon(
+                                      Icons.alarm,
+                                      size: IconDimension.iconSize,
                                     ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: _foundDetail.length,
-                          shrinkWrap: true,
-                          // physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.StoresDetailsPage,
-                                    arguments: _foundDetail[index]);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                child: Card(
-                                  elevation: CardDimension.elevation,
-                                  shadowColor: CardDimension.shadowColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                                child: Text(
-                                              "${_foundDetail[index].vendorName}",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            Icon(
-                                              Icons.alarm,
-                                              size: IconDimension.iconSize,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              "${_foundDetail[index].openTime!.substring(0, 5)}-${_foundDetail[index].closeTime!.substring(0, 5)}",
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            Image(
-                                              height: 70,
-                                              width: 70,
-                                              fit: BoxFit.fill,
-                                              image: NetworkImage(
-                                                  Images.baseUrl +
-                                                      _foundDetail[index]
-                                                          .vendorProfile!),
-                                            ),
-                                            SizedBox(width: 14),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.directions,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                          child: Text(
-                                                              "${_foundDetail[index].distance}")),
-                                                      Icon(
-                                                        Icons.card_travel,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                          "${_foundDetail[index].noOfProducts} Items"),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.shopping_cart,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                          child: Text(
-                                                              "Min. order ${AppDetails.currencySign}${_foundDetail[index].minimumOrder}")),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons
-                                                            .directions_bike_sharp,
-                                                        size: IconDimension
-                                                            .iconSize,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                          "${_foundDetail[index].isHomeDelivery}")
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                    SizedBox(width: 8),
+                                    Text(
+                                      "${dataAllStoreList[index].openTime!.substring(0, 5)}-${dataAllStoreList[index].closeTime!.substring(0, 5)}",
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ),
-                            );
-                          },
+                                SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Image(
+                                      height: 70,
+                                      width: 70,
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(Images.baseUrl +
+                                          dataAllStoreList[index]
+                                              .vendorProfile!),
+                                    ),
+                                    SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.directions,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                  child: Text(
+                                                      "${dataAllStoreList[index].distance}")),
+                                              Icon(
+                                                Icons.card_travel,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                  "${dataAllStoreList[index].noOfProducts} Items"),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.shopping_cart,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                  child: Text(
+                                                      "Min. order ${AppDetails.currencySign}${dataAllStoreList[index].minimumOrder}")),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.directions_bike_sharp,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                  "${dataAllStoreList[index].isHomeDelivery}")
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
+                    );
+                  },
+                ),
+              )
+            else if (_foundDetail.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _foundDetail.length,
+                  shrinkWrap: true,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, AppRoutes.StoresDetailsPage,
+                            arguments: _foundDetail[index]);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
+                        child: Card(
+                          elevation: CardDimension.elevation,
+                          shadowColor: CardDimension.shadowColor,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                        child: Text(
+                                      "${_foundDetail[index].vendorName}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    Icon(
+                                      Icons.alarm,
+                                      size: IconDimension.iconSize,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      "${_foundDetail[index].openTime!.substring(0, 5)}-${_foundDetail[index].closeTime!.substring(0, 5)}",
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Image(
+                                      height: 70,
+                                      width: 70,
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(Images.baseUrl +
+                                          _foundDetail[index].vendorProfile!),
+                                    ),
+                                    SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.directions,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                  child: Text(
+                                                      "${_foundDetail[index].distance}")),
+                                              Icon(
+                                                Icons.card_travel,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                  "${_foundDetail[index].noOfProducts} Items"),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.shopping_cart,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                  child: Text(
+                                                      "Min. order ${AppDetails.currencySign}${_foundDetail[index].minimumOrder}")),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.directions_bike_sharp,
+                                                size: IconDimension.iconSize,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                  "${_foundDetail[index].isHomeDelivery}")
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+            else if (isLoading == false && _foundDetail.isEmpty)
+              SizedBox(
+                height: MediaQuery.of(context).size.width / 1.2,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text("No matched store found."),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  List<StoreListData> _foundDetail = [];
+  List _foundDetail = [];
 
-  void _runFilter(String searchKey) {
-    List<StoreListData>? results = [];
-    results.clear();
-    if (searchKey.isEmpty ||
-        (searchController.text.isEmpty && searchController.text.contains(""))) {
-      results = _foundDetail;
-    } else {
-      results = dataAllStoreList
-          .where((user) =>
-              user.vendorName!.toLowerCase().contains(searchKey.toLowerCase()))
-          .cast<StoreListData>()
-          .toList();
+  Future<dynamic> _runFilter(String searchKey) async {
+    if (searchController.text.characters.first.contains(" ")) {
       setState(() {
-        _foundDetail = results!;
+        searchController.clear();
+        _foundDetail.clear();
+      });
+    } else {
+      List results = [];
+      results.clear();
+      if (searchKey.isEmpty ||
+          (searchController.text.isEmpty &&
+              searchController.text.contains(""))) {
+        results = _foundDetail;
+      } else {
+        setState(() {
+          isLoading = true;
+        });
+        results = dataAllStoreList
+            .where((user) => user.vendorName!
+                .toLowerCase()
+                .contains(searchKey.toLowerCase()))
+            .toList();
+        setState(() {
+          _foundDetail = results;
+        });
+      }
+      setState(() {
+        _foundDetail = results;
+        isLoading = false;
       });
     }
-    setState(() {
-      _foundDetail = results!;
-    });
   }
+
+// List<StoreListData> _foundDetail = [];
+// bool isFetching = false;
+//
+// void _runFilter(String searchKey) {
+//   setState(() {
+//     isFetching = true;
+//   });
+//   List<StoreListData>? results = [];
+//   results.clear();
+//   if (searchKey.isEmpty ||
+//       (searchController.text.isEmpty && searchController.text.contains(""))) {
+//     results = _foundDetail;
+//   } else {
+//     results = dataAllStoreList
+//         .where((user) =>
+//             user.vendorName!.toLowerCase().contains(searchKey.toLowerCase()))
+//         .cast<StoreListData>()
+//         .toList();
+//     setState(() {
+//       _foundDetail = results!;
+//     });
+//   }
+//   setState(() {
+//     _foundDetail = results!;
+//     isFetching = false;
+//   });
+// }
 }

@@ -9,6 +9,7 @@ import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
@@ -234,20 +235,43 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                                                         .circularProgressIndicator,
                                                   ),
                                                 )
-                                              : Image(
-                                                  width: ImageDimension
-                                                          .imageWidth -
-                                                      16,
-                                                  height: ImageDimension
-                                                          .imageHeight -
-                                                      25,
-                                                  fit: BoxFit.fill,
-                                                  image: NetworkImage(Images
+                                              : GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  AppRoutes
+                                                      .CategoriesDetailsPage,
+                                                  arguments: ScreenArguments(
+                                                      Images
                                                           .baseUrl +
+                                                          dataAllStoreDetailsList[
+                                                          index]
+                                                              .itemImages!,
                                                       dataAllStoreDetailsList[
-                                                              index]
-                                                          .itemImages!),
-                                                ),
+                                                      index]
+                                                          .itemName!,
+                                                      dataAllStoreDetailsList[
+                                                      index]
+                                                          .description!,
+                                                      dataAllStoreDetailsList[
+                                                      index]
+                                                          .itemCode!));
+                                            },
+                                                child: Image(
+                                                    width: ImageDimension
+                                                            .imageWidth -
+                                                        16,
+                                                    height: ImageDimension
+                                                            .imageHeight -
+                                                        25,
+                                                    fit: BoxFit.fill,
+                                                    image: NetworkImage(Images
+                                                            .baseUrl +
+                                                        dataAllStoreDetailsList[
+                                                                index]
+                                                            .itemImages!),
+                                                  ),
+                                              ),
                                         ),
                                         // SizedBox(height: 4),
                                         Text(

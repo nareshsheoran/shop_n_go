@@ -9,6 +9,7 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:shop_n_go/shared/page/screen_arguments.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -55,34 +56,20 @@ class _CartPageState extends State<CartPage> {
 
   double totalSum() {
     sum = 0;
-    // if (number == 0 || number == null) {
     for (int i = 0; i < productDetailsDataList.length; i++) {
       setState(() {
-        sum += productDetailsDataList[i].id!;
+        sum += itemData[i].counter;
         sum;
       });
     }
-    sum;
-    // }
-    // else {
-    //   for (int i = 0; i < int.parse(number!.toString()); i++) {
-    //     setState(() {
-    //       sum += itemData[i].counter;
-    //       sum;
-    //     });
-    //   }
-    // }
-
     return sum;
   }
 
   double totalOrderSum() {
     ordersSum = 0;
-    // if (number == 0 || number == null) {
     for (int i = 0; i < productDetailsDataList.length; i++) {
       setState(() {
-        // ordersSum += ((productDetailsDataList[i].price) * productDetailsDataList[i].price);
-        ordersSum += ((productDetailsDataList[i].price));
+        ordersSum += ((productDetailsDataList[i].price) * itemData[i].counter);
         ordersSum;
       });
     }
@@ -99,7 +86,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   void init() {
-    // totalSum();
+    totalSum();
     totalOrderSum();
     totalDeliveryCost();
   }
@@ -185,7 +172,8 @@ class _CartPageState extends State<CartPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  // nameList[index],
+                                                  // productDetailsDataList[index]
+                                                  //     .vendorMasters,
                                                   productDetailsDataList[index]
                                                       .itemName,
                                                   style: TextStyle(
@@ -194,15 +182,38 @@ class _CartPageState extends State<CartPage> {
                                               SizedBox(height: 6),
                                               Row(
                                                 children: [
-                                                  Image(
-                                                    height: 70,
-                                                    width: 70,
-                                                    fit: BoxFit.fill,
-                                                    image: NetworkImage(Images
-                                                            .baseUrl +
-                                                        productDetailsDataList[
-                                                                index]
-                                                            .itemImages),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          AppRoutes
+                                                              .CategoriesDetailsPage,
+                                                          arguments: ScreenArguments(
+                                                              Images
+                                                                      .baseUrl +
+                                                                  productDetailsDataList[
+                                                                          index]
+                                                                      .itemImages!,
+                                                              productDetailsDataList[
+                                                                      index]
+                                                                  .itemName!,
+                                                              productDetailsDataList[
+                                                                      index]
+                                                                  .description!,
+                                                              productDetailsDataList[
+                                                                      index]
+                                                                  .itemCode!));
+                                                    },
+                                                    child: Image(
+                                                      height: 70,
+                                                      width: 70,
+                                                      fit: BoxFit.fill,
+                                                      image: NetworkImage(Images
+                                                              .baseUrl +
+                                                          productDetailsDataList[
+                                                                  index]
+                                                              .itemImages),
+                                                    ),
                                                   ),
                                                   SizedBox(width: 10),
                                                   Expanded(
@@ -222,18 +233,24 @@ class _CartPageState extends State<CartPage> {
                                                                 size: IconDimension
                                                                     .iconSize),
                                                             SizedBox(width: 8),
-                                                            Expanded(
-                                                                child: Text(
-                                                                    "${productDetailsDataList[index].itemCategory} KMS")),
+                                                            Expanded(child: Text(
+                                                                // "${((productDetailsDataList[index].price) * (itemData[index].counter)).toStringAsFixed(0)}")),
+                                                                "Price ${((productDetailsDataList[index].price) * (itemData[index].counter)).toStringAsFixed(0)}")),
                                                             Icon(
                                                                 Icons
                                                                     .card_travel,
                                                                 size: IconDimension
                                                                     .iconSize),
                                                             SizedBox(width: 8),
-                                                            Text(
-                                                                // "${itemData[index].counter} Items"),
-                                                                "1 Item"),
+                                                            itemData[index]
+                                                                        .counter ==
+                                                                    1
+                                                                ? Text(
+                                                                    // "${itemData[index].counter} Items"),
+                                                                    "${itemData[index].counter} Item")
+                                                                : Text(
+                                                                    // "${itemData[index].counter} Items"),
+                                                                    "${itemData[index].counter} Items"),
                                                           ],
                                                         ),
                                                         SizedBox(height: 8),
@@ -246,23 +263,24 @@ class _CartPageState extends State<CartPage> {
                                                                 size: IconDimension
                                                                     .iconSize),
                                                             SizedBox(width: 8),
-                                                            // counterWidget(index),
-                                                            ElevatedButton(
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                        // minimumSize: Size(50, 30),
-                                                                        primary:
-                                                                            Constant
-                                                                                .primaryColor),
-                                                                onPressed: () {
-                                                                  // Navigator.pushNamed(
-                                                                  //     context,
-                                                                  //     AppRoutes
-                                                                  //         .CartDetailsPage,
-                                                                  //     arguments: number);
-                                                                },
-                                                                child: Text(
-                                                                    "VIEW ITEMS"))
+                                                            counterWidget(
+                                                                index),
+                                                            // ElevatedButton(
+                                                            //     style: ElevatedButton
+                                                            //         .styleFrom(
+                                                            //             // minimumSize: Size(50, 30),
+                                                            //             primary:
+                                                            //                 Constant
+                                                            //                     .primaryColor),
+                                                            //     onPressed: () {
+                                                            //       Navigator.pushNamed(
+                                                            //           context,
+                                                            //           AppRoutes
+                                                            //               .CartDetailsPage,
+                                                            //           arguments: number);
+                                                            //     },
+                                                            //     child: Text(
+                                                            //         "VIEW ITEMS"))
                                                           ],
                                                         ),
                                                       ],
@@ -313,9 +331,9 @@ class _CartPageState extends State<CartPage> {
                                           children: [
                                             productDetailsDataList.length == 1
                                                 ? Text(
-                                                    "${productDetailsDataList.length} Item")
+                                                    "${sum.toStringAsFixed(0)} Item")
                                                 : Text(
-                                                    "${productDetailsDataList.length} Items"),
+                                                    "${sum.toStringAsFixed(0)} Items"),
                                             SizedBox(height: 4),
                                             Text(
                                                 "${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
@@ -456,65 +474,10 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget counterWidget(int index) {
-    return
-        // itemData[index].shouldVisible ?
-        //    Center(
-        //       child: Container(
-        //       height: 30,
-        //       width: 70,
-        //       decoration: BoxDecoration(
-        //           color: Colors.grey[200],
-        //           borderRadius: BorderRadius.circular(4),
-        //           border: Border.all(color: Colors.white70)),
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //         children: <Widget>[
-        //           InkWell(
-        //               onTap: () {
-        //                 setState(() {
-        //                   if (itemData[index].counter < 1) {
-        //                     itemData[index].shouldVisible =
-        //                         !itemData[index].shouldVisible;
-        //                   } else {
-        //                     itemData[index].counter--;
-        //                   }
-        //                 });
-        //               },
-        //               child: Icon(
-        //                 Icons.remove,
-        //                 color: Constant.primaryColor,
-        //                 size: 22,
-        //               )),
-        //           SizedBox(width: 4),
-        //           (itemData[index].counter == 0 ||
-        //                   itemData[index].counter == null)
-        //               ? Text(
-        //                   '${itemData[index].counter}',
-        //                   style: TextStyle(color: Colors.black),
-        //                 )
-        //               : Text(
-        //                   '${itemData[index].counter}',
-        //                   style: const TextStyle(color: Colors.black),
-        //                 ),
-        //           SizedBox(width: 4),
-        //           InkWell(
-        //               onTap: () {
-        //                 setState(() {
-        //                   itemData[index].counter++;
-        //                 });
-        //               },
-        //               child: Icon(
-        //                 Icons.add,
-        //                 color: Constant.primaryColor,
-        //                 size: 22,
-        //               )),
-        //         ],
-        //       ),
-        //     )):
-        Container(
+    return Container(
       padding: EdgeInsets.all(5),
-      height: 30,
-      width: 80,
+      height: 34,
+      width: 100,
       decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(4),
@@ -524,50 +487,43 @@ class _CartPageState extends State<CartPage> {
           InkWell(
               onTap: () {
                 setState(() {
-                  // itemData[index].counter--;
-                  if (itemData[index].counter < 1) {
-                    itemData[index].shouldVisible =
-                        !itemData[index].shouldVisible;
-                    if (itemData[index].counter == 0) {
-                      setState(() {
-                        itemData.removeAt(index);
-                      });
-                    }
-                  } else {
-                    itemData[index].counter--;
-                    if (itemData[index].counter == 0) {
-                      setState(() {
-                        itemData.removeAt(index);
-                      });
-                    }
-                  }
-                });
-              },
-              child: Center(
-                  child: Icon(
-                Icons.remove,
-                color: Constant.primaryColor,
-                size: 22,
-              ))),
-          SizedBox(width: 2),
-          Text(
-            '${itemData[index].counter}',
-            style: const TextStyle(color: Colors.black),
-          ),
-          SizedBox(width: 2),
-          InkWell(
-              onTap: () {
-                setState(() {
-                  itemData[index].counter++;
+                  itemData[index].counter == 1
+                      ? null
+                      : itemData[index].counter--;
+                  init();
+
                   itemData[index].shouldVisible =
                       !itemData[index].shouldVisible;
                 });
               },
               child: Center(
                   child: Icon(
+                Icons.remove,
+                color: Constant.primaryColor,
+                size: 28,
+              ))),
+          SizedBox(width: 8),
+          Text(
+            '${itemData[index].counter}',
+            style: const TextStyle(color: Colors.black),
+          ),
+          SizedBox(width: 8),
+          InkWell(
+              onTap: () {
+                setState(() {
+                  itemData[index].counter == 99
+                      ? null
+                      : itemData[index].counter++;
+                  itemData[index].shouldVisible =
+                      !itemData[index].shouldVisible;
+                  init();
+                });
+              },
+              child: Center(
+                  child: Icon(
                 Icons.add,
                 color: Constant.primaryColor,
-                size: 22,
+                size: 28,
               ))),
         ],
       ),

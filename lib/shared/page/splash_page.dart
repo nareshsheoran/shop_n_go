@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/home_page_dir/service/best_seller_service.dart';
 import 'package:shop_n_go/home_page_dir/service/category_service.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/home_page_dir/service/new_product_service.dart';
 import 'package:shop_n_go/home_page_dir/service/recommended_service.dart';
 import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
@@ -22,8 +23,12 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   Future init() async {
     await fetchDataSP();
-    profile;
+    profile();
     decideScreen();
+    services();
+  }
+
+  Future services() async {
     RecommendedService().fetchRecommendedDetails();
     CategoryService().fetchAllCategory();
     BestSellerService().fetchBestSellerDetails();
@@ -31,7 +36,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future profile() async {
-    ProfileDetails.userName == null
+    (ProfileDetails.userName == null || ProfileDetails.userName == "")
         ? ProfileDetails.userName == ''
         : await UserProfileService().fetchUserProfileDetails();
   }
@@ -40,11 +45,11 @@ class _SplashPageState extends State<SplashPage> {
     print("decideScreen email::${ProfileDetails.email}");
     print("decideScreen userName::${ProfileDetails.userName}");
 
-    ProfileDetails.userName == null
-        ? Future.delayed(const Duration(seconds: 4)).then((value) {
+    (ProfileDetails.userName == null || ProfileDetails.userName == "")
+        ? Future.delayed(const Duration(seconds: 2)).then((value) {
             Navigator.pushReplacementNamed(context, AppRoutes.LoginScreenPage);
           })
-        : Future.delayed(const Duration(seconds: 4)).then((value) {
+        : Future.delayed(const Duration(seconds: 2)).then((value) {
             Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
           });
   }

@@ -80,8 +80,9 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                                   Images.baseUrl +
                                       productDetailsDataList[index].itemImages!,
                                   productDetailsDataList[index].itemName!,
-                                  productDetailsDataList[index].itemCategory!.toString(),
-
+                                  productDetailsDataList[index]
+                                      .itemCategory!
+                                      .toString(),
                                   productDetailsDataList[index].itemCode!));
                         },
                         child: Stack(
@@ -104,11 +105,12 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            productDetailsDataList[index].itemName!,
+                                            productDetailsDataList[index]
+                                                .itemName!,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
                                             textAlign: TextAlign.center,
@@ -129,20 +131,30 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                             Positioned(
                                 top: 6,
                                 right: 8,
-                                child: FavoriteButton(
-                                  iconSize: 32,
-                                  isFavorite: true,
-                                  valueChanged: (_isFavorite) {
-                                    print('Is Favorite : $_isFavorite');
-                                    _isFavorite
-                                        ? AddProdIntoFavService()
-                                        .addProdIntoFav(
-                                        productDetailsDataList[index]
-                                            .itemCode)
-                                        : Fluttertoast.showToast(
-                                        msg: "Favourite Removed");
-                                  },
-                                ))
+                                child: GestureDetector(
+                                    onTap: () {
+                                      print(index);
+                                    },
+                                    child: Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                      size: 24,
+                                    ))
+                                // FavoriteButton(
+                                //   iconSize: 32,
+                                //   isFavorite: true,
+                                //   valueChanged: (_isFavorite) {
+                                //     print('Is Favorite : $_isFavorite');
+                                //     _isFavorite
+                                //         ? AddProdIntoFavService()
+                                //         .addProdIntoFav(
+                                //         productDetailsDataList[index]
+                                //             .itemCode)
+                                //         : Fluttertoast.showToast(
+                                //         msg: "Favourite Removed");
+                                //   },
+                                // ),
+                                )
                           ],
                         ),
                       ),
@@ -161,7 +173,7 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
       isDetailsLoading = true;
     });
     // for (int i = 0; i < dataFavouriteList.length; i++) {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
       print(i.toString());
       Uri myUri = Uri.parse(
           "${NetworkUtil.getProductDetailsUrl}${dataFavouriteList[i].favProduct}");

@@ -1,7 +1,11 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:shop_n_go/account_dir/model/add_address_res_req.dart';
 import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
@@ -321,6 +325,22 @@ class _AddressPageState extends State<AddressPage> {
                                 primary: Constant.primaryColor),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+
+                                AddressDetails.flat == ""
+                                    ? addAddress(
+                                        flatController.text,
+                                        villageController.text,
+                                        cityController.text,
+                                        cityController.text,
+                                        pinCodeController.text,
+                                      )
+                                    : updateAddress(
+                                        flatController.text,
+                                        villageController.text,
+                                        cityController.text,
+                                        cityController.text,
+                                        pinCodeController.text,
+                                      );
                                 LocalDataSaver.saveName(nameController.text);
                                 LocalDataSaver.savePhone(mobileController.text);
                                 AddressLocalDataSaver.saveFlat(
@@ -337,19 +357,9 @@ class _AddressPageState extends State<AddressPage> {
                                     countryController.text);
 
                                 await fetchDataSP();
-                                setState(() {});
-                                Fluttertoast.showToast(
-                                    msg: "Address Saved",
-                                    toastLength: Toast.LENGTH_SHORT);
 
-                                Navigator.pop(context);
-                                await Navigator.pushNamed(
-                                    context, AppRoutes.DashboardPage).then((value){
-                                      setState(() {
-                                        fetchDataSP();
-                                      });
-                                });
-                              // Navigator.pop(context);
+
+                                // Navigator.pop(context);
                               }
                             },
                             child: Text("Save Address")),
@@ -366,6 +376,66 @@ class _AddressPageState extends State<AddressPage> {
     );
   }
 
+  Future addAddress(buildingName, area, city, landMark, pinCode) async {
+    String users = ProfileDetails.userName!;
+    var requestBody = {
+      'users': users,
+      'Building_no_or_name': buildingName,
+      'Area': area,
+      'City': city,
+      'Landmark': landMark,
+      'Pincode': pinCode,
+    };
+
+    Uri myUri = Uri.parse(NetworkUtil.getConsumerAddressUrl);
+    //
+    http.Response response = await http.post(
+      myUri,
+      body: requestBody,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      AddAddressResReq addAddressResReq =
+          AddAddressResReq.fromJson(jsonResponse);
+
+      if (addAddressResReq.message == "Created Successfully") {
+        Fluttertoast.showToast(
+            msg: "Address Saved", toastLength: Toast.LENGTH_SHORT);
+        Navigator.pop(context);
+        await Navigator.pushNamed(context, AppRoutes.DashboardPage);
+      }
+    }
+  }
+
+  Future updateAddress(buildingName, area, city, landMark, pinCode) async {
+    var requestBody = {
+      'Building_no_or_name': buildingName,
+      'Area': area,
+      'City': city,
+      'Landmark': landMark,
+      'Pincode': pinCode,
+    };
+
+    Uri myUri = Uri.parse(NetworkUtil.getConsumerAddressUrl);
+    http.Response response = await http.patch(
+      myUri,
+      body: requestBody,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+      AddAddressResReq addAddressResReq =
+          AddAddressResReq.fromJson(jsonResponse);
+
+      if (addAddressResReq.message == "UPDATED") {
+        Fluttertoast.showToast(
+            msg: "Address Update", toastLength: Toast.LENGTH_SHORT);
+        Navigator.pop(context);
+        await Navigator.pushNamed(context, AppRoutes.DashboardPage);
+      }
+    }
+  }
 
   OutlineInputBorder buildOutlineInputBorder() {
     return OutlineInputBorder(

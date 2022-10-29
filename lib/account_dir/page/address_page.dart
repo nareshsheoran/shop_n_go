@@ -31,11 +31,14 @@ class _AddressPageState extends State<AddressPage> {
   TextEditingController flatController =
       TextEditingController(text: AddressDetails.flat);
 
-  TextEditingController villageController =
-      TextEditingController(text: AddressDetails.village);
+  TextEditingController areaController =
+      TextEditingController(text: AddressDetails.area);
 
   TextEditingController cityController =
       TextEditingController(text: AddressDetails.city);
+
+  TextEditingController landMarkController =
+      TextEditingController(text: AddressDetails.landMark);
 
   TextEditingController stateController =
       TextEditingController(text: AddressDetails.state);
@@ -62,26 +65,7 @@ class _AddressPageState extends State<AddressPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.all(8),
-                //   child: Row(
-                //     children: [
-                //       GestureDetector(
-                //           onTap: () {
-                //             Navigator.pop(context);
-                //           },
-                //           child: Icon(Icons.arrow_back_rounded,
-                //               color: Colors.black)),
-                //       SizedBox(width: 20),
-                //       Text(
-                //         "Saved Address",
-                //         style: TextStyle(
-                //             fontWeight: FontWeight.bold, fontSize: 18),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                AddressDetails.flat == ""
+                (AddressDetails.flat == '' || AddressDetails.flat == null)
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
@@ -133,7 +117,9 @@ class _AddressPageState extends State<AddressPage> {
                             controller: mobileController,
                             textCapitalization: TextCapitalization.sentences,
                             keyboardType: TextInputType.phone,
+                            maxLength: 10,
                             decoration: InputDecoration(
+                                counterText: "",
                                 fillColor: Colors.white,
                                 filled: true,
                                 contentPadding: EdgeInsets.all(16),
@@ -173,7 +159,7 @@ class _AddressPageState extends State<AddressPage> {
                       Padding(
                         padding: EdgeInsets.all(10),
                         child: TextFormField(
-                            controller: villageController,
+                            controller: areaController,
                             textCapitalization: TextCapitalization.sentences,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -209,6 +195,27 @@ class _AddressPageState extends State<AddressPage> {
                               return GetUtils.isLengthGreaterOrEqual(value!, 3)
                                   ? null
                                   : "Please Enter Valid City";
+                            }),
+                      ),
+                      buildTitle("Landmark"),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: TextFormField(
+                            controller: landMarkController,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.all(16),
+                                hintText: 'Enter Landmark',
+                                helperMaxLines: 2,
+                                hintMaxLines: 2,
+                                focusedBorder: buildFocusedBorder(),
+                                border: buildOutlineInputBorder()),
+                            validator: (String? value) {
+                              return GetUtils.isLengthGreaterOrEqual(value!, 3)
+                                  ? null
+                                  : "Please Enter Valid Landmark";
                             }),
                       ),
                       buildTitle("State Name"),
@@ -292,7 +299,9 @@ class _AddressPageState extends State<AddressPage> {
                             controller: pinCodeController,
                             textCapitalization: TextCapitalization.sentences,
                             keyboardType: TextInputType.phone,
+                            maxLength: 6,
                             decoration: InputDecoration(
+                                counterText: "",
                                 fillColor: Colors.white,
                                 filled: true,
                                 contentPadding: EdgeInsets.all(16),
@@ -302,7 +311,7 @@ class _AddressPageState extends State<AddressPage> {
                                 focusedBorder: buildFocusedBorder(),
                                 border: buildOutlineInputBorder()),
                             validator: (String? value) {
-                              return GetUtils.isLengthGreaterOrEqual(value!, 6)
+                              return GetUtils.isLengthEqualTo(value!, 6)
                                   ? null
                                   : "Please Enter Valid Pin Code";
                             }),
@@ -338,42 +347,54 @@ class _AddressPageState extends State<AddressPage> {
                                 primary: Constant.primaryColor),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                AddressDetails.flat == ""
+                                (AddressDetails.flat == '' ||
+                                        AddressDetails.flat == null)
                                     ? addAddress(
-                                        flatController.text,
-                                        villageController.text,
-                                        cityController.text,
-                                        cityController.text,
-                                        pinCodeController.text,
+                                        nameController.text.trim(),
+                                        mobileController.text.trim(),
+                                        flatController.text.trim(),
+                                        areaController.text.trim(),
+                                        cityController.text.trim(),
+                                        landMarkController.text.trim(),
+                                        stateController.text.trim(),
+                                        pinCodeController.text.trim(),
+                                        countryController.text.trim(),
                                       )
                                     : updateAddress(
-                                        flatController.text,
-                                        villageController.text,
-                                        cityController.text,
-                                        cityController.text,
-                                        pinCodeController.text,
+                                        flatController.text.trim(),
+                                        areaController.text.trim(),
+                                        cityController.text.trim(),
+                                        landMarkController.text.trim(),
+                                        pinCodeController.text.trim(),
                                       );
-                                LocalDataSaver.saveName(nameController.text);
-                                LocalDataSaver.savePhone(mobileController.text);
+                                LocalDataSaver.saveName(
+                                    nameController.text.trim());
+                                LocalDataSaver.savePhone(
+                                    mobileController.text.trim());
                                 AddressLocalDataSaver.saveFlat(
-                                    flatController.text);
-                                AddressLocalDataSaver.saveVillage(
-                                    villageController.text);
+                                    flatController.text.trim());
+                                AddressLocalDataSaver.saveArea(
+                                    areaController.text.trim());
                                 AddressLocalDataSaver.saveCity(
-                                    cityController.text);
+                                    cityController.text.trim());
+                               AddressLocalDataSaver.saveLandmark(
+                                    landMarkController.text.trim());
                                 AddressLocalDataSaver.saveState(
-                                    stateController.text);
+                                    stateController.text.trim());
                                 AddressLocalDataSaver.savePinCode(
-                                    pinCodeController.text);
+                                    pinCodeController.text.trim());
                                 AddressLocalDataSaver.saveCountry(
-                                    countryController.text);
+                                    countryController.text.trim());
 
                                 await fetchDataSP();
 
                                 // Navigator.pop(context);
                               }
                             },
-                            child:AddressDetails.flat == ""? Text("Save Address"):Text("Update Address")),
+                            child: (AddressDetails.flat == '' ||
+                                    AddressDetails.flat == null)
+                                ? Text("Save Address")
+                                : Text("Update Address")),
                       ),
                       SizedBox(height: 10),
                     ],
@@ -387,15 +408,20 @@ class _AddressPageState extends State<AddressPage> {
     );
   }
 
-  Future addAddress(buildingName, area, city, landMark, pinCode) async {
-    String users = ProfileDetails.userName!;
+  Future addAddress(name, phoneNumber, buildingName, area, city, landMark,
+      state, pinCode, country) async {
+    String users = ProfileDetails.id!;
     var requestBody = {
       'users': users,
+      'name': name,
+      'phone_number': phoneNumber,
       'Building_no_or_name': buildingName,
       'Area': area,
       'City': city,
       'Landmark': landMark,
       'Pincode': pinCode,
+      'state': state,
+      'country': country,
     };
 
     Uri myUri = Uri.parse(NetworkUtil.getConsumerAddressUrl);
@@ -414,7 +440,7 @@ class _AddressPageState extends State<AddressPage> {
         Fluttertoast.showToast(
             msg: "Address Saved", toastLength: Toast.LENGTH_SHORT);
         Navigator.pop(context);
-        await Navigator.pushNamed(context, AppRoutes.DashboardPage);
+        // await Navigator.pushNamed(context, AppRoutes.DashboardPage);
       }
     }
   }
@@ -443,7 +469,7 @@ class _AddressPageState extends State<AddressPage> {
         Fluttertoast.showToast(
             msg: "Address Update", toastLength: Toast.LENGTH_SHORT);
         Navigator.pop(context);
-        await Navigator.pushNamed(context, AppRoutes.DashboardPage);
+        // await Navigator.pushNamed(context, AppRoutes.DashboardPage);
       }
     }
   }

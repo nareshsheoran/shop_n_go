@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_conditional_assignment
 
 import 'dart:convert';
 import 'package:http/http.dart';
@@ -8,12 +8,15 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import '../model_req/best_seller_req.dart';
 
 class NewProductService {
+  static NewProductService? _instance;
+
   NewProductService._internal();
 
-  static final NewProductService _instance = NewProductService._internal();
-
-  factory NewProductService() {
-    return _instance;
+  static NewProductService getInstance() {
+    if (_instance == null) {
+      _instance = NewProductService._internal();
+    }
+    return _instance!;
   }
 
   int? statusCode;

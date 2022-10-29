@@ -116,20 +116,28 @@ class _AccountPageState extends State<AccountPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    buildGestureDetector(AppRoutes.ProfilePage, "Profile"),
-                    buildGestureDetector(AppRoutes.AddressPage, "Addresses"),
-                    buildGestureDetector(AppRoutes.OrderPage, "Orders"),
-                    buildGestureDetector(AppRoutes.PaymentPage, "Payments"),
-                    buildGestureDetector(AppRoutes.RewardPage, "Rewards"),
+                    buildGestureDetector(
+                        AppRoutes.ProfilePage, "Profile", Icons.person),
+                    buildGestureDetector(AppRoutes.AddressPage, "Addresses",
+                        Icons.location_on_outlined),
+                    buildGestureDetector(
+                        AppRoutes.OrderPage, "Orders", Icons.shopping_cart),
+                    buildGestureDetector(
+                        AppRoutes.PaymentPage, "Payments", Icons.payment),
+                    buildGestureDetector(
+                        AppRoutes.RewardPage, "Rewards", Icons.local_offer),
                     buildGestureDetector(AppRoutes.CancelRefundPage,
-                        "Cancellation & Refund Policy"),
+                        "Cancellation & Refund Policy", Icons.policy_outlined),
+                    buildGestureDetector(AppRoutes.PrivacyPolicyPage,
+                        "Privacy Policy", Icons.policy_rounded),
+                    buildGestureDetector(AppRoutes.TermConditionPage,
+                        "Terms & Conditions", Icons.local_police_rounded),
                     buildGestureDetector(
-                        AppRoutes.PrivacyPolicyPage, "Privacy Policy"),
+                        AppRoutes.AboutUsPage, "About Us", Icons.info_outline),
                     buildGestureDetector(
-                        AppRoutes.TermConditionPage, "Terms & Conditions"),
-                    buildGestureDetector(AppRoutes.AboutUsPage, "About Us"),
-                    buildGestureDetector(AppRoutes.HelpPage, "Help"),
-                    buildGestureDetector(AppRoutes.SettingPage, "Settings"),
+                        AppRoutes.HelpPage, "Help", Icons.help),
+                    buildGestureDetector(
+                        AppRoutes.SettingPage, "Settings", Icons.settings),
                     GestureDetector(
                         onTap: () {
                           showDialog<String>(
@@ -176,7 +184,10 @@ class _AccountPageState extends State<AccountPage> {
                           //           context, AppRoutes.LoginScreenPage);
                           //     }).show();
                         },
-                        child: ListTile(title: Text("Log Out"))),
+                        child: ListTile(
+                          title: Text("Log Out"),
+                          leading: Icon(Icons.logout_outlined),
+                        )),
                   ],
                 ),
               ),
@@ -187,12 +198,15 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget buildGestureDetector(routes, title) {
+  Widget buildGestureDetector(routes, title, icon) {
     return GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, routes);
         },
-        child: ListTile(title: Text(title)));
+        child: ListTile(
+          title: Text(title),
+          leading: Icon(icon),
+        ));
   }
 
   Future<String> signOut() async {

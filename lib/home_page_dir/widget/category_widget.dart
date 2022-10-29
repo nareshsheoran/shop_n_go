@@ -17,22 +17,29 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
+
+  @override
+  void initState() {
+    // CategoryService.getInstance().fetchAllCategory();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return (CategoryService().isLoadingAllCategory)
+    return (CategoryService.getInstance().isLoadingAllCategory)
         ? SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 140,
             child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CProgressIndicator.circularProgressIndicator,
-                    SizedBox(height: 16),
-                    Text("Please Wait..",
-                        style: TextStyle(fontWeight: FontWeight.w500)),
-                   ],
-                )),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CProgressIndicator.circularProgressIndicator,
+                SizedBox(height: 16),
+                Text("Please Wait..",
+                    style: TextStyle(fontWeight: FontWeight.w500)),
+              ],
+            )),
           )
         : SizedBox(
             width: MediaQuery.of(context).size.width,
@@ -40,11 +47,14 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: ListView.builder(
-                  itemCount: CategoryService().dataAllCategoryList.length,
+                  itemCount:
+                      CategoryService.getInstance().dataAllCategoryList.length.bitLength,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   // physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
+                    var item =
+                        CategoryService.getInstance().dataAllCategoryList;
                     return SizedBox(
                       width: 110,
                       height: 160,
@@ -54,15 +64,10 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                           Navigator.pushNamed(
                               context, AppRoutes.CategoryNamePage,
                               arguments: ScreenArguments(
-                                  Images.baseUrl + imageList[index],
-                                  CategoryService()
-                                      .dataAllCategoryList[index]
-                                      .name!,
+                                  Images.baseUrl + item[index].images!,
+                                  item[index].name!,
                                   "Description",
-                                  CategoryService()
-                                      .dataAllCategoryList[index]
-                                      .id
-                                      .toString()));
+                                  item[index].id.toString()));
                         },
                         child: Card(
                           child: Padding(
@@ -77,11 +82,9 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                       width: ImageDimension.imageWidth,
                                       height: ImageDimension.imageHeight,
                                       fit: BoxFit.fill,
-                                      image: NetworkImage(imageList[index])),
+                                      image: NetworkImage(Images.baseUrl + item[index].images!)),
                                 ),
-                                Text(
-                                  CategoryService()
-                                      .dataAllCategoryList[index]
+                                Text(item[index]
                                       .name!,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -100,14 +103,4 @@ class _CategoryWidgetState extends State<CategoryWidget> {
   }
 }
 
-List imageList = [
-  Images.laysImg,
-  Images.softDrinksImg,
-  Images.bakeryImg,
-  Images.diaryImg,
-  Images.frozenImg,
-  Images.cookingEssImg,
-  Images.chillyImg,
-  Images.ladiesFingerImg,
-  Images.radisImg,
-];
+

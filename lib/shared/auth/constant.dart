@@ -41,12 +41,12 @@ class AddressDetails {
   static String? flat;
   static String? pinCode;
   static String? state;
-  static String? village;
+  static String? area;
+  static String? landMark;
 }
 
 class NetworkUtil {
-  static String baseUrl =
-      "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
+  static String baseUrl = "https://apiforshopandgo.pythonanywhere.com/shopngo-api/";
   static String getSignUpUrl = baseUrl + "register/";
   static String getLoginUrl = baseUrl + "login/";
   static String getUserProfileUrl = baseUrl + "user-profile/";
@@ -54,8 +54,7 @@ class NetworkUtil {
   static String getProductDetailsUrl = baseUrl + "all-products/";
   static String getConsumerAddressUrl = baseUrl + "consumer-address/";
   static String getCategoryUrl = baseUrl + "category/";
-  static String getCategoryBasedProductUrl =
-      baseUrl + "category-based-product/";
+  static String getCategoryBasedProductUrl = baseUrl + "category-based-product/";
   static String getOrderDetailsUrl = baseUrl + "orders/";
   static String getStoreListUrl = baseUrl + "store-list/";
   static String getRecommendedUrl = baseUrl + "recommended/";
@@ -68,13 +67,18 @@ class NetworkUtil {
   static String getVendorProductUrl = baseUrl + "vendor-product/";
   static String getVendorProfileUrl = baseUrl + "store-list/";
   static String getNearByStoreUrl = baseUrl + "near-by-store";
-  static String getAddIntoCartStoreBasisUrl =
-      baseUrl + "add-into-cart-store-basis";
+  static String getAddIntoCartStoreBasisUrl = baseUrl + "add-into-cart-store-basis";
   static String getStoreProductRatingUrl = baseUrl + "store-product-rating";
-  static String getProdDetailsByBarCodeUrl =
-      baseUrl + "get-product-detail-by-barcode";
+  static String getProdDetailsByBarCodeUrl = baseUrl + "get-product-detail-by-barcode";
   static String getStoreMobileLoginUrl = baseUrl + "store-mobile-login-api";
   static String getStoreVerifyOtpUrl = baseUrl + "store-verify-otp";
+  static String postAddToCartUrl = baseUrl + "add-to-cart/";
+  static String postRemoveToCartUrl = baseUrl + "remove-to-cart/";
+  static String storeListCartUrl = baseUrl + "cart-store-list/";
+  static String cartItemByStoreUrl = baseUrl + "get-to-cart/";
+  static String cartToOrderUrl = baseUrl + "cart-to-order";
+  static String fetchMasterOrderUrl = baseUrl + "master-order";
+  static String fetchMasterOrderDetailsUrl = baseUrl + "master-order-details";
 }
 
 class ApiKey {
@@ -192,6 +196,4 @@ class Images {
 
   static const laysImg =
       "${Images.baseUrl}/media/product_image/Lays_brand_logo_cDRB49B.png";
-
-// static const   fruitImg =  ("");
 }

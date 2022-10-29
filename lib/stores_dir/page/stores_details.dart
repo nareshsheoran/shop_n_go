@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
 import 'dart:convert';
 
@@ -6,12 +6,14 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
+import 'package:shop_n_go/shared/service/product_add_to_N_cart_service.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
 import 'package:http/http.dart';
 import '../model/store_list_req.dart';
@@ -42,13 +44,12 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
       isProduct = true;
     });
     Uri myUri = Uri.parse(
-        "${NetworkUtil.getVendorProductUrl}${storeListRequestData!.authPerson
-            ?.toLowerCase()}v");
+        "${NetworkUtil.getVendorProductUrl}${storeListRequestData!.authPerson?.toLowerCase()}v");
     Response response = await get(myUri);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
       StoreListDetailsReq storeListDetailsReq =
-      StoreListDetailsReq.fromJson(jsonResponse);
+          StoreListDetailsReq.fromJson(jsonResponse);
       setState(() {
         if (storeListDetailsReq.statusCode == 400) {
           isProduct = false;
@@ -76,10 +77,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
   Widget build(BuildContext context) {
     if (storeListRequestData == null) {
       storeListRequestData =
-      ModalRoute
-          .of(context)
-          ?.settings
-          .arguments as StoreListData;
+          ModalRoute.of(context)?.settings.arguments as StoreListData;
       fetchStoreDetailsData();
     }
 
@@ -92,10 +90,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                 children: [
                   Image(
                       height: 200,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      width: MediaQuery.of(context).size.width,
                       fit: BoxFit.fill,
                       image: NetworkImage(
                         // image.toString(),
@@ -119,19 +114,20 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                               Expanded(
                                   child: Text(
                                       "${storeListRequestData!.distance}")),
-                              (isProduct == false || isLoading == true) ? Text(
-                                  "") : Icon(Icons.card_travel),
+                              (isProduct == false || isLoading == true)
+                                  ? Text("")
+                                  : Icon(Icons.card_travel),
                               SizedBox(width: 8),
                               // (storeListRequestData!.noOfProducts == 0)
-                              (isProduct == false || isLoading == true) ? Text(
-                                  "") :
-                              (dataAllStoreDetailsList.length <= 1)
-                                  ? Text(
-                                // "${storeListRequestData!.noOfProducts} Item")
-                                  "${dataAllStoreDetailsList.length} Item")
-                                  : Text(
-                                // "${storeListRequestData!.noOfProducts} Items")
-                                  "${dataAllStoreDetailsList.length} Items")
+                              (isProduct == false || isLoading == true)
+                                  ? Text("")
+                                  : (dataAllStoreDetailsList.length <= 1)
+                                      ? Text(
+                                          // "${storeListRequestData!.noOfProducts} Item")
+                                          "${dataAllStoreDetailsList.length} Item")
+                                      : Text(
+                                          // "${storeListRequestData!.noOfProducts} Items")
+                                          "${dataAllStoreDetailsList.length} Items")
                             ],
                           ),
                           SizedBox(height: 10),
@@ -148,9 +144,7 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                               Icon(Icons.currency_rupee_rounded),
                               SizedBox(width: 8),
                               Text(
-                                  "Minimum Order ${AppDetails
-                                      .currencySign}${storeListRequestData!
-                                      .minimumOrder}")
+                                  "Minimum Order ${AppDetails.currencySign}${storeListRequestData!.minimumOrder}")
                             ],
                           ),
                           SizedBox(height: 10),
@@ -165,31 +159,31 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                           (isProduct == false || isLoading == true)
                               ? Text("")
                               : Text(
-                            "Products Available",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
+                                  "Products Available",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                           SizedBox(height: 10),
                           (isProduct == false || isLoading == true)
                               ? Text("")
                               : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context,
-                                        AppRoutes.StoreSearchPage,
-                                        arguments: storeListRequestData);
-                                  },
-                                  child: Text("View All",
-                                      style: TextStyle(
-                                          color: Constant.primaryColor,
-                                          fontWeight: FontWeight.bold)),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushNamed(context,
+                                              AppRoutes.StoreSearchPage,
+                                              arguments: storeListRequestData);
+                                        },
+                                        child: Text("View All",
+                                            style: TextStyle(
+                                                color: Constant.primaryColor,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
                           // SizedBox(height: 10),
                         ],
                       ),
@@ -197,199 +191,184 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
                   ),
                   (isLoading)
                       ? SizedBox(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 3,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    child: Center(
-                      child: CProgressIndicator.circularProgressIndicator,
-                    ),
-                  )
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: CProgressIndicator.circularProgressIndicator,
+                          ),
+                        )
                       : (isProduct || dataAllStoreDetailsList.isNotEmpty)
-                      ? SizedBox(
-                    height: 157,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    child: ListView.builder(
-                      itemCount: dataAllStoreDetailsList.length >= 4
-                          ? dataAllStoreDetailsList.length
-                          .toInt()
-                          .bitLength
-                          : dataAllStoreDetailsList.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Stack(
-                          children: [
-                            Container(
-                              height: 157,
-                              width: 150,
-                              child: Card(
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 9),
-                                    Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: (isLoading)
-                                          ? SizedBox(
-                                        height: ImageDimension
-                                            .imageWidth -
-                                            16,
-                                        width: ImageDimension
-                                            .imageWidth -
-                                            16,
-                                        child: Center(
-                                          child: CProgressIndicator
-                                              .circularProgressIndicator,
-                                        ),
-                                      )
-                                          : GestureDetector(
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context,
-                                              AppRoutes
-                                                  .CategoriesDetailsPage,
-                                              arguments: ScreenArguments(
-                                                  Images.baseUrl +
-                                                      dataAllStoreDetailsList[
-                                                      index]
-                                                          .itemImages!,
-                                                  dataAllStoreDetailsList[
-                                                  index]
-                                                      .itemName!,
-                                                  dataAllStoreDetailsList[
-                                                  index]
-                                                      .description!,
-                                                  dataAllStoreDetailsList[
-                                                  index]
-                                                      .itemCode!));
-                                        },
-                                        child: Image(
-                                          width: ImageDimension
-                                              .imageWidth -
-                                              16,
-                                          height: ImageDimension
-                                              .imageHeight -
-                                              25,
-                                          fit: BoxFit.fill,
-                                          image: NetworkImage(Images
-                                              .baseUrl +
-                                              dataAllStoreDetailsList[
-                                              index]
-                                                  .itemImages!),
-                                        ),
-                                      ),
-                                    ),
-                                    // SizedBox(height: 4),
-                                    Text(
-                                      // "${dataAllStoreDetailsList[index].itemName} ${itemData[index].weight}kg"),
-                                        "${dataAllStoreDetailsList[index]
-                                            .itemName}"),
-                                    // SizedBox(height: 4),
-                                    Padding(
-                                      padding:
-                                      const EdgeInsets.fromLTRB(
-                                          4, 0, 4, 4),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                        children: [
-                                          Text(
-                                              "${AppDetails
-                                                  .currencySign}${(((dataAllStoreDetailsList[index]
-                                                  .price)!) *
-                                                  (itemData[index].counter))
-                                                  .toStringAsFixed(0)}"),
-                                          ElevatedButton(
-                                              style: ElevatedButton
-                                                  .styleFrom(
-                                                  minimumSize:
-                                                  Size(
-                                                      20, 30),
-                                                  primary: Constant
-                                                      .primaryColor),
-                                              onPressed: () {
-                                                ProductAddCartService()
-                                                    .proAddedIntoCart(
-                                                    index,
-                                                    dataAllStoreDetailsList[
-                                                    index]
-                                                        .itemCode);
-                                                setState(() {
-                                                  // CartProductService.getInstance()
-                                                  //     .fetchAllCartProductDataDetails();
-                                                  // CartProductService.getInstance()
-                                                  //     .fetchAllCartProductDataDetails();
-                                                  ProductAddCartService()
-                                                      .statusCode ==
-                                                      200
-                                                      ? dataAllStoreDetailsList
-                                                      .removeAt(
-                                                      index)
-                                                      : null;
-                                                });
-                                              },
-                                              child: Text(
-                                                "ADD +",
-                                                style: TextStyle(
-                                                    fontSize: 12),
-                                              ))
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                                height: 180,
+                                width: MediaQuery.of(context).size.width,
+                                child: ListView.builder(
+                                  itemCount: dataAllStoreDetailsList.length >= 4
+                                      ? dataAllStoreDetailsList.length
+                                          .toInt()
+                                          .bitLength
+                                      : dataAllStoreDetailsList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    var item = dataAllStoreDetailsList[index];
+                                    return Stack(
+                                      children: [
+                                        Container(
+                                          height: 175,
+                                          width: 150,
+                                          child: Card(
+                                            child: Column(
+                                              children: [
+                                                // SizedBox(height: 9),
+                                                Padding(
+                                                  padding: EdgeInsets.all(8),
+                                                  child: (isLoading)
+                                                      ? SizedBox(
+                                                          height: ImageDimension
+                                                                  .imageWidth-10,
+                                                          width: ImageDimension
+                                                                  .imageWidth -
+                                                              10,
+                                                          child: Center(
+                                                            child: CProgressIndicator
+                                                                .circularProgressIndicator,
+                                                          ),
+                                                        )
+                                                      : GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pushNamed(
+                                                                context,
+                                                                AppRoutes
+                                                                    .CategoriesDetailsPage,
+                                                                arguments: ScreenArguments(
+                                                                    Images.baseUrl +
+                                                                        item.itemImages!,
+                                                                    item.itemName!,
+                                                                    item.description!,
+                                                                    item.itemCode!));
+                                                          },
+                                                          child: Image(
+                                                            width: ImageDimension
+                                                                    .imageWidth -
+                                                                16,
+                                                            height: ImageDimension
+                                                                    .imageHeight -
+                                                                10,
+                                                            fit: BoxFit.fill,
+                                                            image: NetworkImage(
+                                                                Images.baseUrl +
+                                                                    item.itemImages!),
+                                                          ),
+                                                        ),
+                                                ),
+                                                Expanded(
+                                                  child: Center(
+                                                    child: Text(
+                                                        "${item.itemName}",maxLines: 2,style: TextStyle(fontSize: 16),textAlign: TextAlign.center,),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                       EdgeInsets.fromLTRB(
+                                                          4, 0, 4, 0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                          "${AppDetails.currencySign}${((item.price)!).toStringAsFixed(0)}"),
+                                                      ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                                  minimumSize:
+                                                                      Size(
+                                                                          20, 30),
+                                                                  primary: Constant
+                                                                      .primaryColor),
+                                                          onPressed: () {
+                                                            ProductAddCartService
+                                                                    .getInstance()
+                                                                .proAddedIntoCart(
+                                                                    index,
+                                                                    item.itemCode);
+                                                            ProductAddToNCartService
+                                                                    .getInstance()
+                                                                .proAddedIntoCart(
+                                                                    item.itemCode,
+                                                                    item.vendorId);
+                                                            setState(() {
+                                                              (ProductAddCartService.getInstance()
+                                                                              .statusCode ==
+                                                                          200 ||
+                                                                      ProductAddToNCartService.getInstance()
+                                                                              .statusCode ==
+                                                                          200)
+                                                                  ? dataAllStoreDetailsList
+                                                                      .removeAt(
+                                                                          index)
+                                                                  : null;
+                                                              if (dataAllStoreDetailsList
+                                                                  .isEmpty) {
+                                                                setState(() {
+                                                                  isProduct =
+                                                                      false;
+                                                                });
+                                                              }
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            "ADD +",
+                                                            style: TextStyle(
+                                                                fontSize: 12),
+                                                          ))
 
-                                          // counterWidget(index)
-                                        ],
-                                      ),
-                                    )
-                                  ],
+                                                      // counterWidget(index)
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                            top: 6,
+                                            right: 8,
+                                            child: FavoriteButton(
+                                              iconSize: 32,
+                                              isFavorite: false,
+                                              valueChanged: (_isFavorite) {
+                                                print(
+                                                    'Is Favorite : $_isFavorite');
+                                                if (_isFavorite) {
+                                                  FavouriteService.getInstance()
+                                                      .fetchFavouriteDetails();
+                                                  AddProdIntoFavService()
+                                                      .addProdIntoFav(
+                                                          item.itemCode,
+                                                          item.vendorMasters);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg: "Favourite Removed");
+                                                }
+                                              },
+                                            ))
+                                      ],
+                                    );
+                                  },
                                 ),
                               ),
-                            ),
-                            Positioned(
-                                top: 6,
-                                right: 8,
-                                child: FavoriteButton(
-                                  iconSize: 32,
-                                  isFavorite: false,
-                                  valueChanged: (_isFavorite) {
-                                    print(
-                                        'Is Favorite : $_isFavorite');
-                                    _isFavorite
-                                        ? AddProdIntoFavService()
-                                        .addProdIntoFav(
-                                        dataAllStoreDetailsList[
-                                        index]
-                                            .itemCode)
-                                        : Fluttertoast.showToast(
-                                        msg: "Favourite Removed");
-                                  },
-                                ))
-                          ],
-                        );
-                      },
-                    ),
-                  )
-                      : isProduct == false
-                      ? SizedBox(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .width / 3,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      child: Center(
-                          child: Text(
-                            "No Product Found",
-                            style: TextStyle(fontSize: 18),
-                          )))
-                      : SizedBox(),
+                          )
+                          : isProduct == false
+                              ? SizedBox(
+                                  height: MediaQuery.of(context).size.width / 3,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Center(
+                                      child: Text("No More Product Found",
+                                          style: TextStyle(fontSize: 18))))
+                              : SizedBox(),
                 ],
               ),
               Positioned(
@@ -425,123 +404,4 @@ class _StoresDetailsPageState extends State<StoresDetailsPage> {
     );
   }
 
-  Widget counterWidget(int index) {
-    return
-      // itemData[index].shouldVisible ?
-      //    Center(
-      //       child: Container(
-      //       height: 30,
-      //       width: 70,
-      //       decoration: BoxDecoration(
-      //           color: Colors.grey[200],
-      //           borderRadius: BorderRadius.circular(4),
-      //           border: Border.all(color: Colors.white70)),
-      //       child: Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //         children: <Widget>[
-      //           InkWell(
-      //               onTap: () {
-      //                 setState(() {
-      //                   if (itemData[index].counter < 1) {
-      //                     itemData[index].shouldVisible =
-      //                         !itemData[index].shouldVisible;
-      //                   } else {
-      //                     itemData[index].counter--;
-      //                   }
-      //                 });
-      //               },
-      //               child: Icon(
-      //                 Icons.remove,
-      //                 color: Constant.primaryColor,
-      //                 size: 22,
-      //               )),
-      //           SizedBox(width: 4),
-      //           (itemData[index].counter == 0 ||
-      //                   itemData[index].counter == null)
-      //               ? Text(
-      //                   '${itemData[index].counter}',
-      //                   style: TextStyle(color: Colors.black),
-      //                 )
-      //               : Text(
-      //                   '${itemData[index].counter}',
-      //                   style: const TextStyle(color: Colors.black),
-      //                 ),
-      //           SizedBox(width: 4),
-      //           InkWell(
-      //               onTap: () {
-      //                 setState(() {
-      //                   itemData[index].counter++;
-      //                 });
-      //               },
-      //               child: Icon(
-      //                 Icons.add,
-      //                 color: Constant.primaryColor,
-      //                 size: 22,
-      //               )),
-      //         ],
-      //       ),
-      //     )):
-      Container(
-        padding: EdgeInsets.all(5),
-        height: 30,
-        width: 80,
-        decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: Colors.white70)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            InkWell(
-                onTap: () {
-                  setState(() {
-                    // itemData[index].counter--;
-                    if (itemData[index].counter < 1) {
-                      itemData[index].shouldVisible =
-                      !itemData[index].shouldVisible;
-                      if (itemData[index].counter == 0) {
-                        setState(() {
-                          itemData.removeAt(index);
-                        });
-                      }
-                    } else {
-                      itemData[index].counter--;
-                      if (itemData[index].counter == 0) {
-                        setState(() {
-                          itemData.removeAt(index);
-                        });
-                      }
-                    }
-                  });
-                },
-                child: Center(
-                    child: Icon(
-                      Icons.remove,
-                      color: Constant.primaryColor,
-                      size: 22,
-                    ))),
-            SizedBox(width: 2),
-            Text(
-              '${itemData[index].counter}',
-              style: const TextStyle(color: Colors.black),
-            ),
-            SizedBox(width: 2),
-            InkWell(
-                onTap: () {
-                  setState(() {
-                    itemData[index].counter++;
-                    itemData[index].shouldVisible =
-                    !itemData[index].shouldVisible;
-                  });
-                },
-                child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Constant.primaryColor,
-                      size: 22,
-                    ))),
-          ],
-        ),
-      );
-  }
 }

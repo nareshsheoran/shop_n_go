@@ -18,8 +18,9 @@ Future<void> fetchDataSP() async {
   MapDetails.longitude = await AddressLocalDataSaver.getLongitude();
   MapDetails.latitude = await AddressLocalDataSaver.getLatitude();
   AddressDetails.flat = await AddressLocalDataSaver.getFlat();
-  AddressDetails.village = await AddressLocalDataSaver.getVillage();
+  AddressDetails.area = await AddressLocalDataSaver.getArea();
   AddressDetails.city = await AddressLocalDataSaver.getCity();
+  AddressDetails.landMark = await AddressLocalDataSaver.getLandmark();
   AddressDetails.state = await AddressLocalDataSaver.getState();
   AddressDetails.country = await AddressLocalDataSaver.getCountry();
   AddressDetails.pinCode = await AddressLocalDataSaver.getPinCode();
@@ -42,8 +43,9 @@ Future<void> clearDataSP() async {
   AddressLocalDataSaver.saveLatitude('');
   AddressLocalDataSaver.saveLongitude('');
   AddressLocalDataSaver.saveFlat("");
-  AddressLocalDataSaver.saveVillage("");
+  AddressLocalDataSaver.saveArea("");
   AddressLocalDataSaver.saveCity("");
+  AddressLocalDataSaver.saveLandmark("");
   AddressLocalDataSaver.saveState("");
   AddressLocalDataSaver.savePinCode("");
   AddressLocalDataSaver.saveCountry("");

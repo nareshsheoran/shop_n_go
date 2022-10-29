@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_collection_literals, unnecessary_this
-
 class CategoryBasedProductReq {
   bool? success;
   String? message;
@@ -15,14 +13,14 @@ class CategoryBasedProductReq {
     if (json['data'] != null) {
       data = <CategoryBasedProductData>[];
       json['data'].forEach((v) {
-        data!.add(CategoryBasedProductData.fromJson(v));
+        data!.add(new CategoryBasedProductData.fromJson(v));
       });
     }
     statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -45,19 +43,23 @@ class CategoryBasedProductData {
   String? vendorMasters;
   String? description;
   String? tags;
+  String? vendorId;
+  String? vendorName;
 
   CategoryBasedProductData(
       {this.itemCode,
-      this.itemName,
-      this.offerPrice,
-      this.price,
-      this.itemImages,
-      this.mFG,
-      this.itemCategory,
-      this.itemBrands,
-      this.vendorMasters,
-      this.description,
-      this.tags});
+        this.itemName,
+        this.offerPrice,
+        this.price,
+        this.itemImages,
+        this.mFG,
+        this.itemCategory,
+        this.itemBrands,
+        this.vendorMasters,
+        this.description,
+        this.tags,
+        this.vendorId,
+        this.vendorName});
 
   CategoryBasedProductData.fromJson(Map<String, dynamic> json) {
     itemCode = json['item_code'];
@@ -71,10 +73,12 @@ class CategoryBasedProductData {
     vendorMasters = json['vendor_masters'];
     description = json['description'];
     tags = json['tags'];
+    vendorId = json['vendor_id'];
+    vendorName = json['vendor_name'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['item_code'] = this.itemCode;
     data['item_name'] = this.itemName;
     data['offer_price'] = this.offerPrice;
@@ -86,6 +90,8 @@ class CategoryBasedProductData {
     data['vendor_masters'] = this.vendorMasters;
     data['description'] = this.description;
     data['tags'] = this.tags;
+    data['vendor_id'] = this.vendorId;
+    data['vendor_name'] = this.vendorName;
     return data;
   }
 }

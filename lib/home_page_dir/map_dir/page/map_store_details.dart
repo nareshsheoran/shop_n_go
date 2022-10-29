@@ -8,10 +8,12 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
+import 'package:shop_n_go/home_page_dir/map_dir/model/near_by_stores_req.dart';
 import 'package:shop_n_go/home_page_dir/map_dir/model/vendor_profile_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
+import 'package:shop_n_go/shared/service/product_add_to_N_cart_service.dart';
 import 'package:shop_n_go/shop_in_dir/model/add_into_cart_store_basis_req.dart';
 import 'package:shop_n_go/shop_in_dir/model/get_prod_based_on_barCode_req.dart';
 
@@ -25,7 +27,7 @@ class MapStoreDetailsPage extends StatefulWidget {
 class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
   // Object? image = '';
   String _scanBarcode = 'Unknown';
-  VendorProfileReqData? vendorProfileReqData;
+  NearByStoresReqData? nearByStoresReqData;
 
   Future<void> scanQR() async {
     String barcodeScanRes;
@@ -59,8 +61,8 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    vendorProfileReqData =
-        ModalRoute.of(context)?.settings.arguments! as VendorProfileReqData?;
+    nearByStoresReqData =
+        ModalRoute.of(context)?.settings.arguments! as NearByStoresReqData?;
 
     return Scaffold(
       body: SafeArea(
@@ -75,17 +77,17 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.fill,
                           image: NetworkImage(
-                            "${Images.baseUrl}${vendorProfileReqData?.vendorProfile!}",
+                            "${Images.baseUrl}${nearByStoresReqData?.vendorProfile!}",
                           )),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(vendorProfileReqData!.vendorName!,
+                            Text(nearByStoresReqData!.vendorName!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Text(vendorProfileReqData!.address!,
+                            Text(nearByStoresReqData!.address!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 14)),
                           ],
@@ -138,17 +140,17 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.fill,
                           image: NetworkImage(
-                            "${Images.baseUrl}${vendorProfileReqData?.vendorProfile!}",
+                            "${Images.baseUrl}${nearByStoresReqData?.vendorProfile!}",
                           )),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(vendorProfileReqData!.vendorName!,
+                            Text(nearByStoresReqData!.vendorName!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Text(vendorProfileReqData!.address!,
+                            Text(nearByStoresReqData!.address!,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 14)),
                           ],
@@ -334,14 +336,19 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                                                             primary: Constant
                                                                 .primaryColor),
                                                     onPressed: () {
-                                                      ProductAddCartService()
+                                                      ProductAddCartService
+                                                              .getInstance()
                                                           .proAddedIntoCart(
                                                               index,
                                                               item.itemCode);
+                                                      ProductAddToNCartService
+                                                              .getInstance()
+                                                          .proAddedIntoCart(
+                                                              item.itemCode,
+                                                              item.vendorId);
                                                       setState(() {
-                                                        // CartProductService.getInstance()
-                                                        //     .fetchAllCartProductDataDetails();
-                                                        ProductAddCartService()
+                                                        ProductAddCartService
+                                                                        .getInstance()
                                                                     .statusCode ==
                                                                 200
                                                             ? getProductBasedOnBarCodeReqDataList

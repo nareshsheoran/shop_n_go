@@ -5,6 +5,7 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_n_go/home_page_dir/model_req/all_product_req.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/home_page_dir/service/new_product_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
@@ -107,7 +108,8 @@ class _AllProductPageState extends State<AllProductPage> {
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: GridView.builder(
-                    itemCount: NewProductService().dataAllProdList.length,
+                    itemCount:
+                        NewProductService.getInstance().dataAllProdList.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       childAspectRatio: 0.7,
@@ -116,25 +118,19 @@ class _AllProductPageState extends State<AllProductPage> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
+                      var item =
+                          NewProductService.getInstance().dataAllProdList;
                       return GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
                               context, AppRoutes.CategoriesDetailsPage,
                               arguments: ScreenArguments(
-                                  Images.baseUrl +
-                                      NewProductService()
-                                          .dataAllProdList[index]
-                                          .itemImages!,
-                                  NewProductService()
-                                      .dataAllProdList[index]
-                                      .itemName!,
-                                  "description",
-                                  NewProductService()
-                                      .dataAllProdList[index]
-                                      .itemCode!));
+                                  Images.baseUrl + item[index].itemImages!,
+                                  item[index].itemName!,
+                                  item[index].description!,
+                                  item[index].itemCode!));
                         },
-                        child: containerWidget(
-                            index, NewProductService().dataAllProdList),
+                        child: containerWidget(index, item),
                       );
                     },
                   ),
@@ -162,7 +158,7 @@ class _AllProductPageState extends State<AllProductPage> {
                                   Images.baseUrl +
                                       _foundDetail[index].itemImages!,
                                   _foundDetail[index].itemName!,
-                                  "description",
+                                  _foundDetail[index].description!,
                                   _foundDetail[index].itemCode!));
                         },
                         child: containerWidget(index, _foundDetail),
@@ -243,10 +239,13 @@ class _AllProductPageState extends State<AllProductPage> {
                 isFavorite: false,
                 valueChanged: (_isFavorite) {
                   print('Is Favorite : $_isFavorite');
-                  _isFavorite
-                      ? AddProdIntoFavService()
-                          .addProdIntoFav(list[index].itemCode)
-                      : Fluttertoast.showToast(msg: "Favourite Removed");
+                  if (_isFavorite) {
+                    FavouriteService.getInstance().fetchFavouriteDetails();
+                    AddProdIntoFavService().addProdIntoFav(
+                        list[index].itemCode, list[index].vendorId);
+                  } else {
+                    Fluttertoast.showToast(msg: "Favourite Removed");
+                  }
                 },
               ))
         ],
@@ -274,7 +273,7 @@ class _AllProductPageState extends State<AllProductPage> {
         setState(() {
           isLoading = true;
         });
-        results = NewProductService()
+        results = NewProductService.getInstance()
             .dataAllProdList
             .where((user) =>
                 user.itemName!.toLowerCase().contains(searchKey.toLowerCase()))

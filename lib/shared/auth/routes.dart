@@ -7,6 +7,7 @@ import 'package:shop_n_go/account_dir/page/account_page.dart';
 import 'package:shop_n_go/account_dir/page/address_page.dart';
 import 'package:shop_n_go/account_dir/page/cancel_refund_page.dart';
 import 'package:shop_n_go/account_dir/page/help_page.dart';
+import 'package:shop_n_go/account_dir/page/order_details_page.dart';
 import 'package:shop_n_go/account_dir/page/order_page.dart';
 import 'package:shop_n_go/account_dir/page/payment_page.dart';
 import 'package:shop_n_go/account_dir/page/privacy_policy_page.dart';
@@ -70,6 +71,7 @@ class AppRoutes {
   static const String MapStoreDetailsPage = "Map Store Details Page";
   static const String AllBestSellerProduct = "All Best Seller Product Page";
   static const String ForgotPasswordPage = "Forgot Password Page";
+  static const String OrderDetailsPage = "OrderDetailsPage";
 }
 
 Map<String, WidgetBuilder> routes = {
@@ -106,4 +108,5 @@ Map<String, WidgetBuilder> routes = {
   AppRoutes.MapStoreDetailsPage: (context) => const MapStoreDetailsPage(),
   AppRoutes.AllBestSellerProduct: (context) => const AllBestSellerProduct(),
   AppRoutes.ForgotPasswordPage: (context) => const ForgotPasswordPage(),
+  AppRoutes.OrderDetailsPage: (context) => const OrderDetailsPage(),
 };

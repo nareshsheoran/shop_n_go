@@ -4,12 +4,7 @@ class StoreListDetailsReq {
   List<StoreListDetailsData>? data;
   int? statusCode;
 
-  StoreListDetailsReq({
-    this.success,
-    this.message,
-    this.data,
-    this.statusCode,
-  });
+  StoreListDetailsReq({this.success, this.message, this.data, this.statusCode});
 
   StoreListDetailsReq.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -17,7 +12,7 @@ class StoreListDetailsReq {
     if (json['data'] != null) {
       data = <StoreListDetailsData>[];
       json['data'].forEach((v) {
-        data!.add(StoreListDetailsData.fromJson(v));
+        data!.add(new StoreListDetailsData.fromJson(v));
       });
     }
     statusCode = json['status_code'];
@@ -47,20 +42,21 @@ class StoreListDetailsData {
   String? vendorMasters;
   String? description;
   String? tags;
+  String? vendorId;
 
-  StoreListDetailsData({
-    this.itemCode,
-    this.itemName,
-    this.offerPrice,
-    this.price,
-    this.itemImages,
-    this.mFG,
-    this.itemCategory,
-    this.itemBrands,
-    this.vendorMasters,
-    this.description,
-    this.tags,
-  });
+  StoreListDetailsData(
+      {this.itemCode,
+        this.itemName,
+        this.offerPrice,
+        this.price,
+        this.itemImages,
+        this.mFG,
+        this.itemCategory,
+        this.itemBrands,
+        this.vendorMasters,
+        this.description,
+        this.tags,
+        this.vendorId});
 
   StoreListDetailsData.fromJson(Map<String, dynamic> json) {
     itemCode = json['item_code'];
@@ -74,6 +70,7 @@ class StoreListDetailsData {
     vendorMasters = json['vendor_masters'];
     description = json['description'];
     tags = json['tags'];
+    vendorId = json['vendor_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -89,6 +86,7 @@ class StoreListDetailsData {
     data['vendor_masters'] = this.vendorMasters;
     data['description'] = this.description;
     data['tags'] = this.tags;
+    data['vendor_id'] = this.vendorId;
     return data;
   }
 }

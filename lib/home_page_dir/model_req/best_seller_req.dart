@@ -12,7 +12,7 @@ class BestSellerRequest {
     if (json['data'] != null) {
       data = <BestSellerData>[];
       json['data'].forEach((v) {
-        data!.add( BestSellerData.fromJson(v));
+        data!.add(new BestSellerData.fromJson(v));
       });
     }
     statusCode = json['status_code'];
@@ -44,12 +44,16 @@ class BestSellerData {
   String? tags;
   String? mFG;
   String? expiaryDate;
+  int? rating;
+  String? barcodeSequence;
   String? description;
   String? uploadAt;
   String? updateAt;
   int? itemCategory;
   int? itemSubCategory;
   String? itemBrands;
+  String? vendorId;
+  String? vendorName;
 
   BestSellerData(
       {this.itemCode,
@@ -65,12 +69,16 @@ class BestSellerData {
         this.tags,
         this.mFG,
         this.expiaryDate,
+        this.rating,
+        this.barcodeSequence,
         this.description,
         this.uploadAt,
         this.updateAt,
         this.itemCategory,
         this.itemSubCategory,
-        this.itemBrands});
+        this.itemBrands,
+        this.vendorId,
+        this.vendorName});
 
   BestSellerData.fromJson(Map<String, dynamic> json) {
     itemCode = json['item_code'];
@@ -86,12 +94,16 @@ class BestSellerData {
     tags = json['tags'];
     mFG = json['MFG'];
     expiaryDate = json['expiary_date'];
+    rating = json['rating'];
+    barcodeSequence = json['barcode_sequence'];
     description = json['description'];
     uploadAt = json['upload_at'];
     updateAt = json['update_at'];
     itemCategory = json['item_category'];
     itemSubCategory = json['item_sub_category'];
     itemBrands = json['item_brands'];
+    vendorId = json['vendor_id'];
+    vendorName = json['vendor_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -109,12 +121,16 @@ class BestSellerData {
     data['tags'] = this.tags;
     data['MFG'] = this.mFG;
     data['expiary_date'] = this.expiaryDate;
+    data['rating'] = this.rating;
+    data['barcode_sequence'] = this.barcodeSequence;
     data['description'] = this.description;
     data['upload_at'] = this.uploadAt;
     data['update_at'] = this.updateAt;
     data['item_category'] = this.itemCategory;
     data['item_sub_category'] = this.itemSubCategory;
     data['item_brands'] = this.itemBrands;
+    data['vendor_id'] = this.vendorId;
+    data['vendor_name'] = this.vendorName;
     return data;
   }
 }

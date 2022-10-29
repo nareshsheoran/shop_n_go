@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/login_dir/model/login_response_req.dart';
 import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
@@ -25,6 +26,7 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'Enter Username',
+                          hintText: 'Enter username',
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(
@@ -108,13 +110,22 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
+                      obscureText: !showPassword,
                       controller: passwordController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                              icon: Icon(showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              onPressed: () => setState(() {
+                                    showPassword = !showPassword;
+                                  }),
+                              color: Constant.primaryColor),
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'Enter Your Password',
+                          hintText: 'Enter password',
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(
@@ -175,7 +186,9 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("OR", style: TextStyle(fontWeight: FontWeight.bold))
+                    Text("OR",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16))
                   ],
                 ),
                 SizedBox(height: 10),
@@ -272,9 +285,14 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
       ProfileDetails.password = (await LocalDataSaver.getPassword())!;
       ProfileDetails.loginToken = (await LocalDataSaver.getLoginToken())!;
       try {
-        await UserProfileService().fetchUserProfileDetails();
+        await UserProfileService.getInstance().fetchUserProfileDetails();
       } catch (exception) {
         print("UserProfileService:$exception");
+      }
+      try {
+        await FavouriteService.getInstance().fetchFavouriteDetails();
+      } catch (exception) {
+        print("FavouriteService:$exception");
       }
       await fetchDataSP();
       await Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);

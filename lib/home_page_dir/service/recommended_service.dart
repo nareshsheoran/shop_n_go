@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_conditional_assignment
 
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,12 +10,15 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 
 class RecommendedService {
+  static RecommendedService? _instance;
+
   RecommendedService._internal();
 
-  static final RecommendedService _instance = RecommendedService._internal();
-
-  factory RecommendedService() {
-    return _instance;
+  static RecommendedService getInstance() {
+    if (_instance == null) {
+      _instance = RecommendedService._internal();
+    }
+    return _instance!;
   }
 
   int? statusCode;

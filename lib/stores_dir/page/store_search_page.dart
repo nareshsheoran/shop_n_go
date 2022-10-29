@@ -8,6 +8,7 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
+import 'package:shop_n_go/shared/service/product_add_to_N_cart_service.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_details_req.dart';
 import 'package:shop_n_go/stores_dir/model/store_list_req.dart';
 
@@ -25,10 +26,11 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
   bool isLoading = false;
   List<StoreListDetailsData> dataAllStoreDetailsList = [];
   List<StoreListDetailsData> _foundDetail = [];
-
+bool isProduct=false;
   Future<void> fetchStoreDetailsData() async {
     setState(() {
       isLoading = true;
+      isProduct = true;
     });
     Uri myUri = Uri.parse(
         "${NetworkUtil.getVendorProductUrl}${storeListRequestData!.authPerson?.toLowerCase()}v");
@@ -60,6 +62,7 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
@@ -157,6 +160,14 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                   child: Center(
                     child: CProgressIndicator.circularProgressIndicator,
                   ))
+              else if(isProduct==false)
+              SizedBox(
+                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: Text("No More Product",
+                      style: TextStyle(fontSize: 18)),
+                  ))
             else if (searchController.text.isEmpty && _foundDetail.isEmpty)
               Expanded(
                 child: ListView.builder(
@@ -252,14 +263,24 @@ class _StoreSearchPageState extends State<StoreSearchPage> {
                               minimumSize: Size(50, 30),
                               primary: Constant.primaryColor),
                           onPressed: () {
-                            ProductAddCartService()
+                            ProductAddCartService.getInstance()
                                 .proAddedIntoCart(index, list[index].itemCode);
+                            ProductAddToNCartService
+                                .getInstance()
+                                .proAddedIntoCart(
+                                list[index].itemCode,
+                                list[index].vendorId);
                             setState(() {
-                              // CartProductService.getInstance()
-                              //     .fetchAllCartProductDataDetails();
-                              ProductAddCartService().statusCode == 200
+                              (ProductAddCartService.getInstance().statusCode == 200 || ProductAddToNCartService.getInstance().statusCode==200)
                                   ? list.removeAt(index)
                                   : null;
+                              if (dataAllStoreDetailsList
+                                  .isEmpty) {
+                                setState(() {
+                                  isProduct =
+                                  false;
+                                });
+                              }
                             });
                           },
                           child: Text("ADD +")),

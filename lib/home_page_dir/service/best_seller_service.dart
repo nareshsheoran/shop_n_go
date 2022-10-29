@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_conditional_assignment
 
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,12 +13,15 @@ import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 import '../model_req/best_seller_req.dart';
 
 class BestSellerService {
+  static BestSellerService? _instance;
+
   BestSellerService._internal();
 
-  static final BestSellerService _instance = BestSellerService._internal();
-
-  factory BestSellerService() {
-    return _instance;
+  static BestSellerService getInstance() {
+    if (_instance == null) {
+      _instance = BestSellerService._internal();
+    }
+    return _instance!;
   }
 
   int? statusCode;

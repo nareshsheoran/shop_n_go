@@ -9,47 +9,6 @@ import '../shared_preference_data/localdb.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 String verificationID = '';
 int? resendTokens ;
-Future fetchOTP(controller,context) async {
-  try {
-    await _auth.verifyPhoneNumber(
-        phoneNumber: controller,
-        timeout: const Duration(seconds: 60),
-
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
-
-          LocalDataSaver.savePhone(controller);
-          ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
-
-          // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          if (e.code == "invalid-phone-number") {
-            print("Invalid phone no:$controller");
-
-          } else{
-            print("FirebaseAuthException code: $e");
-            Fluttertoast.showToast(msg: "FirebaseAuthException code: $e");
-
-          }
-        },
-        codeSent: (String verificationId, int? resendToken) async {
-          verificationID = verificationId;
-          resendTokens=resendToken;
-          print("resendTokens:$resendTokens");
-          Fluttertoast.showToast(msg: "Code has been sent to your mobile number +91${ProfileDetails.resendPhone}");
-          await Navigator.pushNamed(context, AppRoutes.ConfirmOtpPage);
-
-
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {});
-
-
-    // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
-  } on FirebaseAuthException catch (e) {
-    print("FirebaseAuthException: $e");
-  }
-}
 
 Future<void> verifyOTP(controller, context) async {
   PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(

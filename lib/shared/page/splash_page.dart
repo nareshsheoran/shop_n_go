@@ -3,14 +3,12 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:shop_n_go/home_page_dir/service/best_seller_service.dart';
 import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
+import 'package:shop_n_go/home_page_dir/service/best_seller_service.dart';
 import 'package:shop_n_go/home_page_dir/service/category_service.dart';
 import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/home_page_dir/service/new_product_service.dart';
-import 'package:shop_n_go/home_page_dir/service/prod_details_service.dart';
 import 'package:shop_n_go/home_page_dir/service/recommended_service.dart';
-import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
@@ -34,11 +32,12 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future services() async {
-    RecommendedService().fetchRecommendedDetails();
-    CategoryService().fetchAllCategory();
-    BestSellerService().fetchBestSellerDetails();
-    NewProductService().fetchNewProduct();
-    StoreListService().fetchStoreDetails();
+    RecommendedService.getInstance().fetchRecommendedDetails();
+    CategoryService.getInstance().fetchAllCategory();
+    BestSellerService.getInstance().fetchBestSellerDetails();
+    NewProductService.getInstance().fetchNewProduct();
+    StoreListService.getInstance().fetchStoreDetails();
+    CartProductService.getInstance().fetchStoreListCartDetails();
     // CartProductService.getInstance().fetchAllCartProductDataDetails();
     // FavouriteService.getInstance().fetchFavouriteDetails();
     setState(() {});
@@ -62,7 +61,7 @@ class _SplashPageState extends State<SplashPage> {
     //     : await UserProfileService().fetchUserProfileDetails();
 
     isLogin == true
-        ? await UserProfileService().fetchUserProfileDetails()
+        ? await UserProfileService.getInstance().fetchUserProfileDetails()
         : null;
   }
 
@@ -89,7 +88,9 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    NewProductService().dataAllProdList.isNotEmpty ? services() : null;
+    NewProductService.getInstance().dataAllProdList.isNotEmpty
+        ? services()
+        : null;
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,

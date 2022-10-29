@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_conditional_assignment
 
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,16 +6,20 @@ import 'package:http/http.dart';
 import 'package:shop_n_go/account_dir/model/user_profile_request.dart';
 import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
 import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 
 class UserProfileService {
+  static UserProfileService? _instance;
+
   UserProfileService._internal();
 
-  static final UserProfileService _instance = UserProfileService._internal();
-
-  factory UserProfileService() {
-    return _instance;
+  static UserProfileService getInstance() {
+    if (_instance == null) {
+      _instance = UserProfileService._internal();
+    }
+    return _instance!;
   }
 
   int? statusCode;
@@ -45,6 +49,8 @@ class UserProfileService {
       print("UserProfileService.email::${ProfileDetails.email}");
 
       // CartProductService().fetchAllCartProductDataDetails();
+      FavouriteService.getInstance().fetchFavouriteDetails();
+
       isUserProfileLoading = false;
     }
   }

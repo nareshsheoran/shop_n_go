@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_collection_literals, unnecessary_this
-
 class GetProductBasedOnBarCodeReq {
   bool? success;
   String? message;
@@ -12,14 +10,12 @@ class GetProductBasedOnBarCodeReq {
   GetProductBasedOnBarCodeReq.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null
-        ? GetProductBasedOnBarCodeReqData.fromJson(json['data'])
-        : null;
+    data = json['data'] != null ? GetProductBasedOnBarCodeReqData.fromJson(json['data']) : null;
     statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data =  Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -34,8 +30,8 @@ class GetProductBasedOnBarCodeReqData {
   String? itemCode;
   String? vendorMasters;
   String? itemName;
-  double? price;
-  double? offerPrice;
+  int? price;
+  int? offerPrice;
   String? itemSku;
   String? color;
   String? size;
@@ -51,28 +47,30 @@ class GetProductBasedOnBarCodeReqData {
   int? itemCategory;
   int? itemSubCategory;
   String? itemBrands;
+  String? vendorId;
 
   GetProductBasedOnBarCodeReqData(
       {this.itemCode,
-      this.vendorMasters,
-      this.itemName,
-      this.price,
-      this.offerPrice,
-      this.itemSku,
-      this.color,
-      this.size,
-      this.weight,
-      this.itemImages,
-      this.tags,
-      this.mFG,
-      this.expiaryDate,
-      this.rating,
-      this.barcodeSequence,
-      this.description,
-      this.uploadAt,
-      this.itemCategory,
-      this.itemSubCategory,
-      this.itemBrands});
+        this.vendorMasters,
+        this.itemName,
+        this.price,
+        this.offerPrice,
+        this.itemSku,
+        this.color,
+        this.size,
+        this.weight,
+        this.itemImages,
+        this.tags,
+        this.mFG,
+        this.expiaryDate,
+        this.rating,
+        this.barcodeSequence,
+        this.description,
+        this.uploadAt,
+        this.itemCategory,
+        this.itemSubCategory,
+        this.itemBrands,
+        this.vendorId});
 
   GetProductBasedOnBarCodeReqData.fromJson(Map<String, dynamic> json) {
     itemCode = json['item_code'];
@@ -95,6 +93,7 @@ class GetProductBasedOnBarCodeReqData {
     itemCategory = json['item_category'];
     itemSubCategory = json['item_sub_category'];
     itemBrands = json['item_brands'];
+    vendorId = json['vendor_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -119,6 +118,7 @@ class GetProductBasedOnBarCodeReqData {
     data['item_category'] = this.itemCategory;
     data['item_sub_category'] = this.itemSubCategory;
     data['item_brands'] = this.itemBrands;
+    data['vendor_id'] = this.vendorId;
     return data;
   }
 }

@@ -108,12 +108,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
                       controller: emailController,
-                      textCapitalization: TextCapitalization.sentences,
+                      textCapitalization: TextCapitalization.none,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'Enter Email Address',
+                          hintText: 'Enter Email',
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(

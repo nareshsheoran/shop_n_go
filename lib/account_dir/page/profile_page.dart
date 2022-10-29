@@ -93,6 +93,8 @@ class _ProfilePageState extends State<ProfilePage> {
       },
       body: requestBody,
     );
+    print("fff::${ProfileDetails.loginToken}");
+
     if (response.statusCode == 200) {
       Map<String, dynamic> map =
           jsonDecode(response.body) as Map<String, dynamic>;
@@ -206,6 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
+                          counterText: "",
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                           hintText: 'MOBILE NUMBER',
@@ -366,11 +369,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               (await LocalDataSaver.getGender())!;
 
                           Fluttertoast.showToast(
-                              msg: "Data Saved",
+                              msg: "Profile Details Saved",
                               toastLength: Toast.LENGTH_SHORT,
                               timeInSecForIosWeb: 2);
-
-                          await updateProfilePassword();
+                          Navigator.pop(context);
+                          // await updateProfilePassword();
                         }
                       },
                       child: Text("SAVE AND PROCEED")),
@@ -409,20 +412,16 @@ class _ProfilePageState extends State<ProfilePage> {
         helpText: "Select DOB",
         builder: (BuildContext context, Widget? child) {
           return Theme(
-            data: ThemeData(
-              colorScheme: ColorScheme.light(
-                  primary: Constant.primaryColor, secondary: Colors.black),
-            ),
-            child: child ?? Text(""),
-          );
+              data: ThemeData(
+                  colorScheme: ColorScheme.light(
+                      primary: Constant.primaryColor, secondary: Colors.black)),
+              child: child ?? Text(""));
         });
     if (selected != null && selected != selectedDate) {
       setState(() {
         selectedDate = selected;
         var dateTime = DateTime.parse(selectedDate.toString());
-
         var formatDate = "${dateTime.month}/${dateTime.day}/${dateTime.year}";
-        // selectedDate.toString().trim();
         dateController = TextEditingController(text: formatDate);
       });
     }

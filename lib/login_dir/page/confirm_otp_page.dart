@@ -20,59 +20,74 @@ class ConfirmOtpPage extends StatefulWidget {
 class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController otpController = TextEditingController(text: "123456");
+  TextEditingController otpController = TextEditingController();
 
-  Future otpNoVerify() async {
-    verifyOTP(otpController.text.trim().toString(), context);
+  // Future otpNoVerify() async {
+    // verifyOTP(otpController.text.trim().toString(), context);
     // await Navigator.pushReplacementNamed(context, AppRoutes.WelcomeAboardPage);
-  }
+  // }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String verificationID = '';
-  int? resendTokens ;
+  int? resendTokens;
+  bool isLoading = false;
 
-  Future fetchingOTP(controller,context) async {
+  Future fetchingOTP(controller) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       await _auth.verifyPhoneNumber(
           phoneNumber: controller,
           timeout: const Duration(seconds: 60),
-
           verificationCompleted: (PhoneAuthCredential credential) async {
             await _auth.signInWithCredential(credential);
-
             LocalDataSaver.savePhone(controller);
             ProfileDetails.phone = (await LocalDataSaver.getPhone())!;
-
-            // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
           },
           verificationFailed: (FirebaseAuthException e) {
             if (e.code == "invalid-phone-number") {
               print("Invalid phone no:$controller");
-
-            } else{
+            } else {
               print("FirebaseAuthException code: $e");
               Fluttertoast.showToast(msg: "FirebaseAuthException code: $e");
-
             }
+            setState(() {
+              isLoading = false;
+            });
           },
           codeSent: (String verificationId, int? resendToken) async {
             verificationID = verificationId;
-            resendTokens=resendToken;
+            resendTokens = resendToken;
             print("resendTokens:$resendTokens");
-            Fluttertoast.showToast(msg: "Code has been sent to your mobile number +91${ProfileDetails.resendPhone}");
-            await Navigator.pushReplacementNamed(context, AppRoutes.ConfirmOtpPage);
-
-
+            setState(() {
+              isLoading = false;
+            });
+            otpController.clear();
+            otpController.text = '';
+            Fluttertoast.showToast(
+                msg:
+                    "OTP has been sent to your mobile number +91${ProfileDetails.resendPhone}");
+            // await Navigator.pushReplacementNamed(
+            //     context, AppRoutes.ConfirmOtpPage);
+            // Navigator.canPop(context);
+            Navigator.pop(context);
           },
-          codeAutoRetrievalTimeout: (String verificationId) {});
-
+          codeAutoRetrievalTimeout: (String verificationId) {
+            verificationID = verificationId;
+          });
+      setState(() {
+        isLoading = false;
+      });
 
       // await Navigator.pushNamed(context, AppRoutes.VerifyPage);
     } on FirebaseAuthException catch (e) {
       print("FirebaseAuthException: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -124,9 +139,11 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
                       controller: otpController,
+                      maxLength: 6,
                       textCapitalization: TextCapitalization.sentences,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
+                          counterText: "",
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
@@ -144,34 +161,33 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
                           // border: InputBorder.none
                           ),
                       validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 6)
-                            ? null
-                            : "Please Enter Valid OTP";
+                        return otpController.text.trim().isEmpty
+                            ? "Please Enter OTP"
+                            : GetUtils.isLengthGreaterOrEqual(value!, 6)
+                                ? null
+                                : "Please Enter Valid OTP";
                       }),
                 ),
                 SizedBox(height: 20),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: GestureDetector(
-                    onTap: () async {
+                  child: ElevatedButton(
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        otpNoVerify();
+                        // otpNoVerify();
+                        verifyOTP(otpController.text.trim().toString());
                       }
                     },
-                    child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Constant.primaryColor,
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Constant.primaryColor),
-                        ),
-                        child: Center(
-                            child: Text(
-                          "CONFIRM OTP",
-                          style: TextStyle(color: Colors.white),
-                        ))),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize:
+                            Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    child: Text("CONFIRM OTP",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500)),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -179,7 +195,26 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
                   onTap: () {
                     print("Resend: ${ProfileDetails.resendPhone}");
                     // fetchOTP("+91${ProfileDetails.resendPhone}", context);
-                    fetchingOTP("+91${ProfileDetails.resendPhone}", context);
+                    fetchingOTP("+91${ProfileDetails.resendPhone}");
+                    isLoading
+                        ? showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: SizedBox(
+                                    height: 80,
+                                    width: 80,
+                                    child: Center(
+                                        child: Column(
+                                      children: [
+                                        CircularProgressIndicator(),
+                                        SizedBox(height: 12),
+                                        Text("Pleas wait..."),
+                                      ],
+                                    ))),
+                              );
+                            })
+                        : isLoading == false;
                   },
                   child: Text("Resend OTP",
                       style: TextStyle(
@@ -194,5 +229,26 @@ class _ConfirmOtpPageState extends State<ConfirmOtpPage> {
         ),
       ),
     );
+  }
+
+  Future<void> verifyOTP(controller) async {
+    PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
+        verificationId: verificationID, smsCode: controller.toString());
+    print("verificationId: $verificationID");
+    // _auth.signInWithCredential(phoneAuthCredential);
+    await signInWithPhoneAuthCredential(phoneAuthCredential);
+  }
+
+  Future signInWithPhoneAuthCredential(
+      PhoneAuthCredential phoneAuthCredential) async {
+    try {
+      final authCredential =
+          await _auth.signInWithCredential(phoneAuthCredential);
+      if (authCredential.user != null) {
+        Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
+      }
+    } on FirebaseAuthException catch (e) {
+      print("FirebaseAuthException:$e");
+    }
   }
 }

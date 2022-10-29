@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_conditional_assignment
 
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,12 +11,15 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
 
 class CategoryService {
+  static CategoryService? _instance;
+
   CategoryService._internal();
 
-  static final CategoryService _instance = CategoryService._internal();
-
-  factory CategoryService() {
-    return _instance;
+  static CategoryService getInstance() {
+    if (_instance == null) {
+      _instance = CategoryService._internal();
+    }
+    return _instance!;
   }
 
   int? statusCode;

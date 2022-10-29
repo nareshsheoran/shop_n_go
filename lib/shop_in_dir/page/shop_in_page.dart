@@ -15,6 +15,7 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
+import 'package:shop_n_go/shared/service/product_add_to_N_cart_service.dart';
 import 'package:shop_n_go/shop_in_dir/model/add_into_cart_store_basis_req.dart';
 import 'package:shop_n_go/shop_in_dir/model/get_prod_based_on_barCode_req.dart';
 
@@ -60,7 +61,7 @@ class _ShopInPageState extends State<ShopInPage> {
 
   @override
   void initState() {
-// scanQR();
+    scanQR();
     super.initState();
   }
 
@@ -276,21 +277,28 @@ class _ShopInPageState extends State<ShopInPage> {
                                                     primary:
                                                         Constant.primaryColor),
                                                 onPressed: () {
-                                                  ProductAddCartService()
+                                                  ProductAddCartService.getInstance()
                                                       .proAddedIntoCart(
                                                           index, item.itemCode);
+                                                  ProductAddToNCartService
+                                                      .getInstance()
+                                                      .proAddedIntoCart(
+                                                      item.itemCode,
+                                                      item.vendorId);
 
                                                   setState(() {
                                                     // CartProductService.getInstance()
                                                     //     .fetchAllCartProductDataDetails();
                                                     print(
-                                                        "ProductAddCartService statusCode:${ProductAddCartService().statusCode}");
-                                                    ProductAddCartService()
+                                                        "ProductAddCartService statusCode:${ProductAddCartService.getInstance().statusCode}");
+                                                    ProductAddCartService.getInstance()
                                                                 .statusCode ==
                                                             200
                                                         ? getProdBasedOnBarCodeList
                                                             .removeAt(index)
                                                         : null;
+                                                    // getProdBasedOnBarCodeList
+                                                    //     .removeAt(index);
                                                   });
 
                                                   // proAddedIntoCart(
@@ -338,7 +346,6 @@ class _ShopInPageState extends State<ShopInPage> {
     };
 
     Uri myUri = Uri.parse(NetworkUtil.getProdDetailsByBarCodeUrl);
-    //
     http.Response response = await http.post(
       myUri,
       body: requestBody,
@@ -346,16 +353,16 @@ class _ShopInPageState extends State<ShopInPage> {
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      GetProductBasedOnBarCodeReq getProductBasedOnBarCodeRequ =
+      GetProductBasedOnBarCodeReq getProductRequest =
           GetProductBasedOnBarCodeReq.fromJson(jsonResponse);
-      if (getProductBasedOnBarCodeRequ.statusCode == 200) {
-        getProductBasedOnBarCodeReq = getProductBasedOnBarCodeRequ;
+      if (getProductRequest.statusCode == 200) {
+        getProductBasedOnBarCodeReq = getProductRequest;
 
         getProdBasedOnBarCodeList.add(getProductBasedOnBarCodeReq!.data!);
         getProdBasedOnBarCodeList;
-      } else if (getProductBasedOnBarCodeRequ.statusCode == 400) {
+      } else if (getProductRequest.statusCode == 400) {
         Fluttertoast.showToast(
-            msg: "$barCode: ${getProductBasedOnBarCodeRequ.message!}");
+            msg: "$barCode: ${getProductRequest.message!}");
         setState(() {
           _scanBarcode = "UnMatched Barcode: $barCode";
         });
@@ -367,115 +374,115 @@ class _ShopInPageState extends State<ShopInPage> {
     }
   }
 
-  Future fetchAddCartStoreBasis(index, itemCode, storeId, storeName) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    String user = ProfileDetails.id!;
-
-    var requestBody = {
-      'item_code': itemCode,
-      'store_id': storeId,
-      'store_name': storeName,
-      'user': user,
-    };
-
-    Uri myUri = Uri.parse(NetworkUtil.getAddIntoCartStoreBasisUrl);
-    http.Response response = await http.post(
-      myUri,
-      body: requestBody,
-    );
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      AddIntoCartStoreBasisReq addIntoCartStoreBasisReq =
-          AddIntoCartStoreBasisReq.fromJson(jsonResponse);
-      if (addIntoCartStoreBasisReq.success == true) {
-        Fluttertoast.showToast(
-          msg: "Product Added Successful",
-          toastLength: Toast.LENGTH_SHORT,
-          timeInSecForIosWeb: 2,
-        );
-        getProdBasedOnBarCodeList.removeAt(index);
-      }
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
-    return showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(12), topLeft: Radius.circular(12))),
-        context: context,
-        builder: (context) {
-          return FractionallySizedBox(
-            heightFactor: 0.55,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Text("SHOP-IN",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 24),
-                  Text(
-                    "Are You Sure Switching SHOP-IN ?",
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                  ),
-                  SizedBox(height: 10),
-                  RichText(
-                    text: TextSpan(
-                      text: "NOTICE:",
-                      style: TextStyle(
-                          color: Constant.primaryColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: " All Items From Cart Will Be Removed",
-                          style: TextStyle(
-                              color: Colors.black45,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        )
-                      ],
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                  ),
-                  SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: Constant.primaryColor),
-                          onPressed: () {},
-                          child: Text("Cancel")),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.ShopInPage);
-                        },
-                        child: CircleAvatar(
-                          radius: 20,
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 24),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  // Future fetchAddCartStoreBasis(index, itemCode, storeId, storeName) async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   String user = ProfileDetails.id!;
+  //
+  //   var requestBody = {
+  //     'item_code': itemCode,
+  //     'store_id': storeId,
+  //     'store_name': storeName,
+  //     'user': user,
+  //   };
+  //
+  //   Uri myUri = Uri.parse(NetworkUtil.getAddIntoCartStoreBasisUrl);
+  //   http.Response response = await http.post(
+  //     myUri,
+  //     body: requestBody,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+  //     AddIntoCartStoreBasisReq addIntoCartStoreBasisReq =
+  //         AddIntoCartStoreBasisReq.fromJson(jsonResponse);
+  //     if (addIntoCartStoreBasisReq.success == true) {
+  //       Fluttertoast.showToast(
+  //         msg: "Product Added Successful",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         timeInSecForIosWeb: 2,
+  //       );
+  //       getProdBasedOnBarCodeList.removeAt(index);
+  //     }
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+  //
+  // Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
+  //   return showModalBottomSheet(
+  //       shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.only(
+  //               topRight: Radius.circular(12), topLeft: Radius.circular(12))),
+  //       context: context,
+  //       builder: (context) {
+  //         return FractionallySizedBox(
+  //           heightFactor: 0.55,
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(20),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 SizedBox(height: 10),
+  //                 Text("SHOP-IN",
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //                 SizedBox(height: 24),
+  //                 Text(
+  //                   "Are You Sure Switching SHOP-IN ?",
+  //                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+  //                 ),
+  //                 SizedBox(height: 10),
+  //                 RichText(
+  //                   text: TextSpan(
+  //                     text: "NOTICE:",
+  //                     style: TextStyle(
+  //                         color: Constant.primaryColor,
+  //                         fontSize: 20,
+  //                         fontWeight: FontWeight.bold),
+  //                     children: <TextSpan>[
+  //                       TextSpan(
+  //                         text: " All Items From Cart Will Be Removed",
+  //                         style: TextStyle(
+  //                             color: Colors.black45,
+  //                             fontWeight: FontWeight.bold,
+  //                             fontSize: 20),
+  //                       )
+  //                     ],
+  //                   ),
+  //                   maxLines: 2,
+  //                   overflow: TextOverflow.ellipsis,
+  //                   softWrap: true,
+  //                 ),
+  //                 SizedBox(height: 24),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     ElevatedButton(
+  //                         style: ElevatedButton.styleFrom(
+  //                             primary: Constant.primaryColor),
+  //                         onPressed: () {},
+  //                         child: Text("Cancel")),
+  //                     GestureDetector(
+  //                       onTap: () {
+  //                         Navigator.pushNamed(context, AppRoutes.ShopInPage);
+  //                       },
+  //                       child: CircleAvatar(
+  //                         radius: 20,
+  //                         child: Icon(
+  //                           Icons.arrow_forward_ios,
+  //                         ),
+  //                       ),
+  //                     )
+  //                   ],
+  //                 ),
+  //                 SizedBox(height: 24),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 }

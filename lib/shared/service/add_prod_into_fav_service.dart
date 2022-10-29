@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_n_go/home_page_dir/model_req/add_prod_into_fav_req.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 
 class AddProdIntoFavService {
@@ -18,15 +19,14 @@ class AddProdIntoFavService {
 
   int? statusCode;
 
-  Future addProdIntoFav(code) async {
-    String user = ProfileDetails.id!;
-    String favProduct = code;
-    // String storeID = code;
-    print("user: $user===prodICart:$favProduct");
+  Future addProdIntoFav(itemCode,storeID) async {
+    String consumerId = ProfileDetails.id!;
+    print("consumerId: $consumerId==itemCode:$itemCode==storeId:$storeID");
 
     var requestBody = {
-      'user': user,
-      'fav_product': favProduct,
+      'consumer_id': consumerId,
+      'item_code': itemCode,
+      'store_id': storeID,
       // 'store_id': storeID,
     };
 
@@ -43,11 +43,12 @@ class AddProdIntoFavService {
 
       AddProdIntoFavReq addProdIntoFavReq = AddProdIntoFavReq.fromJson(map);
 
-      if (addProdIntoFavReq.message == "Data Saved SuccessFully") {
+      if (addProdIntoFavReq.message == "Operation Success...!!!") {
         statusCode = 200;
-
-        print("Product Favourite:$favProduct");
-        Fluttertoast.showToast(msg: "Product Favourite", timeInSecForIosWeb: 2);
+        FavouriteService.getInstance()
+            .fetchFavouriteDetails();
+        print("Product Favourite:$itemCode");
+        // Fluttertoast.showToast(msg: "Product Favourite", timeInSecForIosWeb: 2);
       }
     } else {
       statusCode = response.statusCode;

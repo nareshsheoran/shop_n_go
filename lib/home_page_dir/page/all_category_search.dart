@@ -22,17 +22,6 @@ class AllCategorySearch extends StatefulWidget {
 class _AllCategorySearchState extends State<AllCategorySearch> {
   TextEditingController searchController = TextEditingController();
 
-  List imageList = [
-    Images.laysImg,
-    Images.softDrinksImg,
-    Images.bakeryImg,
-    Images.diaryImg,
-    Images.frozenImg,
-    Images.cookingEssImg,
-    Images.chillyImg,
-    Images.ladiesFingerImg,
-    Images.radisImg,
-  ];
   Object? name = '';
 
   @override
@@ -74,9 +63,11 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                   child: TextField(
                     controller: searchController,
                     textCapitalization: TextCapitalization.sentences,
-                    decoration:  InputDecoration(
-                        prefixIcon: Icon(Icons.search,color: Constant.primaryColor),
-                        suffixIcon: IconButton(color: Constant.primaryColor,
+                    decoration: InputDecoration(
+                        prefixIcon:
+                            Icon(Icons.search, color: Constant.primaryColor),
+                        suffixIcon: IconButton(
+                          color: Constant.primaryColor,
                           onPressed: () {
                             setState(() {
                               searchController.clear();
@@ -121,7 +112,9 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GridView.builder(
-                      itemCount: CategoryService().dataAllCategoryList.length,
+                      itemCount: CategoryService.getInstance()
+                          .dataAllCategoryList
+                          .length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 0.8,
@@ -129,23 +122,19 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
+                        var item =
+                            CategoryService.getInstance().dataAllCategoryList;
                         return GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
                                   context, AppRoutes.CategoryNamePage,
                                   arguments: ScreenArguments(
-                                      imageList[index],
-                                      CategoryService()
-                                          .dataAllCategoryList[index]
-                                          .name!,
+                                      Images.baseUrl + item[index].images!,
+                                      item[index].name!,
                                       "description",
-                                      CategoryService()
-                                          .dataAllCategoryList[index]
-                                          .id
-                                          .toString()));
+                                      item[index].id.toString()));
                             },
-                            child: categoryWidget(index,CategoryService()
-                                .dataAllCategoryList));
+                            child: categoryWidget(index, item));
                       },
                     ),
                   ),
@@ -168,12 +157,13 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                               Navigator.pushNamed(
                                   context, AppRoutes.CategoryNamePage,
                                   arguments: ScreenArguments(
-                                      imageList[index],
+                                      Images.baseUrl +
+                                          _foundDetail[index].images!,
                                       _foundDetail[index].name!,
                                       "description",
                                       _foundDetail[index].id.toString()));
                             },
-                            child: categoryWidget(index,_foundDetail));
+                            child: categoryWidget(index, _foundDetail));
                       },
                     ),
                   ),
@@ -193,7 +183,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
     );
   }
 
-  Widget categoryWidget(int index,List list) {
+  Widget categoryWidget(int index, List list) {
     return SizedBox(
       width: 140,
       height: 140,
@@ -212,7 +202,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     width: ImageDimension.imageWidth,
                     height: ImageDimension.imageHeight,
                     fit: BoxFit.fill,
-                    image: NetworkImage(imageList[index])),
+                    image: NetworkImage(Images.baseUrl + list[index].images!)),
               ),
               Text(
                 list[index].name!,
@@ -247,7 +237,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
         setState(() {
           isSearchLoading = true;
         });
-        results = CategoryService()
+        results = CategoryService.getInstance()
             .dataAllCategoryList
             .where((user) =>
                 user.name!.toLowerCase().contains(searchKey.toLowerCase()))

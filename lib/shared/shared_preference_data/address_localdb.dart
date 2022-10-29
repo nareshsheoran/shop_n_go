@@ -4,8 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressLocalDataSaver {
   static String flatKey = "FlatKey";
-  static String villageKey = "VillageKey";
+  static String areaKey = "AreaKey";
   static String cityKey = "CityKey";
+  static String landmarkKey = "LandmarkKey";
   static String stateKey = "StateKey";
   static String pinCodeKey = "PinCodeKey";
   static String countryKey = "CountryKey";
@@ -22,14 +23,14 @@ class AddressLocalDataSaver {
     return await preferences.getString(flatKey);
   }
 
-  static Future<bool> saveVillage(String? usersVillage) async {
+  static Future<bool> saveArea(String? usersVillage) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.setString(villageKey, usersVillage!);
+    return await preferences.setString(areaKey, usersVillage!);
   }
 
-  static Future<String?> getVillage() async {
+  static Future<String?> getArea() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return await preferences.getString(villageKey);
+    return await preferences.getString(areaKey);
   }
 
   static Future<bool> saveCity(String userCity) async {
@@ -40,6 +41,16 @@ class AddressLocalDataSaver {
   static Future<String?> getCity() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.getString(cityKey);
+  }
+
+ static Future<bool> saveLandmark(String userLandmark) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(landmarkKey, userLandmark);
+  }
+
+  static Future<String?> getLandmark() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.getString(landmarkKey);
   }
 
   static Future<bool> saveState(String userState) async {
@@ -99,6 +110,7 @@ class AddressLocalDataSaver {
     await preferences.remove('VillageKey');
     await preferences.remove('StateKey');
     await preferences.remove('CityKey');
+    await preferences.remove('LandmarkKey');
     await preferences.remove('PinCodeKey');
     await preferences.remove('CountryKey');
     await preferences.remove('LongitudeKey');

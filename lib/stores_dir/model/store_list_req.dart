@@ -14,14 +14,14 @@ class StoreListRequest {
     if (json['data'] != null) {
       data = <StoreListData>[];
       json['data'].forEach((v) {
-        data!.add(StoreListData.fromJson(v));
+        data!.add( StoreListData.fromJson(v));
       });
     }
     statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -40,21 +40,21 @@ class StoreListData {
   String? isHomeDelivery;
   String? distance;
   int? minimumOrder;
-  int? noOfProducts;
   String? openTime;
   String? closeTime;
+  int? noOfProduct;
 
   StoreListData(
       {this.vendorId,
-      this.vendorName,
-      this.authPerson,
-      this.vendorProfile,
-      this.isHomeDelivery,
-      this.distance,
-      this.minimumOrder,
-      this.noOfProducts,
-      this.openTime,
-      this.closeTime});
+        this.vendorName,
+        this.authPerson,
+        this.vendorProfile,
+        this.isHomeDelivery,
+        this.distance,
+        this.minimumOrder,
+        this.openTime,
+        this.closeTime,
+        this.noOfProduct});
 
   StoreListData.fromJson(Map<String, dynamic> json) {
     vendorId = json['vendor_id'];
@@ -64,13 +64,13 @@ class StoreListData {
     isHomeDelivery = json['is_home_delivery'];
     distance = json['distance'];
     minimumOrder = json['minimum_order'];
-    noOfProducts = json['no_of_products'];
     openTime = json['open_time'];
     closeTime = json['close_time'];
+    noOfProduct = json['No_Of_Product'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['vendor_id'] = this.vendorId;
     data['vendor_name'] = this.vendorName;
     data['auth_person'] = this.authPerson;
@@ -78,9 +78,10 @@ class StoreListData {
     data['is_home_delivery'] = this.isHomeDelivery;
     data['distance'] = this.distance;
     data['minimum_order'] = this.minimumOrder;
-    data['no_of_products'] = this.noOfProducts;
     data['open_time'] = this.openTime;
     data['close_time'] = this.closeTime;
+    data['No_Of_Product'] = this.noOfProduct;
     return data;
   }
 }
+

@@ -32,7 +32,7 @@ class FavProdDetailsService {
       for (int i = 0; i < FavouriteService.getInstance().dataFavouriteList.length; i++) {
         print(i.toString());
         Uri myUri = Uri.parse(
-            "${NetworkUtil.getProductDetailsUrl}${FavouriteService.getInstance().dataFavouriteList[i].favProduct}");
+            "${NetworkUtil.getProductDetailsUrl}${FavouriteService.getInstance().dataFavouriteList[i].itemCode}");
 
         Response response = await get(myUri);
 
@@ -40,9 +40,8 @@ class FavProdDetailsService {
           var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
           ProductDetailsReq productDetailsReq =
               ProductDetailsReq.fromJson(jsonResponse);
-
-          productDetailsData = productDetailsReq.data!;
-          productDetailsDataList.add(productDetailsData);
+          List<ProductDetailsData> list = productDetailsReq.data!;
+          productDetailsDataList.addAll(list);
           print("productDetailsDataList:${productDetailsDataList.length}");
         }
       }
@@ -50,7 +49,7 @@ class FavProdDetailsService {
       for (int i = 0; i < FavouriteService.getInstance().dataFavouriteList.length; i++) {
         print(i.toString());
         Uri myUri = Uri.parse(
-            "${NetworkUtil.getProductDetailsUrl}${FavouriteService.getInstance().dataFavouriteList[i].favProduct}");
+            "${NetworkUtil.getProductDetailsUrl}${FavouriteService.getInstance().dataFavouriteList[i].itemCode}");
 
         Response response = await get(myUri);
 
@@ -59,8 +58,8 @@ class FavProdDetailsService {
           ProductDetailsReq productDetailsReq =
               ProductDetailsReq.fromJson(jsonResponse);
 
-          productDetailsData = productDetailsReq.data!;
-          productDetailsDataList.add(productDetailsData);
+          List<ProductDetailsData> list = productDetailsReq.data!;
+          productDetailsDataList.addAll(list);
           // init();
           print("productDetailsDataList:${productDetailsDataList.length}");
         }

@@ -12,14 +12,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:google_place/google_place.dart';
 import 'package:google_maps_webservice/places.dart' as Component;
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_n_go/home_page_dir/map_dir/model/near_by_stores_req.dart';
-import 'package:shop_n_go/home_page_dir/map_dir/model/vendor_profile_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
-
 
 class MapSearchPage extends StatefulWidget {
   const MapSearchPage({Key? key}) : super(key: key);
@@ -57,7 +54,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
   void _onAddMarkerButtonPressed() {
     dataNearByStoresList.clear();
-    vendorProfileList.clear();
+    // vendorProfileList.clear();
     _markers.clear();
     _lastMapPosition.longitude;
     _lastMapPosition.latitude;
@@ -346,133 +343,154 @@ class _MapSearchPageState extends State<MapSearchPage> {
             //         ),
             //       )
             //     :
-            (isLoading || isProfileLoading)
+            (isLoading)
                 ? SizedBox(
                     width: MediaQuery.of(context).size.width / 1.5,
                     height: MediaQuery.of(context).size.width / 1.5,
                     child: Center(
                         child: CProgressIndicator.circularProgressIndicator))
-                :(isAvailable==false)?SizedBox(  width: MediaQuery.of(context).size.width / 1.2,
-                height: MediaQuery.of(context).size.width / 1.2,child: Center(child: Text("Could Not Able To Find Nearby Store...!!!"))): Expanded(
-                    child: ListView.builder(
-                      itemCount: vendorProfileList.length,
-                      shrinkWrap: true,
-                      // physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, AppRoutes.MapStoreDetailsPage,
-                                arguments:
-                                    // "${Images.baseUrl}${dataNearByStoresList[index].vendorProfile}");
-                                    vendorProfileList[index]);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 8),
-                            child: Card(
-                              elevation: CardDimension.elevation,
-                              shadowColor: CardDimension.shadowColor,
+                : (isAvailable == false)
+                    ? SizedBox(
+                        width: MediaQuery.of(context).size.width / 1.2,
+                        height: MediaQuery.of(context).size.width / 1.2,
+                        child: Center(
+                            child: Text(
+                                "Could Not Able To Find Nearby Store...!!!")))
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: dataNearByStoresList.length,
+                          shrinkWrap: true,
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, AppRoutes.MapStoreDetailsPage,
+                                    arguments:
+                                        // "${Images.baseUrl}${dataNearByStoresList[index].vendorProfile}");
+                                        dataNearByStoresList[index]);
+                              },
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4, horizontal: 8),
+                                child: Card(
+                                  elevation: CardDimension.elevation,
+                                  shadowColor: CardDimension.shadowColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                            child: Text(
-                                                "${vendorProfileList[index].vendorName}",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold))),
-                                        Icon(Icons.alarm,
-                                            size: IconDimension.iconSize),
-                                        SizedBox(width: 8),
-                                        Text(
-                                            "${vendorProfileList[index].openTime!.substring(0, 5)}-${vendorProfileList[index].closeTime!.substring(0, 5)}"),
-                                      ],
-                                    ),
-                                    SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        Image(
-                                            height: 70,
-                                            width: 70,
-                                            fit: BoxFit.fill,
-                                            image: NetworkImage(
-                                                "${Images.baseUrl}${vendorProfileList[index].vendorProfile}")),
-                                        SizedBox(width: 14),
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                                child: Text(
+                                                    "${dataNearByStoresList[index].vendorName}",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold))),
+                                            Icon(Icons.alarm,
+                                                size: IconDimension.iconSize),
+                                            SizedBox(width: 8),
+                                            Text(
+                                                "${dataNearByStoresList[index].openTime!.substring(0, 5)}-${dataNearByStoresList[index].closeTime!.substring(0, 5)}"),
+                                          ],
+                                        ),
+                                        SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            Image(
+                                                height: 70,
+                                                width: 70,
+                                                fit: BoxFit.fill,
+                                                image: NetworkImage(
+                                                    "${Images.baseUrl}${dataNearByStoresList[index].vendorProfile}")),
+                                            SizedBox(width: 14),
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Icon(Icons.directions,
-                                                      size: IconDimension
-                                                          .iconSize),
-                                                  SizedBox(width: 8),
-                                                  Expanded(
-                                                      child: Text(
-                                                          "${vendorProfileList[index].distance}")),
-                                                  Icon(Icons.card_travel,
-                                                      size: IconDimension
-                                                          .iconSize),
-                                                  SizedBox(width: 8),
-                                                  vendorProfileList[index]
-                                                              .noOfProducts! <=
-                                                          1
-                                                      ? Text(
-                                                          "${vendorProfileList[index].noOfProducts} Item")
-                                                      : Text(
-                                                          "${vendorProfileList[index].noOfProducts} Items"),
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.directions,
+                                                          size: IconDimension
+                                                              .iconSize),
+                                                      SizedBox(width: 8),
+                                                      Expanded(
+                                                          child: Text(
+                                                              "${dataNearByStoresList[index].distance}")),
+                                                      dataNearByStoresList[
+                                                                      index]
+                                                                  .noOfProducts ==
+                                                              0
+                                                          ? SizedBox()
+                                                          : Icon(
+                                                              Icons.card_travel,
+                                                              size: IconDimension
+                                                                  .iconSize),
+                                                      SizedBox(width: 8),
+                                                      dataNearByStoresList[
+                                                                      index]
+                                                                  .noOfProducts ==
+                                                              0
+                                                          ? SizedBox()
+                                                          : dataNearByStoresList[
+                                                                          index]
+                                                                      .noOfProducts! <=
+                                                                  1
+                                                              ? Text(
+                                                                  "${dataNearByStoresList[index].noOfProducts} Item")
+                                                              : Text(
+                                                                  "${dataNearByStoresList[index].noOfProducts} Items"),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.shopping_cart,
+                                                          size: IconDimension
+                                                              .iconSize),
+                                                      SizedBox(width: 8),
+                                                      Expanded(
+                                                          child: Text(
+                                                              "Min. order ${AppDetails.currencySign}${dataNearByStoresList[index].minimumOrder}")),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                          Icons
+                                                              .directions_bike_sharp,
+                                                          size: IconDimension
+                                                              .iconSize),
+                                                      SizedBox(width: 8),
+                                                      Text(dataNearByStoresList[
+                                                              index]
+                                                          .isHomeDelivery!)
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
-                                              SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.shopping_cart,
-                                                      size: IconDimension
-                                                          .iconSize),
-                                                  SizedBox(width: 8),
-                                                  Expanded(
-                                                      child: Text(
-                                                          "Min. order ${AppDetails.currencySign}${vendorProfileList[index].minimumOrder}")),
-                                                ],
-                                              ),
-                                              SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                      Icons
-                                                          .directions_bike_sharp,
-                                                      size: IconDimension
-                                                          .iconSize),
-                                                  SizedBox(width: 8),
-                                                  Text(vendorProfileList[index]
-                                                      .isHomeDelivery!)
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                            );
+                          },
+                        ),
+                      ),
           ],
         ),
       ),
@@ -483,11 +501,10 @@ class _MapSearchPageState extends State<MapSearchPage> {
   bool isAvailable = false;
   List<NearByStoresReqData> dataNearByStoresList = [];
 
-
   Future fetchNearByStoresDetails(longitudeAxis, latitudeAxis) async {
     setState(() {
       isLoading = true;
-      isAvailable=true;
+      isAvailable = true;
     });
 
     String user = ProfileDetails.id!;
@@ -520,45 +537,16 @@ class _MapSearchPageState extends State<MapSearchPage> {
         MapDetails.latitude = (await AddressLocalDataSaver.getLatitude())!;
         print("MapDetails.longitude:${MapDetails.longitude}");
         print("MapDetails.latitude:${MapDetails.latitude}");
-        fetchVendorProfile();
+        // fetchVendorProfile();
       } else if (nearByStoresReq.statusCode == 400) {
         Fluttertoast.showToast(msg: nearByStoresReq.message!);
         setState(() {
-          isAvailable=false;
+          isAvailable = false;
         });
       }
       setState(() {
         isLoading = false;
       });
-    }
-  }
-
-  VendorProfileReqData? vendorProfileReqData;
-  List<VendorProfileReqData> vendorProfileList = [];
-  bool isProfileLoading = false;
-
-  Future fetchVendorProfile() async {
-    setState(() {
-      isProfileLoading = true;
-    });
-    for (int i = 0; i < dataNearByStoresList.length; i++) {
-      Uri myUri = Uri.parse(
-          "${NetworkUtil.getVendorProfileUrl}${dataNearByStoresList[i].vendorId}");
-      Response response = await get(myUri);
-
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-        VendorProfileReq vendorProfileReq =
-            VendorProfileReq.fromJson(jsonResponse);
-        vendorProfileReqData = vendorProfileReq.data!;
-        vendorProfileList.add(vendorProfileReqData!);
-
-        setState(() {
-          (dataNearByStoresList.length == vendorProfileList.length)
-              ? isProfileLoading = false
-              : isProfileLoading = true;
-        });
-      }
     }
   }
 }

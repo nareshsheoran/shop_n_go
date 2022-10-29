@@ -2,6 +2,8 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+
+// import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,9 +12,6 @@ import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/splash_page.dart';
 import 'package:flutter/foundation.dart' as foundation;
-// import 'package:device_preview/device_preview.dart';
-
-
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -24,13 +23,11 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
-
   if (foundation.kDebugMode) {
     debugPrint('release mode');
   } else {
     debugPrint('debug mode');
   }
-
 
   WidgetsFlutterBinding.ensureInitialized();
   // await DotEnv().load(fileName: '.env');

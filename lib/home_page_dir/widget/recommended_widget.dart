@@ -21,8 +21,14 @@ class RecommendedWidget extends StatefulWidget {
 
 class _RecommendedWidgetState extends State<RecommendedWidget> {
   @override
+  void initState() {
+    // RecommendedService.getInstance().fetchRecommendedDetails();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return (RecommendedService().isLoadingRecommended)
+    return (RecommendedService.getInstance().isLoadingRecommended)
         ? SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 170,
@@ -43,11 +49,15 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListView.builder(
-                  itemCount: RecommendedService().dataRecommendedList.length,
+                  itemCount: RecommendedService.getInstance()
+                      .dataRecommendedList
+                      .length,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   // physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
+                    var item =
+                        RecommendedService.getInstance().dataRecommendedList;
                     return SizedBox(
                       width: 115,
                       height: 160,
@@ -56,19 +66,10 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
                           Navigator.pushNamed(
                               context, AppRoutes.CategoriesDetailsPage,
                               arguments: ScreenArguments(
-                                  Images.baseUrl +
-                                      RecommendedService()
-                                          .dataRecommendedList[index]
-                                          .itemImages!,
-                                  RecommendedService()
-                                      .dataRecommendedList[index]
-                                      .itemName!,
-                                  RecommendedService()
-                                      .dataRecommendedList[index]
-                                      .description!,
-                                  RecommendedService()
-                                      .dataRecommendedList[index]
-                                      .itemCode!));
+                                  Images.baseUrl + item[index].itemImages!,
+                                  item[index].itemName!,
+                                  item[index].description!,
+                                  item[index].itemCode!));
                         },
                         child: Stack(
                           children: [
@@ -86,16 +87,12 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
                                           // fit: BoxFit.fill,
                                           fit: BoxFit.scaleDown,
                                           image: NetworkImage(Images.baseUrl +
-                                              RecommendedService()
-                                                  .dataRecommendedList[index]
-                                                  .itemImages!)),
+                                              item[index].itemImages!)),
                                       // image: NetworkImage("${NetworkUtil.baseUrl}${dataRecommendedList[index].itemImages!}")),
                                     ),
                                     Expanded(
                                       child: Text(
-                                        RecommendedService()
-                                            .dataRecommendedList[index]
-                                            .itemName!,
+                                        item[index].itemName!,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w800),
@@ -109,7 +106,7 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
                                             MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "${AppDetails.currencySign}${RecommendedService().dataRecommendedList[index].price?.toStringAsFixed(0)}",
+                                            "${AppDetails.currencySign}${item[index].price?.toStringAsFixed(0)}",
                                             textAlign: TextAlign.left,
                                           ),
                                         ],
@@ -127,14 +124,16 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
                                   isFavorite: false,
                                   valueChanged: (_isFavorite) {
                                     print('Is Favorite : $_isFavorite');
-                                   if( _isFavorite) {
-                                     FavouriteService.getInstance().fetchFavouriteDetails();
-                                     AddProdIntoFavService()
-                                         .addProdIntoFav(RecommendedService()
-                                         .dataRecommendedList[index]
-                                         .itemCode);
-                                   } else {Fluttertoast.showToast(
-                                            msg: "Favourite Removed");}
+                                    if (_isFavorite) {
+                                      FavouriteService.getInstance()
+                                          .fetchFavouriteDetails();
+                                      AddProdIntoFavService().addProdIntoFav(
+                                          item[index].itemCode,
+                                          item[index].vendorId);
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: "Favourite Removed");
+                                    }
                                   },
                                 ))
                           ],

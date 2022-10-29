@@ -102,7 +102,8 @@ class _StoresPageState extends State<StoresPage> {
             else if (searchController.text.isEmpty && _foundDetail.isEmpty)
               Expanded(
                 child: ListView.builder(
-                  itemCount: StoreListService().dataAllStoreList.length,
+                  itemCount:
+                      StoreListService.getInstance().dataAllStoreList.length,
                   shrinkWrap: true,
                   // physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
@@ -110,8 +111,8 @@ class _StoresPageState extends State<StoresPage> {
                       onTap: () {
                         Navigator.pushNamed(
                             context, AppRoutes.StoresDetailsPage,
-                            arguments:
-                                StoreListService().dataAllStoreList[index]);
+                            arguments: StoreListService.getInstance()
+                                .dataAllStoreList[index]);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -130,7 +131,7 @@ class _StoresPageState extends State<StoresPage> {
                                   children: [
                                     Expanded(
                                         child: Text(
-                                      "${StoreListService().dataAllStoreList[index].vendorName}",
+                                      "${StoreListService.getInstance().dataAllStoreList[index].vendorName}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     )),
@@ -140,7 +141,7 @@ class _StoresPageState extends State<StoresPage> {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      "${StoreListService().dataAllStoreList[index].openTime!.substring(0, 5)}-${StoreListService().dataAllStoreList[index].closeTime!.substring(0, 5)}",
+                                      "${StoreListService.getInstance().dataAllStoreList[index].openTime!.substring(0, 5)}-${StoreListService.getInstance().dataAllStoreList[index].closeTime!.substring(0, 5)}",
                                     ),
                                   ],
                                 ),
@@ -152,7 +153,7 @@ class _StoresPageState extends State<StoresPage> {
                                       width: 70,
                                       fit: BoxFit.fill,
                                       image: NetworkImage(Images.baseUrl +
-                                          StoreListService()
+                                          StoreListService.getInstance()
                                               .dataAllStoreList[index]
                                               .vendorProfile!),
                                     ),
@@ -173,14 +174,20 @@ class _StoresPageState extends State<StoresPage> {
                                               SizedBox(width: 8),
                                               Expanded(
                                                   child: Text(
-                                                      "${StoreListService().dataAllStoreList[index].distance}")),
+                                                      "${StoreListService.getInstance().dataAllStoreList[index].distance}")),
                                               Icon(
                                                 Icons.card_travel,
                                                 size: IconDimension.iconSize,
                                               ),
                                               SizedBox(width: 8),
-                                              Text(
-                                                  "${StoreListService().dataAllStoreList[index].noOfProducts} Items"),
+                                              Text(StoreListService
+                                                              .getInstance()
+                                                          .dataAllStoreList[
+                                                              index]
+                                                          .noOfProduct! <=
+                                                      1
+                                                  ? "${StoreListService.getInstance().dataAllStoreList[index].noOfProduct} Item"
+                                                  : "${StoreListService.getInstance().dataAllStoreList[index].noOfProduct} Items"),
                                             ],
                                           ),
                                           SizedBox(height: 4),
@@ -193,7 +200,7 @@ class _StoresPageState extends State<StoresPage> {
                                               SizedBox(width: 8),
                                               Expanded(
                                                   child: Text(
-                                                      "Min. order ${AppDetails.currencySign}${StoreListService().dataAllStoreList[index].minimumOrder}")),
+                                                      "Min. order ${AppDetails.currencySign}${StoreListService.getInstance().dataAllStoreList[index].minimumOrder}")),
                                             ],
                                           ),
                                           SizedBox(height: 4),
@@ -205,7 +212,7 @@ class _StoresPageState extends State<StoresPage> {
                                               ),
                                               SizedBox(width: 8),
                                               Text(
-                                                  "${StoreListService().dataAllStoreList[index].isHomeDelivery}")
+                                                  "${StoreListService.getInstance().dataAllStoreList[index].isHomeDelivery}")
                                             ],
                                           ),
                                         ],
@@ -300,7 +307,7 @@ class _StoresPageState extends State<StoresPage> {
                                               ),
                                               SizedBox(width: 8),
                                               Text(
-                                                  "${_foundDetail[index].noOfProducts} Items"),
+                                                  "${_foundDetail[index].noOfProduct} Items"),
                                             ],
                                           ),
                                           SizedBox(height: 4),
@@ -375,7 +382,7 @@ class _StoresPageState extends State<StoresPage> {
         setState(() {
           isLoading = true;
         });
-        results = StoreListService()
+        results = StoreListService.getInstance()
             .dataAllStoreList
             .where((user) => user.vendorName!
                 .toLowerCase()

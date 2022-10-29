@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_n_go/home_page_dir/model_req/category_based_prod_req.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/page/screen_arguments.dart';
 import 'package:shop_n_go/shared/service/add_prod_into_fav_service.dart';
@@ -30,10 +31,12 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
   List<CategoryBasedProductData> dataCategoryBasedProductList = [];
 
   bool isLoading = false;
+  bool isData = true;
 
   Future fetchCategoryBasedProductDetails() async {
     setState(() {
       isLoading = true;
+      isData = true;
     });
     Uri myUri =
         Uri.parse("${NetworkUtil.getCategoryBasedProductUrl}${id.toString()}");
@@ -43,10 +46,19 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
       CategoryBasedProductReq categoryBasedProductReq =
           CategoryBasedProductReq.fromJson(jsonResponse);
-      List<CategoryBasedProductData> list = categoryBasedProductReq.data!;
-      dataCategoryBasedProductList.addAll(list);
+      if (categoryBasedProductReq.data == null) {
+        setState(() {
+          isLoading = false;
+          isData = false;
+          dataCategoryBasedProductList.clear();
+        });
+      } else {
+        List<CategoryBasedProductData> list = categoryBasedProductReq.data!;
+        dataCategoryBasedProductList.addAll(list);
 
-      dataCategoryBasedProductList = list;
+        dataCategoryBasedProductList = list;
+      }
+
       setState(() {
         isLoading = false;
       });
@@ -144,6 +156,15 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                       child: CProgressIndicator.circularProgressIndicator,
                     ),
                   )
+                else if((isLoading == false &&dataCategoryBasedProductList.isEmpty)||isData==false)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.width,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      // child: CProgressIndicator.circularProgressIndicator,
+                      child: Text("No product found for\n Category: ${name.toString()}",textAlign: TextAlign.center,style: TextStyle(fontSize: 20)),
+                    ),
+                  )
                 else if (searchController.text.isEmpty && _foundDetail.isEmpty)
                   GridView.builder(
                     itemCount: dataCategoryBasedProductList.length,
@@ -204,7 +225,7 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                     child: Center(
                       child: Text("No matched Item found."),
                     ),
-                  ),
+                  )
               ],
             ),
           ),
@@ -269,10 +290,17 @@ class _CategoryNamePageState extends State<CategoryNamePage> {
                 isFavorite: false,
                 valueChanged: (_isFavorite) {
                   print('Is Favorite : $_isFavorite');
-                  _isFavorite
-                      ? AddProdIntoFavService()
-                          .addProdIntoFav(list[index].itemCode)
-                      : Fluttertoast.showToast(msg: "Favourite Removed");
+                  if (_isFavorite) {
+                    FavouriteService.getInstance()
+                        .fetchFavouriteDetails();
+                    AddProdIntoFavService()
+                        .addProdIntoFav(
+                        list[index].itemCode,
+                        list[index].vendorMasters);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Favourite Removed");
+                  }
                 },
               ))
         ],

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_collection_literals, unnecessary_this
-
 class AllCategoryRequest {
   bool? success;
   String? message;
@@ -21,7 +19,7 @@ class AllCategoryRequest {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
@@ -35,18 +33,21 @@ class AllCategoryRequest {
 class AllCategoryData {
   int? id;
   String? name;
+  String? images;
 
-  AllCategoryData({this.id, this.name});
+  AllCategoryData({this.id, this.name, this.images,});
 
   AllCategoryData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
+    images = json['images'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
+    data['images'] = this.images;
     return data;
   }
 }

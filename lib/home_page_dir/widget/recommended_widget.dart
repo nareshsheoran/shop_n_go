@@ -127,7 +127,7 @@ class _RecommendedWidgetState extends State<RecommendedWidget> {
                                     if (_isFavorite) {
                                       FavouriteService.getInstance()
                                           .fetchFavouriteDetails();
-                                      AddProdIntoFavService().addProdIntoFav(
+                                      AddProdIntoFavService.getInstance().addProdIntoFav(
                                           item[index].itemCode,
                                           item[index].vendorId);
                                     } else {

@@ -192,7 +192,7 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                       if (_isFavorite) {
                                         FavouriteService.getInstance()
                                             .fetchFavouriteDetails();
-                                        AddProdIntoFavService().addProdIntoFav(
+                                        AddProdIntoFavService.getInstance().addProdIntoFav(
                                             item[index].itemCode,
                                             item[index].vendorMasters);
                                       } else {
@@ -296,7 +296,7 @@ class _AllBestSellerProductState extends State<AllBestSellerProduct> {
                                       if (_isFavorite) {
                                         FavouriteService.getInstance()
                                             .fetchFavouriteDetails();
-                                        AddProdIntoFavService().addProdIntoFav(
+                                        AddProdIntoFavService.getInstance().addProdIntoFav(
                                             _foundDetail[index].itemCode,
                                             _foundDetail[index].vendorMasters);
                                       } else {

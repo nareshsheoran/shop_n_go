@@ -40,7 +40,7 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
       ProductDetailsReq bestSellerRequest =
           ProductDetailsReq.fromJson(jsonResponse);
 
-      productDetailsData = bestSellerRequest.data!;
+      productDetailsData = bestSellerRequest.data! as ProductDetailsData;
 
       setState(() {
         isLoading = false;
@@ -199,7 +199,7 @@ class _CategoriesDetailsPageState extends State<CategoriesDetailsPage> {
                                                   primary:
                                                       Constant.primaryColor),
                                               onPressed: () {
-                                                ProductAddCartService()
+                                                ProductAddCartService.getInstance()
                                                     .proAddedIntoCart(
                                                         index,
                                                         productDetailsData

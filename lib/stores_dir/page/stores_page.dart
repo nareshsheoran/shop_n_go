@@ -190,7 +190,7 @@ class _StoresPageState extends State<StoresPage> {
                                                       ),
                                                       SizedBox(width: 8),
                                                       Text(
-                                                          "${dataAllStoreList[index].noOfProducts} Items"),
+                                                          "${dataAllStoreList[index].noOfProduct} Items"),
                                                     ],
                                                   ),
                                                   SizedBox(height: 4),
@@ -318,7 +318,7 @@ class _StoresPageState extends State<StoresPage> {
                                                       ),
                                                       SizedBox(width: 8),
                                                       Text(
-                                                          "${_foundDetail[index].noOfProducts} Items"),
+                                                          "${_foundDetail[index].noOfProduct} Items"),
                                                     ],
                                                   ),
                                                   SizedBox(height: 4),

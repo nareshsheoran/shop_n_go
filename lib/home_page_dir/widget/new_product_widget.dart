@@ -124,7 +124,7 @@ class _NewProductWidgetState extends State<NewProductWidget> {
                                     if (_isFavorite) {
                                       FavouriteService.getInstance()
                                           .fetchFavouriteDetails();
-                                      AddProdIntoFavService().addProdIntoFav(
+                                      AddProdIntoFavService.getInstance().addProdIntoFav(
                                           item[index].itemCode,
                                           item[index].vendorId);
                                     } else {

@@ -19,7 +19,7 @@ class CategoryWidget extends StatefulWidget {
 class _CategoryWidgetState extends State<CategoryWidget> {
   @override
   Widget build(BuildContext context) {
-    return (CategoryService().isLoadingAllCategory)
+    return (CategoryService.getInstance().isLoadingAllCategory)
         ? SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 140,
@@ -33,7 +33,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: ListView.builder(
-                  itemCount: CategoryService().dataAllCategoryList.length,
+                  itemCount: CategoryService.getInstance().dataAllCategoryList.length,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   // physics: NeverScrollableScrollPhysics(),
@@ -48,11 +48,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                               context, AppRoutes.CategoryNamePage,
                               arguments: ScreenArguments(
                                   Images.baseUrl + imageList[index],
-                                  CategoryService()
+                                  CategoryService.getInstance()
                                       .dataAllCategoryList[index]
                                       .name!,
                                   "Description",
-                                  CategoryService()
+                                  CategoryService.getInstance()
                                       .dataAllCategoryList[index]
                                       .id
                                       .toString()));
@@ -73,7 +73,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                       image: NetworkImage(imageList[index])),
                                 ),
                                 Text(
-                                  CategoryService()
+                                  CategoryService.getInstance()
                                       .dataAllCategoryList[index]
                                       .name!,
                                   textAlign: TextAlign.center,

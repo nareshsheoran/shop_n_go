@@ -122,7 +122,7 @@ class _BestSellerWidgetState extends State<BestSellerWidget> {
                               if (_isFavorite) {
                                 FavouriteService.getInstance()
                                     .fetchFavouriteDetails();
-                                AddProdIntoFavService().addProdIntoFav(
+                                AddProdIntoFavService.getInstance().addProdIntoFav(
                                     item[index].itemCode,
                                     item[index].vendorId);
                               } else {

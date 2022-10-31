@@ -48,7 +48,7 @@ class ProductAddCartService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> map =
-          jsonDecode(response.body) as Map<String, dynamic>;
+      jsonDecode(response.body) as Map<String, dynamic>;
 
       ProdAddedReqRes prodAddedReqRes = ProdAddedReqRes.fromJson(map);
 

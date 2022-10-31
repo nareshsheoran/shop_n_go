@@ -241,7 +241,7 @@ class _AllProductPageState extends State<AllProductPage> {
                   print('Is Favorite : $_isFavorite');
                   if (_isFavorite) {
                     FavouriteService.getInstance().fetchFavouriteDetails();
-                    AddProdIntoFavService().addProdIntoFav(
+                    AddProdIntoFavService.getInstance().addProdIntoFav(
                         list[index].itemCode, list[index].vendorId);
                   } else {
                     Fluttertoast.showToast(msg: "Favourite Removed");

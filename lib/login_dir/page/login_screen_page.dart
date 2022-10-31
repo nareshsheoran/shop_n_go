@@ -4,7 +4,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:shop_n_go/home_page_dir/service/favourite_service.dart';
 import 'package:shop_n_go/login_dir/model/login_response_req.dart';
 import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
@@ -22,10 +24,9 @@ class LoginScreenPage extends StatefulWidget {
 
 class _LoginScreenPageState extends State<LoginScreenPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController userNameController =
-      TextEditingController(text: "sheoran01");
-  TextEditingController passwordController =
-      TextEditingController(text: "sheoran01");
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,137 +76,146 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
                 SizedBox(height: 30),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
                       controller: userNameController,
                       textCapitalization: TextCapitalization.sentences,
+                      keyboardType: TextInputType.name,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'Enter Username',
+                          hintText: 'Enter username',
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
+                              BorderRadius.all(Radius.circular(4)),
                               borderSide: BorderSide(
                                   width: 1, color: Constant.primaryColor)),
                           border: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: Constant.primaryColor))
-                          // border: InputBorder.none
-                          ),
+                              BorderSide(color: Constant.primaryColor))
+                        // border: InputBorder.none
+                      ),
                       validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 3)
+                        return userNameController.text.trim().isEmpty
+                            ? "Please Enter Username"
+                            : GetUtils.isLengthGreaterOrEqual(value!, 3)
                             ? null
                             : "Please Enter valid Username";
                       }),
                 ),
                 SizedBox(height: 10),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
+                      obscureText: !showPassword,
                       controller: passwordController,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                              icon: Icon(showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              onPressed: () => setState(() {
+                                showPassword = !showPassword;
+                              }),
+                              color: Constant.primaryColor),
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'Enter Your Password',
+                          hintText: 'Enter password',
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
+                              BorderRadius.all(Radius.circular(4)),
                               borderSide: BorderSide(
                                   width: 1, color: Constant.primaryColor)),
                           border: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: Constant.primaryColor))
-                          // border: InputBorder.none
-                          ),
+                              BorderSide(color: Constant.primaryColor))
+                        // border: InputBorder.none
+                      ),
                       validator: (String? value) {
-                        return GetUtils.isLengthGreaterOrEqual(value!, 5)
+                        return passwordController.text.trim().isEmpty
+                            ? "Please Enter Password"
+                            : GetUtils.isLengthGreaterOrEqual(value!, 8)
                             ? null
-                            : "Please Enter 5 Digit Password";
+                            : "Please Enter 8 Digit Password";
                       }),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Forgot Password?"),
-                    SizedBox(width: 10),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, AppRoutes.ForgotPasswordPage);
+                        },
+                        child: Text("Forgot Password?")),
+                    SizedBox(width: 20),
                   ],
                 ),
                 SizedBox(height: 20),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: GestureDetector(
-                    onTap: () async {
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ElevatedButton(
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Fluttertoast.showToast(
-                        //     msg: "Login Successful",
-                        //     toastLength: Toast.LENGTH_SHORT,
-                        //     timeInSecForIosWeb: 2);
-
-                        login();
-
-                        // await Navigator.pushReplacementNamed(
-                        //     context, AppRoutes.DashboardPage);
+                        login(userNameController.text.trim(),
+                            passwordController.text.trim());
                       }
                     },
-                    child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Constant.primaryColor,
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Constant.primaryColor),
-                        ),
-                        child: Center(
-                            child: Text(
-                          "LOG IN",
-                          style: TextStyle(color: Colors.white),
-                        ))),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize:
+                        Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    child: Text(
+                      "LOG IN",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("OR", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("OR",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16))
                   ],
                 ),
                 SizedBox(height: 10),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: GestureDetector(
-                    onTap: () async {
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ElevatedButton(
+                    onPressed: () {
                       Navigator.pushNamed(context, AppRoutes.MobileLoginPage);
                     },
-                    child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Constant.primaryColor,
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Constant.primaryColor),
-                        ),
-                        child: Center(
-                            child: Text(
-                          "LogIn with Mobile Number",
-                          style: TextStyle(color: Colors.white),
-                        ))),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize:
+                        Size(MediaQuery.of(context).size.width, 50),
+                        primary: Constant.primaryColor),
+                    child: Text("LogIn with Mobile Number",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500)),
                   ),
                 ),
                 SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.SignUpPage);
+                    // Navigator.pushNamed(context, AppRoutes.SignUpPage);
+                    Navigator.pushReplacementNamed(
+                        context, AppRoutes.SignUpPage);
                   },
                   child: RichText(
                     text: TextSpan(
@@ -238,21 +248,7 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
     );
   }
 
-  Future login() async {
-    String userName = userNameController.text;
-    String password = passwordController.text;
-
-    if (userName.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "Please Enter Username", timeInSecForIosWeb: 2);
-      return;
-    }
-    if (password.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "Please Enter Password", timeInSecForIosWeb: 2);
-      return;
-    }
-
+  Future login(userName, password) async {
     var requestBody = {
       'username': userName,
       'password': password,
@@ -260,42 +256,52 @@ class _LoginScreenPageState extends State<LoginScreenPage> {
 
     Uri myUri = Uri.parse(NetworkUtil.getLoginUrl);
 
-    // Response response = await get(myUri);
-    // Response response = await post(myUri, body: requestBody);
-
     http.Response response = await http.post(
       myUri,
       body: requestBody,
     );
 
     if (response.statusCode == 200) {
-      Fluttertoast.showToast(msg: "Login Successful", timeInSecForIosWeb: 2);
+      Fluttertoast.showToast(
+        msg: "Login Successful",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      LocalDataSaver.saveLoginData(true);
+      print(response.body);
 
       Map<String, dynamic> map =
-          jsonDecode(response.body) as Map<String, dynamic>;
+      jsonDecode(response.body) as Map<String, dynamic>;
 
       LoginResponseRequest loginResponseRequest =
-          LoginResponseRequest.fromJson(map);
+      LoginResponseRequest.fromJson(map);
 
       print(loginResponseRequest.token);
-
-      LocalDataSaver.saveID("01");
+      // LocalDataSaver.saveID("01");
       LocalDataSaver.saveUserName(userName);
       LocalDataSaver.savePassword(password);
       LocalDataSaver.saveLoginToken(loginResponseRequest.token!);
-      // LocalDataSaver.saveLoginData(true);
-      ProfileDetails.id = (await LocalDataSaver.getID())!;
+      // ProfileDetails.id = (await LocalDataSaver.getID())!;
       ProfileDetails.userName = (await LocalDataSaver.getUserName())!;
       ProfileDetails.password = (await LocalDataSaver.getPassword())!;
       ProfileDetails.loginToken = (await LocalDataSaver.getLoginToken())!;
-      await UserProfileService().fetchUserProfileDetails();
+      try {
+        await UserProfileService.getInstance().fetchUserProfileDetails();
+      } catch (exception) {
+        print("UserProfileService:$exception");
+      }
+      try {
+        await FavouriteService.getInstance().fetchFavouriteDetails();
+      } catch (exception) {
+        print("FavouriteService:$exception");
+      }
       await fetchDataSP();
-
       await Navigator.pushReplacementNamed(context, AppRoutes.DashboardPage);
     } else {
       print('Request failed with status: ${response.statusCode}');
+
       Fluttertoast.showToast(
-          msg: 'Request failed with status: ${response.statusCode}',
+        // msg: 'Request failed with status: ${response.statusCode}',
+          msg: 'Invalid Credential',
           timeInSecForIosWeb: 2);
     }
   }

@@ -2,6 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_n_go/account_dir/page/about_us_page.dart';
+import 'package:shop_n_go/account_dir/page/cancel_refund_page.dart';
+import 'package:shop_n_go/account_dir/page/help_page.dart';
+import 'package:shop_n_go/account_dir/page/payment_page.dart';
+import 'package:shop_n_go/account_dir/page/privacy_policy_page.dart';
+import 'package:shop_n_go/account_dir/page/setting_page.dart';
+import 'package:shop_n_go/account_dir/page/term_condition_page.dart';
 import 'package:shop_n_go/shared/shared_preference_data/address_localdb.dart';
 import 'package:shop_n_go/shared/shared_preference_data/fetch_data_SP.dart';
 import 'package:shop_n_go/shared/shared_preference_data/localdb.dart';
@@ -51,36 +58,36 @@ class _AccountPageState extends State<AccountPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ProfileDetails.userName == '' ||
-                                  ProfileDetails.userName == null
+                              ProfileDetails.userName == null
                               ? Text(
-                                  "User Name",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                )
+                            "User Name",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          )
                               : Text(
-                                  ProfileDetails.userName!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                            ProfileDetails.userName!,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
                           ProfileDetails.email == null
                               ? Text(
-                                  "User Email",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                )
+                            "User Email",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          )
                               : Text(
-                                  ProfileDetails.email!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                            ProfileDetails.email!,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),

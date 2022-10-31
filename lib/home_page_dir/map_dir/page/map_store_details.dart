@@ -336,12 +336,12 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                                                             primary: Constant
                                                                 .primaryColor),
                                                     onPressed: () {
-                                                      ProductAddCartService()
+                                                      ProductAddCartService.getInstance()
                                                           .proAddedIntoCart(
                                                               index,
                                                               item.itemCode);
                                                       setState(() {
-                                                        ProductAddCartService()
+                                                        ProductAddCartService.getInstance()
                                                                     .statusCode ==
                                                                 200
                                                             ? getProductBasedOnBarCodeReqDataList

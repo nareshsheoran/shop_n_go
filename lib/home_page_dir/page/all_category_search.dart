@@ -94,7 +94,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     ),
                   ),
                 ),
-                (CategoryService().isLoadingAllCategory)
+                (CategoryService.getInstance().isLoadingAllCategory)
                     ? SizedBox(
                         height: MediaQuery.of(context).size.width,
                         width: MediaQuery.of(context).size.width,
@@ -103,7 +103,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                         ),
                       )
                     : GridView.builder(
-                        itemCount: CategoryService().dataAllCategoryList.length,
+                        itemCount: CategoryService.getInstance().dataAllCategoryList.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 0.8,
@@ -117,9 +117,9 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                                     context, AppRoutes.CategoryNamePage,
                                     arguments: ScreenArguments(
                                         imageList[index],
-                                        CategoryService().dataAllCategoryList[index].name!,
+                                        CategoryService.getInstance().dataAllCategoryList[index].name!,
                                         "description",
-                                        CategoryService().dataAllCategoryList[index].id.toString()));
+                                        CategoryService.getInstance().dataAllCategoryList[index].id.toString()));
                               },
                               child: categoryWidget(index));
                         },
@@ -154,7 +154,7 @@ class _AllCategorySearchState extends State<AllCategorySearch> {
                     image: NetworkImage(imageList[index])),
               ),
               Text(
-                CategoryService().dataAllCategoryList[index].name!,
+                CategoryService.getInstance().dataAllCategoryList[index].name!,
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             ],

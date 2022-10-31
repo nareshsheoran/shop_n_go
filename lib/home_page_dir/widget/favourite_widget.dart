@@ -135,10 +135,10 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                                   valueChanged: (_isFavorite) {
                                     print('Is Favorite : $_isFavorite');
                                     _isFavorite
-                                        ? AddProdIntoFavService()
+                                        ? AddProdIntoFavService.getInstance()
                                         .addProdIntoFav(
                                         productDetailsDataList[index]
-                                            .itemCode)
+                                            .itemCode,productDetailsDataList[index].vendorId)
                                         : Fluttertoast.showToast(
                                         msg: "Favourite Removed");
                                   },
@@ -173,7 +173,7 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
         ProductDetailsReq productDetailsReq =
             ProductDetailsReq.fromJson(jsonResponse);
 
-        productDetailsData = productDetailsReq.data!;
+        productDetailsData = productDetailsReq.data! as ProductDetailsData?;
         productDetailsDataList.add(productDetailsData);
         // init();
       }

@@ -1,14 +1,14 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shop_n_go/cart_dir/model/all_cart_prod_req.dart';
-import 'package:shop_n_go/home_page_dir/model_req/product_details_req.dart';
-import 'package:shop_n_go/item_data.dart';
+import 'package:shop_n_go/cart_dir/model/remove_to_cart_req_res.dart';
+import 'package:shop_n_go/cart_dir/model/store_list_cart_req.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -18,602 +18,485 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  Object? number = 0;
-  Object? id = '';
-
-  List<AllCartProductData> dataAllCartProductList = [];
   bool isLoading = false;
-
-  Future fetchAllCartProductDataDetails() async {
+  List<StoreListCartReqData> dataStoreCartList = [];
+  Future fetchStoreListCartDetails() async {
     setState(() {
       isLoading = true;
-      number = 1;
+      dataStoreCartList.clear();
     });
     Uri myUri =
-        // Uri.parse("${NetworkUtil.getOrderDetailsUrl}${ProfileDetails.id}");
-        Uri.parse("${NetworkUtil.getAllCartProductUrl}${ProfileDetails.id}");
+    Uri.parse("${NetworkUtil.storeListCartUrl}${ProfileDetails.id}");
     Response response = await get(myUri);
-
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      AllCartProductReq allCartProductData =
-          AllCartProductReq.fromJson(jsonResponse);
-      List<AllCartProductData> list = allCartProductData.data!;
+      StoreListCartReq storeListCartReq =
+      StoreListCartReq.fromJson(jsonResponse);
+      if (storeListCartReq.message == "No Any Product") {
+        setState(() {
+          isLoading = false;
+          dataStoreCartList.clear();
+        });
+      } else {
+        List<StoreListCartReqData> list = storeListCartReq.data!;
+        dataStoreCartList.addAll(list);
+      }
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
 
-      dataAllCartProductList.addAll(list);
-      fetchProductDetails();
-      setState(() {
-        isLoading = false;
-      });
+      isLoading = false;
     }
   }
 
-  double sum = 0;
-  double ordersSum = 0;
-  double costTotal = 0;
-  double deliveryCost = 0;
-
-  double totalSum() {
-    sum = 0;
-    // if (number == 0 || number == null) {
-    for (int i = 0; i < productDetailsDataList.length; i++) {
-      setState(() {
-        sum += productDetailsDataList[i].id!;
-        sum;
-      });
-    }
-    sum;
-    // }
-    // else {
-    //   for (int i = 0; i < int.parse(number!.toString()); i++) {
-    //     setState(() {
-    //       sum += itemData[i].counter;
-    //       sum;
-    //     });
-    //   }
-    // }
-
-    return sum;
-  }
-
-  double totalOrderSum() {
-    ordersSum = 0;
-    // if (number == 0 || number == null) {
-    for (int i = 0; i < productDetailsDataList.length; i++) {
-      setState(() {
-        // ordersSum += ((productDetailsDataList[i].price) * productDetailsDataList[i].price);
-        ordersSum += ((productDetailsDataList[i].price));
-        ordersSum;
-      });
-    }
-    ordersSum;
-
-    return ordersSum;
-  }
-
-  double totalDeliveryCost() {
-    setState(() {
-      costTotal = deliveryCost + ordersSum;
-    });
-    return costTotal;
-  }
-
-  void init() {
-    // totalSum();
-    totalOrderSum();
-    totalDeliveryCost();
-  }
 
   @override
   void initState() {
+    fetchStoreListCartDetails();
     super.initState();
-    fetchAllCartProductDataDetails();
   }
 
-  Future<bool>? _onBackPressed() {
-    Navigator.canPop(context);
-    Navigator.popAndPushNamed(context, AppRoutes.DashboardPage);
-    return null;
+  void _onRefresh() async {
+    dataStoreCartList.clear();
+    await Future.delayed(Duration(milliseconds: 1000));
+
+    fetchStoreListCartDetails();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return _onBackPressed()!;
-      },
-      child: Scaffold(
+    // fetchStoreListCartDetails();
+    return Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+          child: (isLoading)
+              ? SizedBox(
+              height: MediaQuery.of(context).size.height / 1.5,
+              width: MediaQuery.of(context).size.width,
+              child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("CART",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18))
+                      CProgressIndicator.circularProgressIndicator,
+                      SizedBox(height: 16),
+                      Text("Please Wait..",
+                          style: TextStyle(fontWeight: FontWeight.w500)),
                     ],
-                  ),
-                ),
-                (isDetailsLoading || isLoading)
-                    ? SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.5,
-                        width: MediaQuery.of(context).size.width,
-                        child: Center(
-                            child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  )))
+              : ((dataStoreCartList.isEmpty
+              ? RefreshIndicator(
+              onRefresh: () async {
+                _onRefresh();
+                setState(() {});
+              },
+              child: SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.5,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            CProgressIndicator.circularProgressIndicator,
-                            SizedBox(height: 16),
-                            Text("Please Wait..",
-                                style: TextStyle(fontWeight: FontWeight.w500)),
-                            // Text(
-                            //     "${(dataAllCartProductList.length) - (productDetailsDataList.length)}",
-                            //     style: TextStyle(fontWeight: FontWeight.w500))
+                            Text("CART",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18))
                           ],
-                        )),
-                      )
-                    : productDetailsDataList.isEmpty
-                        ? SizedBox(
-                            height: MediaQuery.of(context).size.height / 1.5,
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(child: Text("No Item In Cart")))
-                        : Column(
-                            children: [
-                              ListView.builder(
-                                // itemCount: imgList.length,
-                                itemCount: productDetailsDataList.length,
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      // Navigator.pushNamed(context, AppRoutes.StoresDetailsPage,
-                                      //     arguments: nameList[index]);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 8),
-                                      child: Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  // nameList[index],
-                                                  productDetailsDataList[index]
-                                                      .itemName,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              SizedBox(height: 6),
-                                              Row(
-                                                children: [
-                                                  Image(
-                                                    height: 70,
-                                                    width: 70,
-                                                    fit: BoxFit.fill,
-                                                    image: NetworkImage(Images
-                                                            .baseUrl +
-                                                        productDetailsDataList[
-                                                                index]
-                                                            .itemImages),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Icon(
-                                                                Icons
-                                                                    .directions,
-                                                                size: IconDimension
-                                                                    .iconSize),
-                                                            SizedBox(width: 8),
-                                                            Expanded(
-                                                                child: Text(
-                                                                    "${productDetailsDataList[index].itemCategory} KMS")),
-                                                            Icon(
-                                                                Icons
-                                                                    .card_travel,
-                                                                size: IconDimension
-                                                                    .iconSize),
-                                                            SizedBox(width: 8),
-                                                            Text(
-                                                                // "${itemData[index].counter} Items"),
-                                                                "1 Item"),
-                                                          ],
-                                                        ),
-                                                        SizedBox(height: 8),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Icon(Icons.star,
-                                                                size: IconDimension
-                                                                    .iconSize),
-                                                            SizedBox(width: 8),
-                                                            // counterWidget(index),
-                                                            ElevatedButton(
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                        // minimumSize: Size(50, 30),
-                                                                        primary:
-                                                                            Constant
-                                                                                .primaryColor),
-                                                                onPressed: () {
-                                                                  // Navigator.pushNamed(
-                                                                  //     context,
-                                                                  //     AppRoutes
-                                                                  //         .CartDetailsPage,
-                                                                  //     arguments: number);
-                                                                },
-                                                                child: Text(
-                                                                    "VIEW ITEMS"))
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
+                        ),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height / 3),
+                      Text("No Item In Cart",
+                          style: TextStyle(fontSize: 20)),
+                    ],
+                  )))
+              : RefreshIndicator(
+            onRefresh: () async {
+              _onRefresh();
+              setState(() {});
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("CART",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18))
+                      ],
+                    ),
+                  ),
+                  ListView.builder(
+                    // itemCount: productDetailsDataList.length,
+                    itemCount: dataStoreCartList.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      // var item = productDetailsDataList[index];
+                      var item = dataStoreCartList[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigator.pushNamed(context, AppRoutes.StoresDetailsPage,
+                          //     arguments: nameList[index]);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 8),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    //item
+                                    //     .vendorMasters,
+                                      item.vendorName!,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Image(
+                                          height: 70,
+                                          width: 70,
+                                          fit: BoxFit.fill,
+                                          image: NetworkImage(
+                                              Images.baseUrl +
+                                                  item.vendorProfile!)),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: [
-                                            productDetailsDataList.length == 1
-                                                ? Text("Total Item Count:")
-                                                : Text("Total Items Count:"),
-                                            SizedBox(height: 4),
-                                            productDetailsDataList.length == 1
-                                                ? Text("Total Item Amount:")
-                                                : Text("Total Items Amount:"),
-                                            SizedBox(height: 4),
-                                            Text("Delivery Cost:"),
-                                            SizedBox(height: 4),
-                                            Text("Total Bill Amount:",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.directions,
+                                                    size: IconDimension
+                                                        .iconSize),
+                                                SizedBox(width: 8),
+                                                Expanded(child: Text(
+                                                  // "${((productDetailsDataList[index].price) * (itemData[index].counter)).toStringAsFixed(0)}")),
+                                                  // "Price ${((item.price) * (itemData[index].counter)).toStringAsFixed(0)}")),
+                                                    "${item.vendorId}")),
+                                                Icon(Icons.card_travel,
+                                                    size: IconDimension
+                                                        .iconSize),
+                                                SizedBox(width: 8),
+                                                // itemData[index]
+                                                //             .counter ==
+                                                //         1
+                                                //     ? Text(
+                                                //         "${itemData[index].counter} Item")
+                                                //     : Text(
+                                                //         "${itemData[index].counter} Items"),
+                                                Text(item.itemCount == 1
+                                                    ? "${item.itemCount} Item"
+                                                    : "${item.itemCount} Items")
+                                              ],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                Icon(Icons.star,
+                                                    size: IconDimension
+                                                        .iconSize),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                    child: Container()),
+                                                // counterWidget(index),
+                                                // GestureDetector(
+                                                //   onTap: () {
+                                                //     showDialog<
+                                                //             String>(
+                                                //         context:
+                                                //             context,
+                                                //         builder:
+                                                //             (BuildContext
+                                                //                 context) {
+                                                //           return AlertDialog(
+                                                //             title: Text(
+                                                //                 "Delete?"),
+                                                //             content: Text(
+                                                //                 "Are you sure to delete?"),
+                                                //             actions: <
+                                                //                 Widget>[
+                                                //               TextButton(
+                                                //                 child:
+                                                //                     const Text('Cancel'),
+                                                //                 onPressed:
+                                                //                     () {
+                                                //                   Navigator.of(context).pop();
+                                                //                 },
+                                                //               ),
+                                                //               TextButton(
+                                                //                 child:
+                                                //                     Text('OK'),
+                                                //                 onPressed:
+                                                //                     () {
+                                                //                   setState(() {
+                                                //                     productDetailsDataList.removeAt(index);
+                                                //                     dataAllCartProductList.removeAt(index);
+                                                //                     if (productDetailsDataList.isEmpty || dataAllCartProductList.isEmpty) {
+                                                //                       setState(() {
+                                                //                         isAllDelete = true;
+                                                //                         isAllDelete == true;
+                                                //                       });
+                                                //                     } else {
+                                                //                       setState(() {
+                                                //                         isAllDelete = false;
+                                                //                         isAllDelete == false;
+                                                //                       });
+                                                //                     }
+                                                //                     itemData[index].counter = 1;
+                                                //                     init();
+                                                //                     Fluttertoast.showToast(msg: "Deleted Successfully");
+                                                //                     // removeToCart(item.itemCode!);
+                                                //                   });
+                                                //                   Navigator.of(context).pop();
+                                                //                 },
+                                                //               ),
+                                                //             ],
+                                                //           );
+                                                //         });
+                                                //   },
+                                                //   child: Icon(
+                                                //       // Icons.clear,
+                                                //       Icons
+                                                //           .delete_forever,
+                                                //       color:
+                                                //           Colors.red,
+                                                //       size: IconDimension
+                                                //               .iconSize +
+                                                //           10),
+                                                // ),
+                                                ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      // minimumSize: Size(50, 30),
+                                                        primary: Constant
+                                                            .primaryColor),
+                                                    onPressed: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          AppRoutes
+                                                              .CartDetailsPage,
+                                                          arguments:
+                                                          item)
+                                                          .then((value) {
+                                                        setState(() {
+                                                          fetchStoreListCartDetails();
+                                                          setState(() {});
+                                                        });
+                                                      });
+
+                                                      // arguments: item.vendorId);
+                                                    },
+                                                    child: Text(
+                                                        item.itemCount ==
+                                                            1
+                                                            ? "VIEW ITEM"
+                                                            : "VIEW ITEMS"))
+                                              ],
+                                            ),
                                           ],
                                         ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            productDetailsDataList.length == 1
-                                                ? Text(
-                                                    "${productDetailsDataList.length} Item")
-                                                : Text(
-                                                    "${productDetailsDataList.length} Items"),
-                                            SizedBox(height: 4),
-                                            Text(
-                                                "${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
-                                            // Text("${AppDetails.currencySign}"),
-                                            SizedBox(height: 4),
-                                            Text(
-                                                "${AppDetails.currencySign} ${deliveryCost.toStringAsFixed(0)}"),
-                                            // "${AppDetails.currencySign}"),
-                                            SizedBox(height: 4),
-                                            Text(
-                                                "${AppDetails.currencySign} ${costTotal.toStringAsFixed(0)}",
-                                                // Text("${AppDetails.currencySign} ",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text("Delivery to HOME",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          SizedBox(height: 4),
-                                          AddressDetails.flat == ''
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pushNamed(context,
-                                                        AppRoutes.AddressPage);
-                                                  },
-                                                  child: Text("Enter Address",
-                                                      style: TextStyle(
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .underline,
-                                                          color: Colors.blue)))
-                                              : SizedBox(
-                                                  height: 0,
-                                                  width: 0,
-                                                ),
-                                          AddressDetails.flat == ''
-                                              ? Text("")
-                                              : GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pushNamed(context,
-                                                        AppRoutes.AddressPage);
-                                                  },
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.end,
-                                                    children: [
-                                                      Text("Change Address",
-                                                          style: TextStyle(
-                                                              decoration:
-                                                                  TextDecoration
-                                                                      .underline,
-                                                              color:
-                                                                  Colors.blue))
-                                                    ],
-                                                  ),
-                                                ),
-                                        ],
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        minimumSize: Size(
-                                            MediaQuery.of(context).size.width,
-                                            50),
-                                        primary: Constant.primaryColor),
-                                    onPressed: () {
-                                      AddressDetails.flat == ""
-                                          ? Fluttertoast.showToast(
-                                              msg:
-                                                  "Please Enter Delivery Address")
-                                          : Navigator.pushNamed(
-                                              context, AppRoutes.OrderPage,
-                                              arguments:
-                                                  costTotal.toStringAsFixed(0));
-                                    },
-                                    child: Text("PROCEED TO BUY")),
-                              ),
-                            ],
+                            ),
                           ),
-              ],
+                        ),
+                      );
+                    },
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Card(
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.all(8.0),
+                  //       child: Row(
+                  //         mainAxisAlignment:
+                  //             MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Column(
+                  //             crossAxisAlignment:
+                  //                 CrossAxisAlignment.start,
+                  //             children: [
+                  //               productDetailsDataList.length == 1
+                  //                   ? Text("Total Item Count:")
+                  //                   : Text("Total Items Count:"),
+                  //               SizedBox(height: 4),
+                  //               productDetailsDataList.length == 1
+                  //                   ? Text("Total Item Amount:")
+                  //                   : Text("Total Items Amount:"),
+                  //               SizedBox(height: 4),
+                  //               Text("Delivery Cost:"),
+                  //               SizedBox(height: 4),
+                  //               Text("Total Bill Amount:",
+                  //                   style: TextStyle(
+                  //                       fontWeight: FontWeight.bold)),
+                  //             ],
+                  //           ),
+                  //           Column(
+                  //             crossAxisAlignment:
+                  //                 CrossAxisAlignment.end,
+                  //             children: [
+                  //               productDetailsDataList.length == 1
+                  //                   ? Text(
+                  //                       "${sum.toStringAsFixed(0)} Item")
+                  //                   : Text(
+                  //                       "${sum.toStringAsFixed(0)} Items"),
+                  //               SizedBox(height: 4),
+                  //               Text(
+                  //                   "${AppDetails.currencySign} ${ordersSum.toStringAsFixed(0)}"),
+                  //               // Text("${AppDetails.currencySign}"),
+                  //               SizedBox(height: 4),
+                  //               Text(
+                  //                   "${AppDetails.currencySign} ${deliveryCost.toStringAsFixed(0)}"),
+                  //               // "${AppDetails.currencySign}"),
+                  //               SizedBox(height: 4),
+                  //               Text(
+                  //                   "${AppDetails.currencySign} ${costTotal.toStringAsFixed(0)}",
+                  //                   // Text("${AppDetails.currencySign} ",
+                  //                   style: TextStyle(
+                  //                       fontWeight: FontWeight.bold)),
+                  //             ],
+                  //           )
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: SizedBox(
+                  //     width: double.infinity,
+                  //     child: Card(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.all(8.0),
+                  //         child: Column(
+                  //           crossAxisAlignment:
+                  //               CrossAxisAlignment.start,
+                  //           children: [
+                  //             Text("Delivery to HOME",
+                  //                 style: TextStyle(
+                  //                     fontWeight: FontWeight.bold)),
+                  //             SizedBox(height: 4),
+                  //             (AddressDetails.flat == '' ||
+                  //                     AddressDetails.flat == null)
+                  //                 ? GestureDetector(
+                  //                     onTap: () {
+                  //                       Navigator.pushNamed(context,
+                  //                           AppRoutes.AddressPage);
+                  //                     },
+                  //                     child: Text("Enter Address",
+                  //                         style: TextStyle(
+                  //                             decoration:
+                  //                                 TextDecoration
+                  //                                     .underline,
+                  //                             color: Colors.blue)))
+                  //                 : Text(
+                  //                     "${AddressDetails.flat}, ${AddressDetails.area}, ${AddressDetails.city}, ${AddressDetails.landMark}, ${AddressDetails.state}, ${AddressDetails.pinCode} - ${AddressDetails.country}              Mob: ${ProfileDetails.phone}",
+                  //                     style: TextStyle()),
+                  //             SizedBox(height: 4),
+                  //             (AddressDetails.flat == '' ||
+                  //                     AddressDetails.flat == null)
+                  //                 ? SizedBox()
+                  //                 : GestureDetector(
+                  //                     onTap: () {
+                  //                       Navigator.pushNamed(context,
+                  //                           AppRoutes.AddressPage);
+                  //                     },
+                  //                     child: Row(
+                  //                       mainAxisAlignment:
+                  //                           MainAxisAlignment.end,
+                  //                       children: [
+                  //                         Text("Change Address",
+                  //                             style: TextStyle(
+                  //                                 decoration:
+                  //                                     TextDecoration
+                  //                                         .underline,
+                  //                                 color: Colors.blue))
+                  //                       ],
+                  //                     ),
+                  //                   ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ElevatedButton(
+                  //       style: ElevatedButton.styleFrom(
+                  //           minimumSize: Size(
+                  //               MediaQuery.of(context).size.width,
+                  //               50),
+                  //           primary: Constant.primaryColor),
+                  //       onPressed: () {
+                  //         (AddressDetails.flat == '' ||
+                  //                 AddressDetails.flat == null)
+                  //             ? Fluttertoast.showToast(
+                  //                 msg:
+                  //                     "Please Enter Delivery Address")
+                  //             : Navigator.pushNamed(
+                  //                 context, AppRoutes.OrderPage,
+                  //                 arguments:
+                  //                     costTotal.toStringAsFixed(0));
+                  //       },
+                  //       child: Text("PROCEED TO BUY")),
+                  // ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          ))),
+        ));
   }
 
-  bool isDetailsLoading = false;
-  late ProductDetailsData productDetailsData;
-  List productDetailsDataList = [];
+  Future removeToCart(itemCode) async {
+    String consumerId = ProfileDetails.id!;
+    print("consumerId: $consumerId==itemCode:$itemCode");
 
-  Future fetchProductDetails() async {
-    setState(() {
-      isDetailsLoading = true;
-    });
-    for (int i = 0; i < dataAllCartProductList.length; i++) {
-      Uri myUri = Uri.parse(
-          "${NetworkUtil.getProductDetailsUrl}${dataAllCartProductList[i].addedProIntoCart}");
-      Response response = await get(myUri);
+    Uri myUri = Uri.parse(
+        "${NetworkUtil.postRemoveToCartUrl}${ProfileDetails.id}/$itemCode");
+    // "${NetworkUtil.postRemoveToCartUrl}26/102");
 
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-        ProductDetailsReq productDetailsReq =
-            ProductDetailsReq.fromJson(jsonResponse);
+    http.Response response = await http.delete(myUri);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> map =
+      jsonDecode(response.body) as Map<String, dynamic>;
+      RemoveToCartResReq removeToCartResReq = RemoveToCartResReq.fromJson(map);
 
-        productDetailsData = productDetailsReq.data!;
-        productDetailsDataList.add(productDetailsData);
-        init();
+      if (removeToCartResReq.success == true) {
+        print('removeToCart: Success');
+        Fluttertoast.showToast(msg: "Product Deleted Successfully");
+      } else {
+        Fluttertoast.showToast(
+            msg: "Request failed with Error: ${response.statusCode}",
+            timeInSecForIosWeb: 2);
+        print(
+            'removeToCart: Request failed with status: ${response.statusCode}');
       }
     }
-    setState(() {
-      isDetailsLoading = false;
-      id = ProfileDetails.id;
-    });
   }
-
-  Widget counterWidget(int index) {
-    return
-        // itemData[index].shouldVisible ?
-        //    Center(
-        //       child: Container(
-        //       height: 30,
-        //       width: 70,
-        //       decoration: BoxDecoration(
-        //           color: Colors.grey[200],
-        //           borderRadius: BorderRadius.circular(4),
-        //           border: Border.all(color: Colors.white70)),
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //         children: <Widget>[
-        //           InkWell(
-        //               onTap: () {
-        //                 setState(() {
-        //                   if (itemData[index].counter < 1) {
-        //                     itemData[index].shouldVisible =
-        //                         !itemData[index].shouldVisible;
-        //                   } else {
-        //                     itemData[index].counter--;
-        //                   }
-        //                 });
-        //               },
-        //               child: Icon(
-        //                 Icons.remove,
-        //                 color: Constant.primaryColor,
-        //                 size: 22,
-        //               )),
-        //           SizedBox(width: 4),
-        //           (itemData[index].counter == 0 ||
-        //                   itemData[index].counter == null)
-        //               ? Text(
-        //                   '${itemData[index].counter}',
-        //                   style: TextStyle(color: Colors.black),
-        //                 )
-        //               : Text(
-        //                   '${itemData[index].counter}',
-        //                   style: const TextStyle(color: Colors.black),
-        //                 ),
-        //           SizedBox(width: 4),
-        //           InkWell(
-        //               onTap: () {
-        //                 setState(() {
-        //                   itemData[index].counter++;
-        //                 });
-        //               },
-        //               child: Icon(
-        //                 Icons.add,
-        //                 color: Constant.primaryColor,
-        //                 size: 22,
-        //               )),
-        //         ],
-        //       ),
-        //     )):
-        Container(
-      padding: EdgeInsets.all(5),
-      height: 30,
-      width: 80,
-      decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.white70)),
-      child: Row(
-        children: <Widget>[
-          InkWell(
-              onTap: () {
-                setState(() {
-                  // itemData[index].counter--;
-                  if (itemData[index].counter < 1) {
-                    itemData[index].shouldVisible =
-                        !itemData[index].shouldVisible;
-                    if (itemData[index].counter == 0) {
-                      setState(() {
-                        itemData.removeAt(index);
-                      });
-                    }
-                  } else {
-                    itemData[index].counter--;
-                    if (itemData[index].counter == 0) {
-                      setState(() {
-                        itemData.removeAt(index);
-                      });
-                    }
-                  }
-                });
-              },
-              child: Center(
-                  child: Icon(
-                Icons.remove,
-                color: Constant.primaryColor,
-                size: 22,
-              ))),
-          SizedBox(width: 2),
-          Text(
-            '${itemData[index].counter}',
-            style: const TextStyle(color: Colors.black),
-          ),
-          SizedBox(width: 2),
-          InkWell(
-              onTap: () {
-                setState(() {
-                  itemData[index].counter++;
-                  itemData[index].shouldVisible =
-                      !itemData[index].shouldVisible;
-                });
-              },
-              child: Center(
-                  child: Icon(
-                Icons.add,
-                color: Constant.primaryColor,
-                size: 22,
-              ))),
-        ],
-      ),
-    );
-  }
-
-  List imgList = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-DjY67mzulVMRq80hvI-mq8dImIOgKt5Cw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREArY26l80lxfHNDyJ_kcZZWVav8i4kPadgA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiT2KSFH6y04zyIvWox_XKHa7rOZfmv8RPzw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdQjJbw3mOduJzO3hGipOnI-q0JzduC8kfzA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdckMBb1G75l-pI607XL2qItYa0sVc8vG--g&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJaCYKmaRi3xV2Q-0WhIy6-8OomW7rpc2DFg&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6-DjY67mzulVMRq80hvI-mq8dImIOgKt5Cw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiT2KSFH6y04zyIvWox_XKHa7rOZfmv8RPzw&usqp=CAU"
-  ];
-
-  List nameList = [
-    "Spencer Stores 01",
-    "Spencer Stores 02",
-    "Spencer Stores 03",
-    "Spencer Stores 04",
-    "Spencer Stores 05",
-    "Spencer Stores 06",
-    "Spencer Stores 07",
-    "Spencer Stores 08",
-  ];
-
-  List distanceList = [
-    "5",
-    "6",
-    "10",
-    "1",
-    "6",
-    "10",
-    "1",
-    "8",
-  ];
-  List itemList = [
-    "55",
-    "66",
-    "80",
-    "31",
-    "66",
-    "80",
-    "31",
-    "18",
-  ];
 }

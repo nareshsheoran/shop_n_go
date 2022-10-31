@@ -17,29 +17,15 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
-
-  @override
-  void initState() {
-    // CategoryService.getInstance().fetchAllCategory();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return (CategoryService.getInstance().isLoadingAllCategory)
+    return (CategoryService().isLoadingAllCategory)
         ? SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 140,
             child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CProgressIndicator.circularProgressIndicator,
-                SizedBox(height: 16),
-                Text("Please Wait..",
-                    style: TextStyle(fontWeight: FontWeight.w500)),
-              ],
-            )),
+              child: CProgressIndicator.circularProgressIndicator,
+            ),
           )
         : SizedBox(
             width: MediaQuery.of(context).size.width,
@@ -47,14 +33,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: ListView.builder(
-                  itemCount:
-                      CategoryService.getInstance().dataAllCategoryList.length.bitLength,
+                  itemCount: CategoryService().dataAllCategoryList.length,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   // physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    var item =
-                        CategoryService.getInstance().dataAllCategoryList;
                     return SizedBox(
                       width: 110,
                       height: 160,
@@ -64,10 +47,15 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                           Navigator.pushNamed(
                               context, AppRoutes.CategoryNamePage,
                               arguments: ScreenArguments(
-                                  Images.baseUrl + item[index].images!,
-                                  item[index].name!,
+                                  Images.baseUrl + imageList[index],
+                                  CategoryService()
+                                      .dataAllCategoryList[index]
+                                      .name!,
                                   "Description",
-                                  item[index].id.toString()));
+                                  CategoryService()
+                                      .dataAllCategoryList[index]
+                                      .id
+                                      .toString()));
                         },
                         child: Card(
                           child: Padding(
@@ -82,9 +70,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                       width: ImageDimension.imageWidth,
                                       height: ImageDimension.imageHeight,
                                       fit: BoxFit.fill,
-                                      image: NetworkImage(Images.baseUrl + item[index].images!)),
+                                      image: NetworkImage(imageList[index])),
                                 ),
-                                Text(item[index]
+                                Text(
+                                  CategoryService()
+                                      .dataAllCategoryList[index]
                                       .name!,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -103,4 +93,14 @@ class _CategoryWidgetState extends State<CategoryWidget> {
   }
 }
 
-
+List imageList = [
+  Images.laysImg,
+  Images.milkImg,
+  Images.radisImg,
+  Images.potatoImg,
+  Images.tomatoImg,
+  Images.onionImg,
+  Images.chillyImg,
+  Images.ladiesFingerImg,
+  Images.radisImg,
+];

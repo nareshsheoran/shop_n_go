@@ -7,13 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop_n_go/cart_dir/service/cart_product_service.dart';
 import 'package:shop_n_go/home_page_dir/map_dir/model/near_by_stores_req.dart';
-import 'package:shop_n_go/home_page_dir/map_dir/model/vendor_profile_req.dart';
+import 'package:shop_n_go/home_page_dir/model_req/product_add_req_res.dart';
+import 'package:shop_n_go/item_data.dart';
 import 'package:shop_n_go/shared/auth/constant.dart';
 import 'package:shop_n_go/shared/auth/routes.dart';
 import 'package:shop_n_go/shared/service/product_add_cart_service.dart';
-import 'package:shop_n_go/shared/service/product_add_to_N_cart_service.dart';
 import 'package:shop_n_go/shop_in_dir/model/add_into_cart_store_basis_req.dart';
 import 'package:shop_n_go/shop_in_dir/model/get_prod_based_on_barCode_req.dart';
 
@@ -31,6 +30,7 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
 
   Future<void> scanQR() async {
     String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
@@ -336,19 +336,12 @@ class _MapStoreDetailsPageState extends State<MapStoreDetailsPage> {
                                                             primary: Constant
                                                                 .primaryColor),
                                                     onPressed: () {
-                                                      ProductAddCartService
-                                                              .getInstance()
+                                                      ProductAddCartService()
                                                           .proAddedIntoCart(
                                                               index,
                                                               item.itemCode);
-                                                      ProductAddToNCartService
-                                                              .getInstance()
-                                                          .proAddedIntoCart(
-                                                              item.itemCode,
-                                                              item.vendorId);
                                                       setState(() {
-                                                        ProductAddCartService
-                                                                        .getInstance()
+                                                        ProductAddCartService()
                                                                     .statusCode ==
                                                                 200
                                                             ? getProductBasedOnBarCodeReqDataList

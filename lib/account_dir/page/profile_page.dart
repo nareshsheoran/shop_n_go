@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:bottom_picker/resources/arrays.dart';
+import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,14 +29,12 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   TextEditingController nameController =
       TextEditingController(text: ProfileDetails.userName);
-  //Naresh
   TextEditingController emailController =
       TextEditingController(text: ProfileDetails.email);
   TextEditingController passwordController =
       TextEditingController(text: ProfileDetails.password);
   TextEditingController mobileController =
       TextEditingController(text: ProfileDetails.phone);
-  //7027768268
   TextEditingController dateController =
       TextEditingController(text: ProfileDetails.date);
   TextEditingController genderController =
@@ -95,8 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
       body: requestBody,
     );
-    print("fff::${ProfileDetails.loginToken}");
-
     if (response.statusCode == 200) {
       Map<String, dynamic> map =
           jsonDecode(response.body) as Map<String, dynamic>;
@@ -125,10 +122,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Profile"),
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -147,10 +140,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 SizedBox(height: 20),
                 CircleAvatar(
                   radius: 44,
-                  child: Text(
-                    ProfileDetails.userName!.characters.first.toUpperCase(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
-                  ),
+                  child: Center(
+                      child: Text(
+                    ProfileDetails.userName!,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
                 ),
                 SizedBox(height: 30),
                 buildText("Name"),
@@ -210,7 +204,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
-                          counterText: "",
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                           hintText: 'MOBILE NUMBER',
@@ -250,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             : "Please Enter 5 Digit Password";
                       }),
                 ),
-                buildText("DOB"),
+                buildText("Date"),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
                   child: TextFormField(
@@ -262,20 +255,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         selectDateTime(context);
                       },
                       decoration: InputDecoration(
-                          iconColor: Constant.primaryColor,
                           suffixIcon: InkWell(
                               onTap: () {
                                 // buildDateTimePicker(context);
                                 selectDateTime(context);
                               },
-                              child: Icon(
-                                Icons.calendar_today_outlined,
-                                color: Constant.primaryColor,
-                              )),
+                              child: Icon(Icons.calendar_today_outlined)),
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
-                          hintText: 'MM/DD/YYYY',
+                          hintText: 'DD/MM/YYYY',
                           // label: Text("Enter Email",style: TextStyle(color: Constant.secondaryColor),),
                           helperMaxLines: 2,
                           hintMaxLines: 2,
@@ -371,11 +360,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               (await LocalDataSaver.getGender())!;
 
                           Fluttertoast.showToast(
-                              msg: "Profile Details Saved",
+                              msg: "Data Saved",
                               toastLength: Toast.LENGTH_SHORT,
                               timeInSecForIosWeb: 2);
-                          Navigator.pop(context);
-                          // await updateProfilePassword();
+
+                          await updateProfilePassword();
                         }
                       },
                       child: Text("SAVE AND PROCEED")),
@@ -408,22 +397,26 @@ class _ProfilePageState extends State<ProfilePage> {
     final DateTime? selected = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(1950),
+        firstDate: DateTime(2020),
         lastDate: DateTime.now(),
         // lastDate: DateTime(2025),
-        helpText: "Select DOB",
+        helpText: "Select Date",
         builder: (BuildContext context, Widget? child) {
           return Theme(
-              data: ThemeData(
-                  colorScheme: ColorScheme.light(
-                      primary: Constant.primaryColor, secondary: Colors.black)),
-              child: child ?? Text(""));
+            data: ThemeData(
+              colorScheme: ColorScheme.light(
+                  primary: Constant.primaryColor, secondary: Colors.black),
+            ),
+            child: child ?? Text(""),
+          );
         });
     if (selected != null && selected != selectedDate) {
       setState(() {
         selectedDate = selected;
         var dateTime = DateTime.parse(selectedDate.toString());
-        var formatDate = "${dateTime.month}/${dateTime.day}/${dateTime.year}";
+
+        var formatDate = "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+        // selectedDate.toString().trim();
         dateController = TextEditingController(text: formatDate);
       });
     }
@@ -470,7 +463,7 @@ class _ProfilePageState extends State<ProfilePage> {
       onSubmit: (index) {
         print("Date Time:$index");
         setState(() {
-          String formattedDate = DateFormat('MM/dd/yyyy').format(index);
+          String formattedDate = DateFormat('dd/MM/yyyy').format(index);
           dateController = TextEditingController(text: formattedDate);
         });
       },

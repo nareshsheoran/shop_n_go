@@ -29,7 +29,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   TextEditingController otpController = TextEditingController();
 
   bool isShow = false;
+<<<<<<< HEAD
   String textS = "Send OTP";
+=======
+>>>>>>> origin/master
 
   Future forgotPassword(storeUserId, emailId) async {
     var requestBody = {
@@ -108,13 +111,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextFormField(
                       controller: emailController,
+<<<<<<< HEAD
                       textCapitalization: TextCapitalization.none,
                       keyboardType: TextInputType.emailAddress,
+=======
+                      textCapitalization: TextCapitalization.sentences,
+>>>>>>> origin/master
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
+<<<<<<< HEAD
                           hintText: 'Enter Email',
+=======
+                          hintText: 'Enter Email Address',
+>>>>>>> origin/master
                           helperMaxLines: 2,
                           hintMaxLines: 2,
                           focusedBorder: OutlineInputBorder(
@@ -133,11 +144,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         });
                       },
                       validator: (String? value) {
+<<<<<<< HEAD
                         return emailController.text.trim().isEmpty
                             ? "Please Enter Email"
                             : GetUtils.isEmail(value!)
                             ? null
                             : "Please Enter valid Email";
+=======
+                        return GetUtils.isEmail(value!)
+                            ? null
+                            : "Please Enter valid Email Address.";
+>>>>>>> origin/master
                       }),
                 ),
               ),
@@ -150,11 +167,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       // buildExpandablePanel();
                       if (_formKeyEmail.currentState!.validate()) {
                         print(emailController.text);
+<<<<<<< HEAD
                         forgotPassword("V002", emailController.text.trim());
                         setState(() {
                           isShow = true;
                           print(isShow);
                           buildThen();
+=======
+                        forgotPassword("V001", emailController.text);
+                        setState(() {
+                          isShow = true;
+                          print(isShow);
+>>>>>>> origin/master
                         });
                       }
                     },
@@ -164,8 +188,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           borderRadius: BorderRadius.circular(4)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
+<<<<<<< HEAD
                         // child: Center(child: Text("Send OTP")),
                         child: Center(child: Text(textS)),
+=======
+                        child: Center(child: Text("Send OTP")),
+>>>>>>> origin/master
                       ),
                     ),
                   ),
@@ -204,9 +232,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 // border: InputBorder.none
                                 ),
                             validator: (String? value) {
+<<<<<<< HEAD
                               return otpController.text.trim().isEmpty
                                   ? "Please Enter OTP"
                                   : GetUtils.isLengthGreaterOrEqual(value!, 6)
+=======
+                              return GetUtils.isLengthGreaterOrEqual(value!, 6)
+>>>>>>> origin/master
                                   ? null
                                   : "Please Enter Valid OTP";
                             }),
@@ -214,7 +246,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
               // emailController.text == ""
 
+<<<<<<< HEAD
               otpController.text == ''
+=======
+              otpController.text==''
+>>>>>>> origin/master
                   ? SizedBox()
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -224,7 +260,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             // buildExpandablePanel();
                             if (_formKeyOTP.currentState!.validate()) {
                               print(otpController.text);
+<<<<<<< HEAD
                               otpSubmit(otpController.text.trim());
+=======
+                              otpSubmit(otpController.text);
+>>>>>>> origin/master
                             }
                           },
                           child: Container(
@@ -247,6 +287,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
+<<<<<<< HEAD
   Future buildThen() {
     return Future.delayed(Duration(seconds: 30)).then((value) {
       setState(() {
@@ -255,6 +296,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
   }
 
+=======
+>>>>>>> origin/master
   Future otpSubmit(otp) async {
     String enterOtp = otp;
     var requestBody = {
